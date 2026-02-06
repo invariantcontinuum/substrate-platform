@@ -1,0 +1,2100 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Governance layer over modern software delivery">
+      
+      
+      
+        <link rel="canonical" href="https://example.com/substrate-platform/architecture/technical-spec/">
+      
+      
+        <link rel="prev" href="../overview/">
+      
+      
+        <link rel="next" href="../../product/requirements/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Technical Spec - Structural Integrity Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#structural-integrity-platform-comprehensive-implementation-blueprint" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Structural Integrity Platform" class="md-header__button md-logo" aria-label="Structural Integrity Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Structural Integrity Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Technical Spec
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/yourusername/substrate-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    substrate-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../overview/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../product/requirements/" class="md-tabs__link">
+          
+  
+  
+  Product
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/frontend/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../deployment/docker/" class="md-tabs__link">
+          
+  
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Structural Integrity Platform" class="md-nav__button md-logo" aria-label="Structural Integrity Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Structural Integrity Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/yourusername/substrate-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    substrate-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Spec
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#graphrag-indexing-pipeline-adapted-for-code-and-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GraphRAG indexing pipeline adapted for code and documentation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GraphRAG indexing pipeline adapted for code and documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#query-strategies-and-when-to-use-each" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query strategies and when to use each
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-neo4j-and-qdrant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration with Neo4j and Qdrant
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-metrics-and-scoring-for-architectural-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality metrics and scoring for architectural governance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quality metrics and scoring for architectural governance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architectural-drift-and-conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural drift and conformance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-freshness-and-technical-debt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation freshness and technical debt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composite-platform-health-score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite platform health score
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oparego-patterns-for-knowledge-graph-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OPA/Rego patterns for knowledge graph governance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OPA/Rego patterns for knowledge graph governance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-policy-patterns-with-complete-rego-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core policy patterns with complete Rego examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syncing-neo4j-state-to-opa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Syncing Neo4j state to OPA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-integration-as-structural-gatekeeper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI/CD integration as structural gatekeeper
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#polyglot-backend-architecture-with-event-driven-synchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Polyglot backend architecture with event-driven synchronization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Polyglot backend architecture with event-driven synchronization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rust-ingestion-with-tree-sitter-and-stack-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rust ingestion with tree-sitter and stack-graphs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-ml-and-graphrag-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python ML and GraphRAG services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#go-governance-microservices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Go governance microservices
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-driven-synchronization-and-cqrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event-driven synchronization and CQRS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entity-resolution-across-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entity resolution across data sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-connector-architecture-and-knowledge-freshness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data connector architecture and knowledge freshness
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data connector architecture and knowledge freshness">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connector-sdk-design-following-airbyte-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector SDK design following Airbyte patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#source-specific-ingestion-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source-specific ingestion patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-staleness-detection-and-knowledge-enrichment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated staleness detection and knowledge enrichment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frontend-dashboard-with-graph-visualization-and-governance-ux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend dashboard with graph visualization and governance UX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frontend dashboard with graph visualization and governance UX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#graph-visualization-sigmajs-for-exploration-cytoscapejs-for-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graph visualization: Sigma.js for exploration, Cytoscape.js for architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dashboard-design-for-engineering-leadership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard design for engineering leadership
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings-ui-and-llm-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings UI and LLM configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reactvite-technical-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        React/Vite technical stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-architecture-and-scaling-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment architecture and scaling path
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Product
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Product
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../product/requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../product/strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../product/gap-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gap Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../product/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/frontend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/refactor-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/docker-cheatsheet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cheatsheet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#graphrag-indexing-pipeline-adapted-for-code-and-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GraphRAG indexing pipeline adapted for code and documentation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GraphRAG indexing pipeline adapted for code and documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#query-strategies-and-when-to-use-each" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query strategies and when to use each
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-neo4j-and-qdrant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration with Neo4j and Qdrant
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-metrics-and-scoring-for-architectural-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality metrics and scoring for architectural governance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quality metrics and scoring for architectural governance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architectural-drift-and-conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural drift and conformance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-freshness-and-technical-debt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation freshness and technical debt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composite-platform-health-score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite platform health score
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oparego-patterns-for-knowledge-graph-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OPA/Rego patterns for knowledge graph governance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OPA/Rego patterns for knowledge graph governance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-policy-patterns-with-complete-rego-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core policy patterns with complete Rego examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syncing-neo4j-state-to-opa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Syncing Neo4j state to OPA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-integration-as-structural-gatekeeper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI/CD integration as structural gatekeeper
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#polyglot-backend-architecture-with-event-driven-synchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Polyglot backend architecture with event-driven synchronization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Polyglot backend architecture with event-driven synchronization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rust-ingestion-with-tree-sitter-and-stack-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rust ingestion with tree-sitter and stack-graphs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-ml-and-graphrag-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python ML and GraphRAG services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#go-governance-microservices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Go governance microservices
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-driven-synchronization-and-cqrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event-driven synchronization and CQRS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entity-resolution-across-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entity resolution across data sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-connector-architecture-and-knowledge-freshness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data connector architecture and knowledge freshness
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data connector architecture and knowledge freshness">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connector-sdk-design-following-airbyte-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector SDK design following Airbyte patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#source-specific-ingestion-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source-specific ingestion patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-staleness-detection-and-knowledge-enrichment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated staleness detection and knowledge enrichment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frontend-dashboard-with-graph-visualization-and-governance-ux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend dashboard with graph visualization and governance UX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frontend dashboard with graph visualization and governance UX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#graph-visualization-sigmajs-for-exploration-cytoscapejs-for-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graph visualization: Sigma.js for exploration, Cytoscape.js for architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dashboard-design-for-engineering-leadership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard design for engineering leadership
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings-ui-and-llm-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings UI and LLM configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reactvite-technical-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        React/Vite technical stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-architecture-and-scaling-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment architecture and scaling path
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="structural-integrity-platform-comprehensive-implementation-blueprint">Structural Integrity Platform: comprehensive implementation blueprint</h1>
+<p><strong>The Structural Integrity Platform can be built as a polyglot, event-driven system using Rust for code ingestion, Python for GraphRAG/ML pipelines, Go for real-time governance, and React for visualization—unified by a multi-modal knowledge base spanning PostgreSQL, Neo4j, and Qdrant.</strong> This report synthesizes deep technical research across all seven architecture domains into concrete implementation guidance: data models, library selections with version numbers, Rego policy examples, pipeline architectures, and frontend component recommendations. The platform's core innovation is treating software architecture as a living knowledge graph, then enforcing architectural intent through policy-as-code evaluated against that graph in real time.</p>
+<hr />
+<h2 id="graphrag-indexing-pipeline-adapted-for-code-and-documentation">GraphRAG indexing pipeline adapted for code and documentation</h2>
+<p>Microsoft's GraphRAG transforms unstructured text into a hierarchical knowledge graph through <strong>seven distinct indexing phases</strong>, each configurable for a software architecture corpus.</p>
+<p><strong>Phase 1 — Text chunking</strong> splits input into TextUnits. The default is <strong>300 tokens</strong> with <strong>100-token overlap</strong>, but Microsoft reports success with <strong>1,200-token chunks</strong> using a single "glean" step. For code files, 300–600 tokens work best to preserve function-level boundaries. Configuration lives in <code>settings.yaml</code> under <code>chunks.size</code> and <code>chunks.overlap</code>. Short documents like Slack messages can use many-to-many mapping instead of the default one-to-many.</p>
+<p><strong>Phase 2 — Graph extraction</strong> sends each TextUnit to an LLM that extracts entities (with title, type, description) and relationships (source, target, description). For the Structural Integrity Platform, replace the default entity types (<code>organization, person, geo, event</code>) with software-specific types:</p>
+<div class="language-yaml highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">entity_extraction</span><span class="p">:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">entity_types</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Service</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">API</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Module</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Database</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Component</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Team</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Repository</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Package</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Function</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Class</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Interface</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Endpoint</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Queue</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Cache</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">max_gleanings</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</code></pre></div>
+<p>Custom relationship types should include <code>depends_on</code>, <code>calls</code>, <code>imports</code>, <code>owns</code>, <code>maintains</code>, <code>reads_from</code>, <code>writes_to</code>, <code>deploys_to</code>, <code>implements</code>, and <code>exposes</code>. The extraction prompt must be rewritten with domain-specific few-shot examples and explicit relationship definitions. GraphRAG's <code>prompt-tune</code> CLI auto-generates tuned prompts from sample data.</p>
+<p><strong>Phase 3 — Graph augmentation</strong> applies the <strong>Hierarchical Leiden Algorithm</strong> (via the <code>graspologic</code> Python library) to detect communities at multiple resolution levels. Level 0 is the finest granularity; higher levels are broader. Each node belongs to exactly one community per level. <strong>Phase 4 — Community summarization</strong> generates LLM-written reports for each community, producing executive overviews of component clusters. These reports become the backbone of Global Search. <strong>Phase 5</strong> links documents to TextUnits for provenance, <strong>Phase 6</strong> optionally generates Node2Vec + UMAP embeddings for visualization, and <strong>Phase 7</strong> generates text embeddings for vector search.</p>
+<p><strong>Adapting for multi-modal sources</strong> requires normalizing diverse inputs to text before ingestion. Source code should be pre-processed through tree-sitter to extract AST structure, docstrings, and imports as structured text. Jira tickets export as JSON with title/description/status/labels. Slack messages group by thread. A <strong>dual-graph strategy</strong> yields the best results: deterministic AST-derived graphs for code structure (achieving <strong>15/15 correctness</strong> on architectural queries in research benchmarks) combined with LLM-generated graphs for documentation and tickets.</p>
+<h3 id="query-strategies-and-when-to-use-each">Query strategies and when to use each</h3>
+<p><strong>Local Search</strong> identifies entities related to a query via vector similarity on entity embeddings, then traverses connected entities, relationships, and community reports within a graph neighborhood. Use for targeted questions like "What depends on the auth service?" Fast, cheap, focused on graph locality.</p>
+<p><strong>Global Search</strong> uses a map-reduce pattern across all community reports at a specified hierarchy level. Each report chunk generates importance-rated intermediate responses, which are then aggregated. Use for holistic questions like "What are the systemic risks in our architecture?" Expensive but comprehensive.</p>
+<p><strong>DRIFT Search</strong> (Dynamic Reasoning and Inference with Flexible Traversal) combines both approaches in three phases: a primer phase comparing the query against top-K community summaries, a follow-up phase drilling into specific entities via local search, and an output phase combining everything into a ranked hierarchy. Use for questions requiring both breadth and depth, like "How does the payment service's reliability compare to our overall system patterns?"</p>
+<h3 id="integration-with-neo4j-and-qdrant">Integration with Neo4j and Qdrant</h3>
+<p>Three paths exist for Neo4j integration. The most production-ready is <strong>exporting GraphRAG parquet output to Neo4j</strong> via Cypher <code>LOAD CSV</code> or the <code>neo4j-graphrag-python</code> package's <code>SimpleKGPipeline</code>. The data model maps entities to <code>:Entity</code> nodes (or typed labels like <code>:Service</code>, <code>:API</code>), relationships to typed edges, communities to <code>:Community</code> nodes, and TextUnits to <code>:TextUnit</code> nodes.</p>
+<p>For Qdrant, implement a custom vector store via GraphRAG's factory pattern at <code>graphrag/vector_stores/factory.py</code>, registering a <code>QdrantVectorStore</code> class. Three collections are needed: <code>entity_embeddings</code>, <code>text_unit_embeddings</code>, and <code>community_report_embeddings</code>. The <strong>hybrid query pattern</strong> starts with Qdrant vector search to find seed entities, then expands via Neo4j graph traversal to connected entities and communities, then combines contexts for LLM generation. Production deployments report <strong>20–25% accuracy uplift</strong> over pure vector solutions and <strong>1–2 second query latency</strong>.</p>
+<p><strong>Token optimization</strong> uses gpt-4o-mini for extraction (reducing costs to ~$0.01 per processing pass for a 45K-word corpus), built-in LLM caching (identical requests return cached results), and incremental per-service re-indexing rather than full corpus re-indexing. GraphRAG currently requires full re-indexing for updates, so partitioning the corpus by service or team and re-indexing only changed partitions is essential.</p>
+<hr />
+<h2 id="quality-metrics-and-scoring-for-architectural-governance">Quality metrics and scoring for architectural governance</h2>
+<p>The platform needs a layered metrics framework combining code-level, architecture-level, documentation, delivery, and knowledge graph quality dimensions into a composite health score.</p>
+<h3 id="architectural-drift-and-conformance">Architectural drift and conformance</h3>
+<p><strong>Coupling</strong> is measured through afferent coupling (Ca: components depending on you), efferent coupling (Ce: components you depend on), and the <strong>Instability Index</strong>: <code>I = Ce / (Ca + Ce)</code>, ranging from 0.0 (maximally stable) to 1.0 (maximally unstable). The <strong>Distance from Main Sequence</strong> formula <code>D = |A + I - 1|</code> (where A = abstractness) identifies components in the "zone of pain" (concrete and stable, hard to change) or "zone of uselessness" (abstract and unstable).</p>
+<p><strong>Cohesion</strong> uses LCOM4, which counts connected components in a method-attribute graph. LCOM4 = 1 means perfect cohesion; LCOM4 &gt; 1 suggests the class should be split. <strong>Relational cohesion</strong> <code>H = (R + 1) / N</code> (internal relationships divided by types) should be ≥1.5.</p>
+<p><strong>Architecture conformance checking</strong> uses the <strong>Reflexion Model</strong> approach: compare an intended architecture model (allowed dependencies) with the actual extracted architecture via a mapping. Dependencies classify as convergence (exists in both), divergence (exists in actual but not intended—a violation), or absence (intended but not actual). The conformance score is:</p>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ConformanceScore = convergences / (convergences + divergences + absences)
+</code></pre></div>
+<p>The <strong>Normalized Cumulative Component Dependency (NCCD)</strong> from Lakos metrics compares system CCD against a balanced binary tree. NCCD &gt; 1.0 indicates worse-than-average modularity. Tools like ArchUnit, jQAssistant (which stores code in Neo4j for Cypher-based rule checking), and Sonargraph implement these checks.</p>
+<h3 id="documentation-freshness-and-technical-debt">Documentation freshness and technical debt</h3>
+<p><strong>Exponential decay</strong> models documentation staleness: <code>Freshness(t) = e^(-λ × Δt)</code>, where λ varies by document type—<strong>0.01 for architectural docs</strong> (~70-day half-life), <strong>0.05 for API docs</strong> (~14-day half-life), <strong>0.1 for deployment guides</strong> (~7-day half-life). A composite staleness score combines time decay (25%), code drift (30%), link rot (15%), reference validity (20%), and view frequency (10%). Research shows <strong>28.9% of popular GitHub projects</strong> contain at least one outdated code reference in documentation, and references typically remain outdated for years.</p>
+<p><strong>Technical debt quantification</strong> follows the SQALE methodology: sum all remediation costs per violation type. SonarQube's Technical Debt Ratio = <code>Remediation_Cost / (Lines_of_Code × 30_minutes)</code>. An 'A' rating means ≤5% debt ratio. Architectural debt—improper boundaries, layer violations, missing abstractions—is not captured by code-level tools but accounts for an estimated <strong>80% of all technical debt</strong> (Gartner projection for 2027). The platform should quantify architectural debt as <code>Σ(violation_type × estimated_remediation_cost)</code>.</p>
+<p><strong>DORA metrics</strong> integrate via CI/CD pipeline APIs. GitLab provides a native DORA API (<code>/api/v4/projects/{id}/dora/metrics</code>). GitHub Actions data comes from the Workflow Runs API. Elite performers deploy <strong>on-demand (multiple/day)</strong> with <strong>&lt; 1 hour lead time</strong>, <strong>0–5% change failure rate</strong>, and <strong>&lt; 1 hour MTTR</strong>. Apache DevLake provides open-source DORA metric collection across multiple CI/CD systems.</p>
+<h3 id="composite-platform-health-score">Composite platform health score</h3>
+<p>All dimensions normalize to 0–1 and combine with configurable weights:</p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Suggested weight</th>
+<th>Primary inputs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Architectural conformance</td>
+<td>0.25</td>
+<td>Reflexion model alignment, layer violations, coupling/cohesion</td>
+</tr>
+<tr>
+<td>Documentation health</td>
+<td>0.15</td>
+<td>Coverage × Freshness</td>
+</tr>
+<tr>
+<td>Intent-reality alignment</td>
+<td>0.20</td>
+<td>Convergence ratio, weighted violations</td>
+</tr>
+<tr>
+<td>Delivery performance (DORA)</td>
+<td>0.15</td>
+<td>Normalized four key metrics</td>
+</tr>
+<tr>
+<td>Technical debt</td>
+<td>0.15</td>
+<td>Inverted SQALE ratio</td>
+</tr>
+<tr>
+<td>Knowledge graph quality</td>
+<td>0.10</td>
+<td>Completeness × Freshness × Accuracy</td>
+</tr>
+</tbody>
+</table>
+<p>Final scores map to letter ratings: A (≥0.9), B (≥0.75), C (≥0.6), D (≥0.4), F (&lt;0.4).</p>
+<hr />
+<h2 id="oparego-patterns-for-knowledge-graph-governance">OPA/Rego patterns for knowledge graph governance</h2>
+<p>OPA's <code>graph.reachable</code> built-in function computes transitive closure over a directed graph, handling cycles safely. Its signature is <code>output := graph.reachable(graph, initial)</code> where <code>graph</code> is an adjacency list and <code>initial</code> is a starting set. Complexity is <strong>O(V + E)</strong> per call, and it terminates safely on cyclic graphs.</p>
+<h3 id="core-policy-patterns-with-complete-rego-examples">Core policy patterns with complete Rego examples</h3>
+<p><strong>Circular dependency detection</strong> checks whether a component can reach itself through its neighbors:</p>
+<div class="language-rego highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">package</span><span class="w"> </span><span class="n">architecture</span><span class="p">.</span><span class="n">circular</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">import</span><span class="w"> </span><span class="n">rego</span><span class="p">.</span><span class="n">v1</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">circular_dependency</span><span class="w"> </span><span class="k">contains</span><span class="w"> </span><span class="n">cycle</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="k">some</span><span class="w"> </span><span class="n">component</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="k">data</span><span class="p">.</span><span class="n">architecture</span><span class="p">.</span><span class="n">dependencies</span><span class="p">[</span><span class="n">component</span><span class="p">]</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="k">some</span><span class="w"> </span><span class="n">neighbor</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">data</span><span class="p">.</span><span class="n">architecture</span><span class="p">.</span><span class="n">dependencies</span><span class="p">[</span><span class="n">component</span><span class="p">]</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="n">reachable</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="n">reachable</span><span class="p">(</span><span class="k">data</span><span class="p">.</span><span class="n">architecture</span><span class="p">.</span><span class="n">dependencies</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">neighbor</span><span class="p">})</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="n">component</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">reachable</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="n">cycle</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">component</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;via&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">neighbor</span><span class="p">,</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">      </span><span class="s2">&quot;msg&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">sprintf</span><span class="p">(</span><span class="s2">&quot;Circular: &#39;%s&#39; -&gt; &#39;%s&#39; -&gt; ... -&gt; &#39;%s&#39;&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">component</span><span class="p">,</span><span class="w"> </span><span class="n">neighbor</span><span class="p">,</span><span class="w"> </span><span class="n">component</span><span class="p">])}</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Layer violation detection</strong> assigns numeric levels to layers and flags lower layers depending on higher ones:</p>
+<div class="language-rego highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">package</span><span class="w"> </span><span class="n">architecture</span><span class="p">.</span><span class="n">layers</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">import</span><span class="w"> </span><span class="n">rego</span><span class="p">.</span><span class="n">v1</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">layer_order</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;presentation&quot;</span><span class="p">:</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;application&quot;</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;domain&quot;</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;infrastructure&quot;</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="p">}</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">layer_violation</span><span class="w"> </span><span class="k">contains</span><span class="w"> </span><span class="n">violation</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="k">some</span><span class="w"> </span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="n">targets</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">data</span><span class="p">.</span><span class="n">architecture</span><span class="p">.</span><span class="n">dependencies</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="k">some</span><span class="w"> </span><span class="n">target</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">targets</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="n">layer_order</span><span class="p">[</span><span class="k">data</span><span class="p">.</span><span class="n">architecture</span><span class="p">.</span><span class="n">component_layers</span><span class="p">[</span><span class="n">source</span><span class="p">]]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">layer_order</span><span class="p">[</span><span class="k">data</span><span class="p">.</span><span class="n">architecture</span><span class="p">.</span><span class="n">component_layers</span><span class="p">[</span><span class="n">target</span><span class="p">]]</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="n">violation</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;target&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">target</span><span class="p">,</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">      </span><span class="s2">&quot;msg&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">sprintf</span><span class="p">(</span><span class="s2">&quot;Layer violation: &#39;%s&#39; (%s) depends on &#39;%s&#39; (%s)&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">        </span><span class="p">[</span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="p">.</span><span class="n">architecture</span><span class="p">.</span><span class="n">component_layers</span><span class="p">[</span><span class="n">source</span><span class="p">],</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="p">.</span><span class="n">architecture</span><span class="p">.</span><span class="n">component_layers</span><span class="p">[</span><span class="n">target</span><span class="p">]])}</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="p">}</span>
+</code></pre></div>
+<p>Additional policies enforce <strong>API gateway compliance</strong> (external clients must route through the gateway), <strong>service boundary enforcement</strong> (cross-context access only through public APIs), <strong>database access restrictions</strong> (no direct DB access from presentation/application layers), <strong>dependency version constraints</strong> (banned dependencies and minimum versions), and <strong>team ownership rules</strong> (every component must have an owner; cross-team dependencies require approval).</p>
+<h3 id="syncing-neo4j-state-to-opa">Syncing Neo4j state to OPA</h3>
+<p>OPA does not query Neo4j directly. The recommended architecture uses a sync service that extracts graph snapshots via Cypher queries and pushes them to OPA's Data API:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Extract from Neo4j, push to OPA</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">result</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;MATCH (a:Component)-[:DEPENDS_ON]-&gt;(b:Component) RETURN a.name AS source, collect(b.name) AS targets&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">opa_url</span><span class="si">}</span><span class="s2">/v1/data/architecture/dependencies&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">dependencies</span><span class="p">)</span>
+</code></pre></div>
+<p>Three sync strategies apply: <strong>Bundle API</strong> for CI/CD-cycle updates (OPA polls a bundle server every 10–30 seconds), <strong>Push via Data API</strong> for dynamic updates after graph changes, and <strong>OPAL</strong> (Open Policy Administration Layer) for production real-time event-driven synchronization. For latency-sensitive paths, OPA evaluates policies in <strong>sub-millisecond</strong> for indexed rules and <strong>1–5ms</strong> for typical policies. Enterprise OPA from Styra uses <strong>10× less memory</strong> and <strong>40% less CPU</strong> than open-source OPA.</p>
+<h3 id="cicd-integration-as-structural-gatekeeper">CI/CD integration as structural gatekeeper</h3>
+<p>GitHub Actions integration uses the <code>open-policy-agent/setup-opa@v2</code> action to install OPA, extract architecture state from Neo4j, run policy tests via <code>opa test</code>, and evaluate policies with <code>--fail-defined</code> to block merges on violations. <strong>Conftest</strong> wraps OPA for testing configuration files (Kubernetes manifests, Terraform, Dockerfiles) against policies. Pre-commit hooks catch violations locally before push. OPA <strong>Gatekeeper</strong> acts as a Kubernetes admission controller for deployment-time enforcement.</p>
+<p><strong>Natural language to Rego translation</strong> is not yet production-ready but emerging. The LACE framework achieved <strong>100% correctness</strong> in verified policy generation using LLMs. For now, LLMs serve best as authoring assistants with mandatory human review and automated <code>opa test</code> validation of generated policies.</p>
+<hr />
+<h2 id="polyglot-backend-architecture-with-event-driven-synchronization">Polyglot backend architecture with event-driven synchronization</h2>
+<h3 id="rust-ingestion-with-tree-sitter-and-stack-graphs">Rust ingestion with tree-sitter and stack-graphs</h3>
+<p><strong>tree-sitter</strong> (crate <code>tree-sitter</code> v0.24.x) is an incremental parsing framework that generates concrete syntax trees from grammar definitions. It parses a 2,157-line Rust file in <strong>~6.5ms</strong> and performs incremental re-parses in sub-millisecond time after edits. Over <strong>150 language grammars</strong> are available. From Rust, use tree-sitter queries (S-expression patterns) to extract functions, classes, imports, and dependencies:</p>
+<div class="language-rust highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">parser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Parser</span><span class="p">::</span><span class="n">new</span><span class="p">();</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">parser</span><span class="p">.</span><span class="n">set_language</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tree_sitter_rust</span><span class="p">::</span><span class="n">LANGUAGE</span><span class="p">.</span><span class="n">into</span><span class="p">()).</span><span class="n">unwrap</span><span class="p">();</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kd">let</span><span class="w"> </span><span class="n">tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parser</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source_code</span><span class="p">,</span><span class="w"> </span><span class="nb">None</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1">// Use TreeCursor to walk AST or queries to match patterns like:</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c1">// (function_item name: (identifier) @fn_name)</span>
+</code></pre></div>
+<p><strong>stack-graphs</strong> (GitHub's framework for code navigation) build on tree-sitter to resolve references to definitions across files without requiring a full build. While the GitHub repository has been archived, the crates remain functional. Stack-graphs produce Push Symbol Nodes (references) and Pop Symbol Nodes (definitions), enabling construction of call graphs, import dependency graphs, and type hierarchies.</p>
+<p>The <strong>ingestion pipeline</strong> uses <code>notify</code> (v6.x) for filesystem watching, <code>rayon</code> for CPU-bound parallel parsing, and <code>tokio</code> for async I/O orchestration. Bounded channels (<code>crossbeam-channel</code>) provide backpressure between stages. The pipeline flows: File Watcher → Change Queue → Parser Pool (tree-sitter + stack-graphs) → Entity Emitter (graph triples) → Output Sink (NATS/Kafka).</p>
+<h3 id="python-ml-and-graphrag-services">Python ML and GraphRAG services</h3>
+<p><strong>FastAPI</strong> (v0.115.x) serves as the HTTP/REST API layer, with <strong>Celery</strong> (v5.4.x) and Redis for async task processing of long-running ML operations. LLM inference goes through <strong>vLLM</strong> (v0.6.x) with PagedAttention for high-throughput serving, exposed as an OpenAI-compatible endpoint. Pipeline orchestration uses <strong>Prefect</strong> (v3.x) for workflow management with built-in retry, caching, and observability. Error handling for LLM calls uses <code>tenacity</code> for exponential backoff with jitter and <code>pybreaker</code> for circuit breaking.</p>
+<p>Incremental indexing tracks file hashes and timestamps in PostgreSQL. On change detection, only affected TextUnits are re-extracted. LLM extraction results are cached keyed by <code>(chunk_hash, model_version, prompt_version)</code> to avoid redundant API calls.</p>
+<h3 id="go-governance-microservices">Go governance microservices</h3>
+<p>Go services embed OPA as a library via <code>github.com/open-policy-agent/opa/v1/sdk</code>, achieving <strong>sub-millisecond policy evaluation</strong> with zero serialization overhead. Prepared queries are goroutine-safe and cache evaluation plans. The service uses <code>go-chi/chi</code> for HTTP routing, <code>nats.go</code> for event consumption, <code>sony/gobreaker</code> for circuit breaking, and <code>golang.org/x/time/rate</code> for rate limiting. Go's goroutine model maps naturally to concurrent webhook processing.</p>
+<h3 id="event-driven-synchronization-and-cqrs">Event-driven synchronization and CQRS</h3>
+<p><strong>NATS with JetStream</strong> is recommended for initial deployment—a single <strong>~10MB binary</strong> supporting pub/sub, request-reply, and streaming with sub-millisecond latency and ~200K msg/s persistent throughput. Migrate to <strong>Apache Kafka</strong> when throughput exceeds 200K msg/s sustained or when the Kafka Connect ecosystem (especially Debezium) is needed.</p>
+<p>The platform follows <strong>CQRS</strong>: PostgreSQL is the write model and source of truth; Neo4j and Qdrant are read-optimized projections built from events. The <strong>Outbox Pattern</strong> ensures atomicity—write to a PostgreSQL <code>event_outbox</code> table in the same transaction as entity updates, then a dispatcher publishes to the event bus.</p>
+<p><strong>Debezium</strong> captures PostgreSQL WAL changes via logical replication and streams them to Kafka topics. Custom consumers transform CDC events into Neo4j Cypher MERGE statements and Qdrant vector upserts (after generating embeddings via the Python service). Key PostgreSQL configuration: <code>wal_level = logical</code>, <code>max_replication_slots = 4</code>, and <code>REPLICA IDENTITY FULL</code> on tracked tables.</p>
+<h3 id="entity-resolution-across-data-sources">Entity resolution across data sources</h3>
+<p>The same developer appears as a GitHub username, Jira account ID, Slack user ID, and Confluence author. A <strong>three-layer resolution strategy</strong> handles this: deterministic matching (email/SSO ID/username mapping), probabilistic matching via the <strong>Fellegi-Sunter model</strong> (computing match weights per attribute), and ML-based matching with active learning. <strong>Splink</strong> (v4.x, Python) implements Fellegi-Sunter with EM parameter estimation and multiple SQL backends. A canonical entity model stores all identifiers with resolution confidence scores and supports entity evolution over time.</p>
+<hr />
+<h2 id="data-connector-architecture-and-knowledge-freshness">Data connector architecture and knowledge freshness</h2>
+<h3 id="connector-sdk-design-following-airbyte-patterns">Connector SDK design following Airbyte patterns</h3>
+<p>The connector framework should adopt a <strong>three-tier development approach</strong> inspired by Airbyte: no-code YAML configuration for common REST APIs, low-code YAML with custom functions for moderate complexity, and a full Python SDK for complex sources. Each connector runs in its own <strong>Docker container</strong> for isolation, communicates via a standard protocol (SPEC → CHECK → DISCOVER → READ), and is versioned independently.</p>
+<p>Key design principles from production connector platforms:</p>
+<ul>
+<li><strong>Backstage-style extension points</strong> for plugin extensibility, where modules register capabilities via typed interfaces</li>
+<li><strong>Incremental sync</strong> via cursor fields and state checkpoints (Airbyte's <code>AirbyteStateMessage</code> pattern)</li>
+<li><strong>Credential management</strong> through an external secrets store (Vault, AWS Secrets Manager)—never stored in connector code</li>
+<li><strong>Rate limit budgets</strong> allocated across connectors using token bucket algorithms</li>
+</ul>
+<h3 id="source-specific-ingestion-patterns">Source-specific ingestion patterns</h3>
+<p><strong>GitHub</strong> ingestion should use <strong>GitHub Apps</strong> (5,000–15,000 req/hr based on org size) over OAuth Apps. Webhooks handle real-time updates for push, PR, and issue events; <strong>conditional requests</strong> with ETag headers avoid counting 304 responses against rate limits. For monorepos, the Git Trees API (<code>/git/trees/{sha}?recursive=1</code>) enables efficient traversal.</p>
+<p><strong>Jira</strong> uses REST API v3 with the new <code>/rest/api/3/search/jql</code> endpoint. Pagination has shifted to sequential <code>nextPageToken</code>-based (no parallel page fetches), with <code>maxResults</code> up to 5,000 for smaller datasets. Extract issues, epics, sprints, components, and issue links—mapping components to services/modules in the knowledge graph.</p>
+<p><strong>Confluence</strong> uses CQL for searching (<code>type=page AND space=ARCH AND lastModified &gt;= "2025-01-01"</code>). Body content returns in Confluence Storage Format (XHTML with <code>ac:</code> macros) requiring tag stripping for clean text. With body expansion, pagination limits to <strong>50 results per page</strong>.</p>
+<p><strong>Slack</strong> uses Socket Mode (no public endpoint required, works behind firewalls) via the Bolt framework. Subscribe to <code>message</code>, <code>reaction_added</code>, and <code>file_shared</code> events. Filter by channel type for privacy, and consider ingesting only from designated "knowledge" channels.</p>
+<p>The recommended <strong>hybrid strategy</strong>: webhooks for real-time event capture, periodic reconciliation polling (every 15–60 minutes) to catch missed events, and full polling-based backfill on initial setup.</p>
+<h3 id="automated-staleness-detection-and-knowledge-enrichment">Automated staleness detection and knowledge enrichment</h3>
+<p>A <strong>composite staleness score</strong> combines five signals with weighted contributions: time-based exponential decay (25%), code drift where related code changed but docs didn't (30%), link rot from broken URLs (15%), reference validity checking whether referenced APIs/classes still exist (20%), and inverse view frequency (10%). Research confirms that <strong>82.3% of popular GitHub projects</strong> have contained outdated code references at some point.</p>
+<p><strong>Smart notifications</strong> route through severity tiers: dashboard flag at score &gt; 0.5, Slack message to the document owner at day 3, team channel escalation at day 7, engineering manager report at day 14, and deprecation/archival suggestion at day 30. <strong>Notification fatigue prevention</strong> uses batching into daily/weekly digests, a cap of 3 push notifications per hour per user, priority tiering, and user-configurable preferences.</p>
+<p><strong>Embedding-based duplicate detection</strong> uses cosine similarity on document embeddings (via <code>all-MiniLM-L6-v2</code> for self-hosted or <code>text-embedding-3-small</code> for OpenAI). Thresholds: &gt; 0.95 triggers auto-flagging for merge, 0.85–0.95 suggests consolidation for human review, 0.70–0.85 suggests cross-linking. <strong>HDBSCAN clustering</strong> on embeddings identifies topic clusters for consolidation suggestions. For scale beyond 100K documents, use FAISS or Qdrant for approximate nearest neighbor search.</p>
+<p><strong>Human-in-the-loop enrichment</strong> uses confidence thresholds: &gt; 0.9 auto-adds graph relationships, 0.7–0.9 queues for review, &lt; 0.7 discards. PR-triggered prompts ask authors to review related docs when code changes touch documented components. Acceptance rates feed back into extraction model tuning.</p>
+<hr />
+<h2 id="frontend-dashboard-with-graph-visualization-and-governance-ux">Frontend dashboard with graph visualization and governance UX</h2>
+<h3 id="graph-visualization-sigmajs-for-exploration-cytoscapejs-for-architecture">Graph visualization: Sigma.js for exploration, Cytoscape.js for architecture</h3>
+<p><strong>Sigma.js</strong> (v3.0.2) with <code>@react-sigma/core</code> is recommended as the primary graph visualization library. It uses <strong>WebGL rendering</strong> and handles <strong>100K+ edges</strong> at 60fps with default styles. Built on <code>graphology</code> for data manipulation and algorithms. ForceAtlas2 layout computation offloads to a Web Worker via <code>graphology-layout-forceatlas2/worker</code>. Custom node renderers display service health indicators (traffic light coloring), and <code>reducers</code> enable dynamic appearance changes for filtering.</p>
+<p><strong>Cytoscape.js</strong> (v3.x) with <code>react-cytoscapejs</code> serves architecture diagram views. It has the <strong>richest layout ecosystem</strong>: Dagre for directed acyclic dependency flows, CoSE-Bilkent for compound graphs with nested domain groups, hierarchical for org charts, and breadthfirst for tree-like structures. Compound nodes group services by team or bounded context. Use CSS-like selectors for styling edges by health status (red = error, green = healthy) and thickness by traffic volume.</p>
+<p>Performance benchmarks show <strong>SVG falls below 30fps at 10K elements</strong> during pan/zoom, Canvas hits limits at ~10K elements with complex interactions, and <strong>WebGL holds steady past 100K elements</strong>. The recommended hybrid approach: WebGL (Sigma.js) at overview zoom levels, Canvas for mid-range with labels, and SVG export for high-quality architecture diagrams.</p>
+<p><strong>Diff visualization</strong> overlays two graph states with color-coded additions (green), removals (red), and modifications (yellow). Sigma.js supports this via dynamic style updates through reducers.</p>
+<h3 id="dashboard-design-for-engineering-leadership">Dashboard design for engineering leadership</h3>
+<p>The dashboard follows a <strong>card-based KPI layout</strong> with drill-down navigation: top row shows total services, compliance percentage, active drift alerts, and deployment frequency. Below, time-series trend charts (via <strong>Recharts</strong> v2.x, chosen for its 9M+ weekly npm downloads and composable React API) track metrics over sprints. <strong>Nivo</strong> supplements with heatmaps for dependency risk matrices and radar charts for team comparisons.</p>
+<p>Key dashboard views include an architecture health overview with traffic-light scoring, drift detection alerts with trend lines, team-based ownership matrices, a service catalog with health indicators (inspired by Backstage's entity model), and a dependency risk heatmap. Real-time updates use <strong>TanStack Query</strong> (v5.x) with <code>refetchInterval</code> for polling and WebSocket integration via Zustand for live drift detection alerts.</p>
+<h3 id="settings-ui-and-llm-configuration">Settings UI and LLM configuration</h3>
+<p>LLM configuration presents a provider selector (OpenAI, Anthropic, Azure OpenAI, Ollama, custom endpoint) with API key management using masked input with show/hide toggle, model selection dropdown, and parameter sliders for temperature and max tokens. A "Test Connection" button validates through the backend proxy and displays latency and model availability. <strong>API keys must be stored server-side only</strong>—never in frontend environment variables, which embed into build output.</p>
+<p>Data source connector configuration uses OAuth 2.0 popup flows for GitHub/Jira/Confluence, with connection status indicators (Connected/Disconnected/Error/Syncing), sync scheduling dropdowns, and repository selection interfaces.</p>
+<h3 id="reactvite-technical-stack">React/Vite technical stack</h3>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Choice</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build</td>
+<td><strong>Vite 6.x</strong></td>
+<td>Native ESM, fast HMR</td>
+</tr>
+<tr>
+<td>UI framework</td>
+<td><strong>React 19</strong></td>
+<td>Hooks, Suspense, transitions</td>
+</tr>
+<tr>
+<td>Components</td>
+<td><strong>shadcn/ui</strong> + Radix UI + Tailwind CSS 4.x</td>
+<td>Accessible, composable, dark mode built-in; used by OpenAI and Adobe</td>
+</tr>
+<tr>
+<td>State (client)</td>
+<td><strong>Zustand 5.x</strong></td>
+<td>~3KB, no Provider needed, middleware for persistence and devtools</td>
+</tr>
+<tr>
+<td>State (server)</td>
+<td><strong>TanStack Query 5.x</strong></td>
+<td>Caching, background refetching, optimistic mutations</td>
+</tr>
+<tr>
+<td>Routing</td>
+<td><strong>TanStack Router</strong></td>
+<td>File-based, type-safe, automatic code splitting</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td><strong>Zod 3.x</strong></td>
+<td>TypeScript-first runtime validation</td>
+</tr>
+<tr>
+<td>Graph (exploration)</td>
+<td><strong>Sigma.js 3.0.2</strong> + <code>@react-sigma/core</code></td>
+<td>WebGL performance for 1000+ node graphs</td>
+</tr>
+<tr>
+<td>Graph (architecture)</td>
+<td><strong>Cytoscape.js 3.x</strong> + <code>react-cytoscapejs</code></td>
+<td>Rich layout algorithms (Dagre, hierarchical)</td>
+</tr>
+<tr>
+<td>Charts</td>
+<td><strong>Recharts 2.x</strong> + Nivo for specialized views</td>
+<td>Largest community, composable React API</td>
+</tr>
+</tbody>
+</table>
+<p>The project uses feature-based file organization: <code>routes/</code> for TanStack Router pages, <code>components/</code> split by domain (graph/, dashboard/, settings/, layout/), <code>stores/</code> for Zustand stores, <code>hooks/queries/</code> and <code>hooks/mutations/</code> for TanStack Query hooks, and <code>lib/</code> for utilities. Performance optimization includes lazy loading for heavy graph components, <code>@tanstack/react-virtual</code> for long service lists, and Web Workers for ForceAtlas2 layout computation.</p>
+<hr />
+<h2 id="deployment-architecture-and-scaling-path">Deployment architecture and scaling path</h2>
+<p>The platform targets Docker and Kubernetes with a clear scaling path:</p>
+<ul>
+<li><strong>Small team (5–20 devs)</strong>: Docker Compose with all services; NATS JetStream for events; single PostgreSQL, Neo4j, and Qdrant instances; gpt-4o-mini for GraphRAG indexing to control costs</li>
+<li><strong>Growth (20–100 devs)</strong>: Kubernetes with Helm charts; migrate to Kafka for CDC integration with Debezium; Neo4j clustering; Qdrant sharding; dedicated GPU node for vLLM</li>
+<li><strong>Enterprise (100+ devs)</strong>: Multi-cluster Kubernetes; Kafka with multiple topic partitions; Neo4j Fabric for federation; Qdrant distributed mode; Enterprise OPA (Styra DAS) for policy lifecycle management; OPAL for real-time policy data synchronization</li>
+</ul>
+<p>The <strong>Outbox Pattern</strong> with Debezium CDC provides the atomic consistency guarantee between PostgreSQL writes and event publication across all scale levels. Event schema versioning with backward compatibility (Protobuf for inter-service communication) ensures smooth upgrades.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Three architectural decisions define this platform's success. First, the <strong>dual-graph strategy</strong>—deterministic AST-derived graphs for code structure combined with LLM-generated graphs for documentation and tickets—delivers higher accuracy than either approach alone. Second, <strong>CQRS with PostgreSQL as the write-side source of truth</strong> and Neo4j/Qdrant as read-optimized projections eliminates the consistency challenges of multi-model databases. Third, <strong>OPA's <code>graph.reachable</code> function</strong> enables expressing complex architectural policies (circular dependencies, transitive layer violations, cross-boundary access) in 10–20 lines of Rego, evaluated in sub-millisecond time.</p>
+<p>The cost model is favorable for small teams: GraphRAG indexing with gpt-4o-mini costs <strong>~$5–50 per full re-index</strong> depending on corpus size, and incremental per-service re-indexing keeps ongoing costs minimal. NATS JetStream adds near-zero operational overhead as a single binary. The primary technical risks are GraphRAG's current lack of true incremental indexing (mitigated by corpus partitioning) and stack-graphs' archived status (mitigated by the codebase remaining functional and forkable). The platform should ship with the ingestion pipeline and governance policies first, then layer on GraphRAG community detection and DRIFT search as the knowledge graph matures.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
