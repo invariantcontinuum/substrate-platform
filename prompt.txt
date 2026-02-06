@@ -1,0 +1,9 @@
+take some time to read the documentation in docs folder, this app is the frontend for the substrate, the core services are not implemented and for now out
+of scope, the aim is to develop the frontend with a complete openapi spec yaml supported by the mock data to accelerate the development of core services later. for now focus is only th
+e frontend in its current shape. i want you to add functionality missing for e.g. above knowledge streak Freshness
+85%
+Validation
+38%
+Human Check
+15%
+bars from qualityawareui.txt would be nice,
