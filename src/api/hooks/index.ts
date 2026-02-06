@@ -563,3 +563,10 @@ export function useQuickSync() {
     error: triggerSync.error,
   };
 }
+
+// ============================================================================
+// Re-exports from feature modules
+// ============================================================================
+
+export * from './tenant';
+export * from './connector';
