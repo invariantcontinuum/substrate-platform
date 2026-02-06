@@ -1,0 +1,96 @@
+name: Release Management
+
+on:
+  workflow_dispatch:
+    inputs:
+      increment:
+        description: "Version increment type"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version and get new version
+        id: version_bump
+        run: |
+          # Get the new version string from npm version
+          NEW_VERSION=$(npm version ${{ github.event.inputs.increment }} --no-git-tag-version)
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Commit version bump
+        run: |
+          git add package.json package-lock.json
+          git commit -m "chore(release): bump version to ${{ env.NEW_VERSION }}"
+          git push origin main
+
+      - name: Handle Release Branching
+        run: |
+          VERSION=${{ env.NEW_VERSION }}
+          # Strip 'v' if present for logic
+          CLEAN_VERSION=${VERSION#v}
+          MAJOR=$(echo $CLEAN_VERSION | cut -d. -f1)
+
+          RELEASE_BRANCH="release/v$MAJOR"
+
+          if [ "${{ github.event.inputs.increment }}" == "major" ]; then
+            echo "Creating new major release branch: $RELEASE_BRANCH"
+            git branch $RELEASE_BRANCH
+            git push origin $RELEASE_BRANCH
+          else
+            echo "Updating existing release branch: $RELEASE_BRANCH"
+            # Try to push to the release branch, if it exists
+            if git ls-remote --exit-code --heads origin $RELEASE_BRANCH; then
+              git checkout $RELEASE_BRANCH
+              git merge main --no-edit
+              git push origin $RELEASE_BRANCH
+              git checkout main
+            else
+              echo "Release branch $RELEASE_BRANCH does not exist. Skipping update."
+            fi
+          fi
+
+      - name: Create Git Tag
+        run: |
+          git tag ${{ env.NEW_VERSION }}
+          git push origin ${{ env.NEW_VERSION }}
+
+      - name: Generate Release Notes
+        id: release_notes
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.NEW_VERSION }}
+          name: Release ${{ env.NEW_VERSION }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
