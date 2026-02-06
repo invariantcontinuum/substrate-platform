@@ -68,8 +68,9 @@ nav:
       - Kubernetes: deployment/kubernetes.md
       - Cheatsheet: deployment/docker-cheatsheet.md
   - Platform:
-      - Ingestion: platform/ingestion/index.md
-      - GraphRAG: platform/graphrag/index.md
-      - Institutional Memory: platform/memory/index.md
-      - Maintainence: platform/maintainence/index.md
+      - Core Services: platform/services/index.md
+          - Ingestion: platform/services/ingestion/index.md
+          - GraphRAG: platform/services/graphrag/index.md
+          - Governance: platform/services/governance/index.md
+          - Maintainence: platform/services/maintainence/index.md
 
