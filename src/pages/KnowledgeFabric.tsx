@@ -10,6 +10,7 @@ import {
   useFullGraph, 
   useLensConfig, 
   useLegendItems,
+  useDriftAnalysis,
 } from '@/hooks';
 import { LensType } from '@/types';
 import { cn } from '@/lib/utils';
@@ -37,6 +38,7 @@ export const KnowledgeFabric: React.FC<KnowledgeFabricProps> = ({
   const { data: graphData, isLoading: graphLoading } = useFullGraph();
   const { data: lensConfig } = useLensConfig();
   const { data: legendItems } = useLegendItems();
+  const { data: driftAnalysis, isLoading: driftLoading } = useDriftAnalysis();
 
   // Local state
   const [isDriftModalOpen, setIsDriftModalOpen] = useState(false);
@@ -187,22 +189,44 @@ export const KnowledgeFabric: React.FC<KnowledgeFabricProps> = ({
             <div className="space-y-3">
               {activeLens === 'drift' ? (
                 <>
-                  <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-lg">
-                    <p className="text-[11px] text-red-400 font-medium">
-                      Found 1 undocumented dependency between{' '}
-                      <span className="underline">DB_ORDERS</span> and{' '}
-                      <span className="underline">SHADOW_TRACKER</span>.
-                    </p>
-                    <p className="text-[9px] text-slate-500 mt-2 italic font-mono uppercase">
-                      VIOLATES POLICY: ADR-022
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setIsDriftModalOpen(true)}
-                    className="w-full py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-[10px] font-bold uppercase transition-all shadow-lg shadow-red-900/20"
-                  >
-                    Open Drift Resolver
-                  </button>
+                  {driftLoading ? (
+                    <div className="p-3 bg-slate-800 rounded-lg animate-pulse">
+                      <div className="h-8 bg-slate-700 rounded" />
+                    </div>
+                  ) : driftAnalysis?.hasViolation ? (
+                    <>
+                      <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-lg">
+                        <p className="text-[11px] text-red-400 font-medium">
+                          {driftAnalysis.between && driftAnalysis.between.length >= 2 ? (
+                            <>
+                              Found 1 undocumented dependency between{' '}
+                              <span className="underline">{driftAnalysis.between[0]}</span> and{' '}
+                              <span className="underline">{driftAnalysis.between[1]}</span>.
+                            </>
+                          ) : (
+                            driftAnalysis.description || 'Drift detected in the system.'
+                          )}
+                        </p>
+                        {driftAnalysis.policy && (
+                          <p className="text-[9px] text-slate-500 mt-2 italic font-mono uppercase">
+                            VIOLATES POLICY: {driftAnalysis.policy}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => setIsDriftModalOpen(true)}
+                        className="w-full py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-[10px] font-bold uppercase transition-all shadow-lg shadow-red-900/20"
+                      >
+                        Open Drift Resolver
+                      </button>
+                    </>
+                  ) : (
+                    <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-lg">
+                      <p className="text-[11px] text-emerald-400 font-medium">
+                        No drift detected. System is aligned with architectural intent.
+                      </p>
+                    </div>
+                  )}
                 </>
               ) : (
                 <>

@@ -1,4 +1,19 @@
 {
+    "stats": {
+        "personaDepth": {
+            "level": 4,
+            "label": "Expert",
+            "progress": 87
+        },
+        "knowledgeSaved": {
+            "adrCount": 12,
+            "label": "12 ADRs worth"
+        },
+        "systemConfidence": {
+            "percentage": 94.2,
+            "trend": "improving"
+        }
+    },
     "auditItems": [
         {
             "id": "jira-882",

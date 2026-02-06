@@ -8,7 +8,7 @@ import { User, History, Sparkles, Cpu, AlertCircle, ChevronRight } from 'lucide-
 import { MemoryStat } from '@/components/ui/MemoryStat';
 import { AuditBubble } from '@/components/ui/AuditBubble';
 import { AuditItemModal } from '@/components/modals/AuditItemModal';
-import { useAuditItems } from '@/hooks';
+import { useAuditItems, useMemoryStats } from '@/hooks';
 
 interface ChatMessage {
   type: 'bot' | 'user';
@@ -25,8 +25,9 @@ export const MemoryInterface: React.FC = () => {
   const [selectedAuditItem, setSelectedAuditItem] = useState<any>(null);
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
 
-  // Use API hook to fetch audit items
+  // Use API hooks to fetch data
   const { data: auditItems, isLoading } = useAuditItems();
+  const { data: memoryStats, isLoading: statsLoading } = useMemoryStats();
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -38,7 +39,7 @@ export const MemoryInterface: React.FC = () => {
     setChatHistory([...chatHistory, newMsg]);
     setLogContent('');
 
-    // Mock bot response
+    // Bot response - in production this would come from an API
     setTimeout(() => {
       setChatHistory(prev => [...prev, {
         type: 'bot',
@@ -57,9 +58,31 @@ export const MemoryInterface: React.FC = () => {
       <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col gap-6 overflow-hidden">
         {/* Memory Stats Row */}
         <div className="grid grid-cols-3 gap-4">
-          <MemoryStat icon={<User className="text-blue-400" />} label="Persona Depth" value="Lvl 4 (Expert)" />
-          <MemoryStat icon={<History className="text-purple-400" />} label="Knowledge Saved" value="12 ADRs worth" />
-          <MemoryStat icon={<Sparkles className="text-emerald-400" />} label="System Confidence" value="94.2%" />
+          {statsLoading ? (
+            <>
+              <div className="h-16 bg-slate-800 rounded-xl animate-pulse" />
+              <div className="h-16 bg-slate-800 rounded-xl animate-pulse" />
+              <div className="h-16 bg-slate-800 rounded-xl animate-pulse" />
+            </>
+          ) : (
+            <>
+              <MemoryStat 
+                icon={<User className="text-blue-400" />} 
+                label="Persona Depth" 
+                value={memoryStats ? `Lvl ${memoryStats.personaDepth.level} (${memoryStats.personaDepth.label})` : 'Loading...'} 
+              />
+              <MemoryStat 
+                icon={<History className="text-purple-400" />} 
+                label="Knowledge Saved" 
+                value={memoryStats?.knowledgeSaved.label || 'Loading...'} 
+              />
+              <MemoryStat 
+                icon={<Sparkles className="text-emerald-400" />} 
+                label="System Confidence" 
+                value={memoryStats ? `${memoryStats.systemConfidence.percentage}%` : 'Loading...'} 
+              />
+            </>
+          )}
         </div>
 
         {/* Chat Area */}

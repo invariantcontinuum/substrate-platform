@@ -21,6 +21,7 @@ export {
   syncService,
   healthService,
   uiService,
+  uiConfigService,
   memoryService,
 } from './services';
 
@@ -31,6 +32,7 @@ export type {
   PolicyFilterParams,
   ViolationFilterParams,
   PolicyMetadata,
+  MemoryStats,
 } from './services';
 
 // Hooks - React Query integration
@@ -54,6 +56,7 @@ export {
   useViolation,
   useDriftSummary,
   useDriftTimeline,
+  useDriftAnalysis,
   // Search hooks
   useSearch,
   useEvidence,
@@ -71,6 +74,7 @@ export {
   // Memory hooks
   useAuditItems,
   useAuditItem,
+  useMemoryStats,
   // Mutations
   useResolveViolation,
   useTriggerSync,
@@ -80,5 +84,28 @@ export {
   useUpdateEnforcementMode,
 } from './hooks';
 
+// API Types from OpenAPI spec
+export type {
+  SubgraphRequest,
+  PolicyCreate,
+  PolicyEvaluateRequest,
+  SearchRequest,
+  SyncRequest,
+  GraphNodesParams,
+  GraphEdgesParams,
+  PoliciesParams,
+  ViolationsParams,
+  TimelineParams,
+  EvidenceParams,
+  ApiResponse,
+  ApiError,
+  ApiEndpoints,
+  EndpointPath,
+  ApiRequestConfig,
+} from './types';
+
 // Mock data (for testing and development)
 export { mockData, mockProvider, initializeMockProvider } from './mock/data';
+
+// OpenAPI Specification
+// Located at src/api/openapi.yaml

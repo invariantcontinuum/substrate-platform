@@ -21,6 +21,26 @@ import type {
   PolicyCreate,
   PolicyStatus,
   EnforcementMode,
+  GraphNode,
+  GraphEdge,
+  GraphData,
+  GraphMetrics,
+  Community,
+  Policy,
+  PolicyTemplate,
+  DriftViolation,
+  DriftSummary,
+  DriftTimelinePoint,
+  SearchResponse,
+  EvidenceItem,
+  ReasoningResult,
+  SyncJob,
+  HealthStatus,
+  DashboardMetrics,
+  LensConfig,
+  LegendItemConfig,
+  AnalysisAction,
+  AuditItem,
 } from '@/types';
 
 // ============================================================================
@@ -91,8 +111,6 @@ export const queryKeys = {
 // ============================================================================
 // Graph Hooks
 // ============================================================================
-
-import type { GraphNode, GraphEdge, GraphData, GraphMetrics, Community } from '@/types';
 
 export function useNodes(params?: GraphFilterParams, options?: UseQueryOptions<GraphNode[]>) {
   return useQuery<GraphNode[]>({
@@ -170,8 +188,6 @@ export function useGraphMetrics(options?: UseQueryOptions<GraphMetrics>) {
 // ============================================================================
 // Policy Hooks
 // ============================================================================
-
-import type { Policy, PolicyTemplate, DriftViolation, DriftSummary, DriftTimelinePoint, SearchResponse, EvidenceItem, ReasoningResult, SyncJob, HealthStatus, DashboardMetrics, LensConfig, LegendItemConfig, AnalysisAction, AuditItem } from '@/types';
 
 export function usePolicies(params?: PolicyFilterParams, options?: UseQueryOptions<Policy[]>) {
   return useQuery<Policy[]>({
@@ -416,9 +432,43 @@ export function useDriftActions(options?: UseQueryOptions<AnalysisAction[]>) {
   });
 }
 
+
+
+/**
+ * Hook to get drift analysis for the current context
+ * Returns the first active drift violation for display
+ */
+export function useDriftAnalysis(options?: UseQueryOptions<DriftAnalysis>) {
+  return useQuery<DriftAnalysis>({
+    queryKey: ['drift', 'analysis'],
+    queryFn: async () => {
+      const response = await api.drift.getViolations({ status: 'open' });
+      const violations = response.data;
+      const openViolation = violations.find(v => v.highlight);
+      
+      if (openViolation) {
+        return {
+          hasViolation: true,
+          violation: openViolation,
+          between: openViolation.between || [],
+          policy: openViolation.policy,
+          description: openViolation.description,
+        };
+      }
+      
+      return { hasViolation: false };
+    },
+    staleTime: 30 * 1000,
+    ...options,
+  });
+}
+
 // ============================================================================
 // Memory Hooks
 // ============================================================================
+
+import type { MemoryStats } from '../services';
+import type { DriftAnalysis } from './types';
 
 export function useAuditItems(options?: UseQueryOptions<AuditItem[]>) {
   return useQuery<AuditItem[]>({
@@ -440,6 +490,18 @@ export function useAuditItem(id: string, enabled = true, options?: UseQueryOptio
       return response.data;
     },
     enabled: enabled && !!id,
+    staleTime: 2 * 60 * 1000,
+    ...options,
+  });
+}
+
+export function useMemoryStats(options?: UseQueryOptions<MemoryStats>) {
+  return useQuery<MemoryStats>({
+    queryKey: ['memory', 'stats'],
+    queryFn: async () => {
+      const response = await api.memory.getStats();
+      return response.data;
+    },
     staleTime: 2 * 60 * 1000,
     ...options,
   });
@@ -563,6 +625,9 @@ export function useQuickSync() {
     error: triggerSync.error,
   };
 }
+
+// Re-export types for convenience
+export type { DriftAnalysis };
 
 // ============================================================================
 // Re-exports from feature modules

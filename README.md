@@ -4,6 +4,8 @@
 
 AI has massively accelerated code creation but often at the cost of architectural consistency, security guarantees, and shared understanding. This platform restores control, visibility, and confidence by governing AI-generated code and preserving architectural intent.
 
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=invariantcontinuum_substrate-platform) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=invariantcontinuum_substrate-platform)](https://sonarcloud.io/summary/new_code?id=invariantcontinuum_substrate-platform)
+
 ## 📚 Documentation
 
 The documentation is organized as follows:

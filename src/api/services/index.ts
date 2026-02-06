@@ -249,6 +249,33 @@ class HealthService extends BaseService {
   }
 }
 
+/**
+ * UI Config Service
+ * Following OpenAPI spec paths: /ui-config/*
+ */
+class UIConfigService extends BaseService {
+  protected readonly basePath = '/ui-config';
+
+  getLensConfig() {
+    return this.get<Record<string, LensConfig>>('/lens');
+  }
+
+  getLegendItems() {
+    return this.get<LegendItemConfig[]>('/legend');
+  }
+
+  getAnalysisActions() {
+    return this.get<Record<string, AnalysisAction[]>>('/actions/analysis');
+  }
+
+  getDriftActions() {
+    return this.get<AnalysisAction[]>('/actions/drift');
+  }
+}
+
+/**
+ * @deprecated Use UIConfigService instead. Kept for backward compatibility.
+ */
 class UIService extends BaseService {
   protected readonly basePath = '/ui';
 
@@ -269,6 +296,12 @@ class UIService extends BaseService {
   }
 }
 
+export interface MemoryStats {
+  personaDepth: { level: number; label: string; progress: number };
+  knowledgeSaved: { adrCount: number; label: string };
+  systemConfidence: { percentage: number; trend: string };
+}
+
 class MemoryService extends BaseService {
   protected readonly basePath = '/memory';
 
@@ -278,6 +311,10 @@ class MemoryService extends BaseService {
 
   getAuditItemById(id: string) {
     return this.get<AuditItem>(`/audit/${id}`);
+  }
+  
+  getStats() {
+    return this.get<MemoryStats>('/stats');
   }
 }
 
@@ -292,6 +329,7 @@ export const searchService = new SearchService();
 export const syncService = new SyncService();
 export const healthService = new HealthService();
 export const uiService = new UIService();
+export const uiConfigService = new UIConfigService();
 export const memoryService = new MemoryService();
 
 // ============================================================================
@@ -305,7 +343,8 @@ export const api = {
   search: searchService,
   sync: syncService,
   health: healthService,
-  ui: uiService,
+  ui: uiConfigService,  // Use new ui-config paths
+  uiLegacy: uiService,   // Backward compatibility
   memory: memoryService,
 };
 

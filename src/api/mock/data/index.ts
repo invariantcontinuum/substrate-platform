@@ -89,7 +89,14 @@ interface UIData {
   driftActions: AnalysisAction[];
 }
 
-interface MemoryData { auditItems: AuditItem[]; }
+interface MemoryData { 
+  stats: {
+    personaDepth: { level: number; label: string; progress: number };
+    knowledgeSaved: { adrCount: number; label: string };
+    systemConfidence: { percentage: number; trend: string };
+  };
+  auditItems: AuditItem[]; 
+}
 
 interface SearchData {
   evidenceItems: EvidenceItem[];
@@ -188,6 +195,9 @@ export async function mockProvider(endpoint: string, method: string): Promise<un
     
     case 'ui':
       return handleUIRequest(segments.slice(1));
+    
+    case 'ui-config':
+      return handleUIConfigRequest(segments.slice(1));
     
     case 'memory':
       return handleMemoryRequest(segments.slice(1), id);
@@ -353,10 +363,42 @@ function handleUIRequest(segments: string[]): unknown {
       return mockData.ui.legendItems;
     
     case 'actions':
-      return mockData.ui.analysisActions;
+      const actionType = segments[1];
+      switch (actionType) {
+        case 'analysis':
+          return mockData.ui.analysisActions;
+        case 'drift':
+          return mockData.ui.driftActions;
+        default:
+          return mockData.ui.analysisActions;
+      }
     
-    case 'drift-actions':
-      return mockData.ui.driftActions;
+    default:
+      return mockData.ui;
+  }
+}
+
+// Handle ui-config endpoints from OpenAPI spec
+function handleUIConfigRequest(segments: string[]): unknown {
+  const subResource = segments[0];
+
+  switch (subResource) {
+    case 'lens':
+      return mockData.ui.lensConfig;
+    
+    case 'legend':
+      return mockData.ui.legendItems;
+    
+    case 'actions':
+      const actionType = segments[1];
+      switch (actionType) {
+        case 'analysis':
+          return mockData.ui.analysisActions;
+        case 'drift':
+          return mockData.ui.driftActions;
+        default:
+          return mockData.ui.analysisActions;
+      }
     
     default:
       return mockData.ui;
@@ -374,8 +416,15 @@ function handleMemoryRequest(segments: string[], id?: string): unknown {
     }
     return mockData.memory.auditItems;
   }
+  
+  if (subResource === 'stats') {
+    return mockData.memory.stats;
+  }
 
-  return mockData.memory.auditItems;
+  return {
+    stats: mockData.memory.stats,
+    auditItems: mockData.memory.auditItems,
+  };
 }
 
 function handleSearchRequest(segments: string[]): unknown {
@@ -517,10 +566,12 @@ function handleProjectRequest(segments: string[], id?: string): unknown {
     switch (subResource) {
       case 'members': {
         const memberId = segments[2];
-        if (memberId === 'me') {
-          return mockProjectMembers.find(m => m.projectId === id) || mockProjectMembers[0];
+        {
+          if (memberId === 'me') {
+            return mockProjectMembers.find(m => m.projectId === id) || mockProjectMembers[0];
+          }
+          return mockProjectMembers.filter(m => m.projectId === id);
         }
-        return mockProjectMembers.filter(m => m.projectId === id);
       }
       
       case 'invitations':
