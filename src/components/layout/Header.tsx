@@ -1,16 +1,19 @@
 /**
  * Header Component
- * Updated with data from API and proper theming
+ * Multi-tenant aware header with context selector and drift indicators
  */
 
 import React from 'react';
-import { Layers, Activity } from 'lucide-react';
+import { Layers, Activity, AlertTriangle, Bell } from 'lucide-react';
 import { useDriftSummary } from '@/hooks';
+import { useCurrentProject } from '@/stores';
 import { env } from '@/config/env';
 import { cn } from '@/lib/utils';
+import { ContextSelector } from './ContextSelector';
 
 export const Header: React.FC = () => {
   const { data: driftSummary } = useDriftSummary();
+  const currentProject = useCurrentProject();
 
   const totalViolations = driftSummary?.totalViolations || 0;
   const criticalViolations = driftSummary?.bySeverity.Critical || 0;
@@ -21,48 +24,100 @@ export const Header: React.FC = () => {
     : '0.0';
 
   return (
-    <header className="border-b border-slate-800 bg-slate-900/50 p-4 flex items-center justify-between backdrop-blur-md z-20">
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-900/20">
-          <Layers size={20} className="text-white" />
+    <header className="border-b border-slate-800 bg-slate-900/50 px-4 py-3 flex items-center justify-between backdrop-blur-md z-20">
+      {/* Left: Logo and Context Selector */}
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-900/20">
+            <Layers size={20} className="text-white" />
+          </div>
+          <div className="hidden lg:block">
+            <h1 className="text-lg font-bold tracking-tight text-slate-200">
+              {env.VITE_APP_NAME}
+            </h1>
+            <p className="text-[10px] text-slate-400 font-mono uppercase tracking-widest">
+              {env.VITE_APP_VERSION}
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-lg font-bold tracking-tight text-slate-200">
-            {env.VITE_APP_NAME}
-          </h1>
-          <p className="text-[10px] text-slate-400 font-mono uppercase tracking-widest">
-            Structural Integrity {env.VITE_APP_VERSION}
-          </p>
-        </div>
+
+        {/* Context Selector - shows when we have org/project data */}
+        <div className="h-8 w-px bg-slate-800 hidden md:block" />
+        <ContextSelector />
       </div>
 
-      <div className="flex items-center gap-4">
-        {/* Active Users Indicator */}
-        <div className="hidden md:flex items-center gap-3 px-3 py-1 bg-slate-800/50 rounded-full border border-slate-700">
-          <div className="flex -space-x-2">
-            {[1, 2, 3].map(i => (
-              <div 
-                key={i} 
-                className="w-5 h-5 rounded-full bg-slate-600 border border-slate-900 flex items-center justify-center text-[8px] font-bold text-slate-200"
-              >
-                U{i}
-              </div>
-            ))}
+      {/* Right: Indicators and Actions */}
+      <div className="flex items-center gap-3">
+        {/* Project Status Badge */}
+        {currentProject && (
+          <div className={cn(
+            "hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border",
+            currentProject.status === 'active'
+              ? "bg-emerald-500/5 text-emerald-400 border-emerald-500/20"
+              : currentProject.status === 'setup'
+              ? "bg-amber-500/5 text-amber-400 border-amber-500/20"
+              : "bg-slate-800/50 text-slate-400 border-slate-700"
+          )}>
+            {currentProject.status === 'active' ? (
+              <>
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Active
+              </>
+            ) : currentProject.status === 'setup' ? (
+              <>
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                Setup
+              </>
+            ) : (
+              <>
+                <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                Archived
+              </>
+            )}
           </div>
-          <span className="text-[10px] text-slate-400">4 Active Contributors</span>
-        </div>
+        )}
+
+        {/* Violations Indicator */}
+        {totalViolations > 0 && (
+          <button className={cn(
+            "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors",
+            criticalViolations > 0
+              ? "bg-red-500/5 text-red-400 border-red-500/20 hover:bg-red-500/10"
+              : "bg-amber-500/5 text-amber-400 border-amber-500/20 hover:bg-amber-500/10"
+          )}>
+            <AlertTriangle size={14} />
+            <span className="hidden sm:inline">{totalViolations} Violation{totalViolations !== 1 ? 's' : ''}</span>
+            <span className="sm:hidden">{totalViolations}</span>
+          </button>
+        )}
 
         {/* Drift Indicator */}
         <div className={cn(
-          "flex items-center gap-2 px-3 py-1 bg-slate-800 rounded-full text-xs font-mono border",
+          "flex items-center gap-2 px-3 py-1.5 bg-slate-800 rounded-lg text-xs font-mono border",
           criticalViolations > 0 
             ? "text-red-400 border-red-500/20"
             : "text-emerald-400 border-emerald-500/20"
         )}>
           <Activity size={14} className={criticalViolations > 0 ? "animate-pulse" : ""} />
-          LIVE DRIFT: {driftPercent}%
+          <span className="hidden sm:inline">DRIFT: {driftPercent}%</span>
+          <span className="sm:hidden">{driftPercent}%</span>
         </div>
+
+        {/* Notifications */}
+        <button className="relative p-2 hover:bg-slate-800 rounded-lg transition-colors">
+          <Bell size={18} className="text-slate-400" />
+          {totalViolations > 0 && (
+            <span className={cn(
+              "absolute top-1 right-1 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center",
+              criticalViolations > 0 ? "bg-red-500 text-white" : "bg-amber-500 text-white"
+            )}>
+              {Math.min(totalViolations, 9)}
+            </span>
+          )}
+        </button>
       </div>
     </header>
   );
 };
+
+export default Header;

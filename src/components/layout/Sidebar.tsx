@@ -1,10 +1,11 @@
 /**
  * Sidebar Component
- * Updated with proper props and theming
+ * Updated with Project Dashboard and proper navigation
  */
 
 import React from 'react';
 import { 
+  LayoutDashboard,
   Database, 
   MessageSquare, 
   Search, 
@@ -26,10 +27,14 @@ interface SidebarProps {
 }
 
 const navItems = [
+  { id: 'dashboard', icon: LayoutDashboard, label: 'Project Dashboard' },
   { id: 'graph', icon: Database, label: 'Knowledge Fabric' },
   { id: 'memory', icon: MessageSquare, label: 'Institutional Memory' },
   { id: 'rag', icon: Search, label: 'GraphRAG Studio' },
   { id: 'policy', icon: ShieldCheck, label: 'Active Governance' },
+];
+
+const bottomItems = [
   { id: 'terminal', icon: Terminal, label: 'System Logs' },
   { id: 'settings', icon: Settings, label: 'Settings' },
 ];
@@ -52,8 +57,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <PanelLeft size={18} className="text-slate-400" />
         </button>
-        <nav className="mt-4 space-y-2">
+        <nav className="mt-4 space-y-2 flex-1">
           {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onTabChange(item.id)}
+              className={cn(
+                "p-2 rounded-lg transition-all duration-200",
+                activeTab === item.id
+                  ? "bg-blue-500/20 text-blue-400"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              )}
+              title={item.label}
+            >
+              <item.icon size={18} />
+            </button>
+          ))}
+        </nav>
+        <nav className="space-y-2 pb-4">
+          {bottomItems.map((item) => (
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
@@ -85,7 +107,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      <nav className="px-4 pb-4 space-y-1">
+      <nav className="px-4 pb-4 space-y-1 flex-1">
         {navItems.map((item) => (
           <NavButton
             key={item.id}
@@ -98,7 +120,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ))}
       </nav>
 
-      <div className="mt-auto p-4 border-t border-slate-800/50">
+      <nav className="px-4 pb-4 space-y-1">
+        {bottomItems.map((item) => (
+          <NavButton
+            key={item.id}
+            active={activeTab === item.id}
+            onClick={() => onTabChange(item.id)}
+            icon={<item.icon size={18} />}
+            label={item.label}
+          />
+        ))}
+      </nav>
+
+      <div className="p-4 border-t border-slate-800/50">
         <div className="p-4 bg-blue-600/5 rounded-xl border border-blue-500/20">
           <div className="flex items-center gap-2 mb-2">
             <Target size={14} className="text-blue-400" />
@@ -126,3 +160,5 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </aside>
   );
 };
+
+export default Sidebar;

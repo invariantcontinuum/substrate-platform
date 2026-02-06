@@ -21,12 +21,9 @@ import { cn } from '@/lib/utils';
 import {
   useCurrentProject,
   useCurrentOrganization,
-  useOrganizations,
-  useProjects,
   useProjectStore,
-  useUserOrganizations,
-  useUserProjects,
 } from '@/stores';
+import { useUserOrganizations, useUserProjects } from '@/hooks';
 import type { Organization, Project } from '@/types';
 
 // ============================================================================

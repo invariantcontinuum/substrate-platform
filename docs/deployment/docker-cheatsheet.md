@@ -10,7 +10,7 @@ docker compose --profile http up -d
 docker compose --profile https up -d
 
 # With Monitoring
-docker compose --profile http --profile monitoring up -d
+docker compose --profile monitoring up -d
 ```
 
 ## Essential Commands
@@ -89,7 +89,7 @@ ENABLE_METRICS=false
 docker compose logs -f
 
 # Specific container logs
-docker logs -f substrate-platform-http
+docker logs -f substrate-platform
 ```
 
 ### Check Status
@@ -101,7 +101,7 @@ docker compose ps
 curl http://localhost:8080/health
 
 # Nginx configuration test
-docker exec substrate-platform-http nginx -t
+docker exec substrate-platform nginx -t
 ```
 
 ### SSL Setup
@@ -122,13 +122,13 @@ cp your-key.pem ssl/key.pem
 ### Debugging
 ```bash
 # Open shell
-docker exec -it substrate-platform-http /bin/sh
+docker exec -it substrate-platform /bin/sh
 
 # Check nginx config
-docker exec substrate-platform-http nginx -t
+docker exec substrate-platform nginx -t
 
 # View real-time logs
-docker logs -f substrate-platform-http
+docker logs -f substrate-platform
 
 # Check metrics
 curl http://localhost:9113/metrics
@@ -140,7 +140,7 @@ curl http://localhost:9113/metrics
 |-------|----------|
 | Port already in use | Change ports in docker-compose.yml |
 | SSL certificate error | Generate certs manually or provide valid certs |
-| Container won't start | Check logs with `docker logs substrate-platform-http` |
+| Container won't start | Check logs with `docker logs substrate-platform` |
 | 502 Bad Gateway | Check if build completed: `docker compose logs` |
 | Can't access metrics | Ensure `ENABLE_METRICS=true` |
 
@@ -150,7 +150,7 @@ curl http://localhost:9113/metrics
 substrate-platform/
 ├── Dockerfile                          # Multi-stage build configuration
 ├── docker-compose.yml                  # Orchestration configuration
-├── DOCKER.md                          # Full documentation
+├── docs/deployment/docker.md           # Full documentation
 ├── .dockerignore                      # Build optimization
 ├── .env.docker.example                # Environment template
 └── docker/
@@ -173,6 +173,6 @@ substrate-platform/
 
 1. **Development**: `docker compose --profile http up -d`
 2. **Production**: Generate/provide SSL certs, then `docker compose --profile https up -d`
-3. **Monitoring**: `docker compose --profile http --profile monitoring up -d`
+3. **Monitoring**: `docker compose --profile monitoring up -d`
 4. **Customize**: Edit templates in `docker/nginx/`
-5. **Read More**: See `DOCKER.md` for detailed documentation
+5. **Read More**: See `docker.md` in the deployment docs for detailed documentation

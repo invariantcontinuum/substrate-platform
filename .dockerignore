@@ -41,14 +41,14 @@ docs/
 __tests__/
 coverage/
 
-# Config files not needed in container
-.eslintrc*
-.prettierrc*
+# Config files not needed in container (removed to allow build)
+#.eslintrc*
+#.prettierrc*
 # tsconfig*.json
-vite.config.ts
-tailwind.config.ts
-postcss.config.js
-eslint.config.js
+#vite.config.ts
+#tailwind.config.ts
+#postcss.config.js
+#eslint.config.js
 
 # Docker files (avoid recursive copies)
 Dockerfile*

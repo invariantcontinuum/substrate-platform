@@ -167,5 +167,27 @@ Mock behavior is controlled by:
 npm run build
 # ✓ TypeScript compilation successful
 # ✓ Vite build successful
-# ✓ No errors
+
+## Docker & Build Optimization (2026-02-06)
+
+### Overview
+Refactored the Docker orchestration and build process to improve developer experience, reduce configuration redundancy, and fix critical build-time failures.
+
+### Improvements
+- **YAML Anchors in Compose**: Simplified `docker-compose.yml` by abstracting base platform configurations into anchors, reducing the file size and complexity.
+- **Lockfile Synchronization**: Synchronized `package-lock.json` with `package.json` to ensure deterministic builds using `npm ci` in Docker.
+- **Build Context Fixes**: Adjusted `.dockerignore` to include essential Vite and Tailwind configuration files that were previously ignored, causing build failures.
+- **Nginx Resilience**: Commented out upstream dependencies (backend) in Nginx templates to allow the frontend prototype to start successfully in a standalone Docker environment.
+- **Simplified Profiles**: Streamlined Docker Compose profiles for easier switching between `http`, `https`, and `monitoring` modes.
+
+### Key Commands Updated
+- `docker compose --profile http up -d` - Default development mode.
+- `docker compose --profile monitoring up -d` - Full stack with Prometheus and Grafana.
+
+### Verified Build
+```bash
+docker compose build --no-cache
+# ✓ Multi-stage build successful
+# ✓ Nginx configuration valid
+# ✓ Container health checks passing
 ```

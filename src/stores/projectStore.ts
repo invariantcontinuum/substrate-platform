@@ -15,11 +15,8 @@ import type {
   Permission,
   DashboardView,
   UserRole,
-  hasPermission as hasPermissionFn,
-  hasAnyPermission as hasAnyPermissionFn,
-  hasAllPermissions as hasAllPermissionsFn,
-  ROLE_DEFINITIONS,
 } from '@/types';
+import { ROLE_DEFINITIONS } from '@/types';
 
 // ============================================================================
 // State Types

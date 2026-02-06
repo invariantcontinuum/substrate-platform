@@ -272,7 +272,7 @@ docker compose --profile http up -d
 docker compose --profile https up -d
 
 # Test with monitoring
-docker compose --profile http --profile monitoring up -d
+docker compose --profile monitoring up -d
 ```
 
 ### Docker Guidelines

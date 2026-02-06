@@ -508,27 +508,27 @@ const ExecutiveView: React.FC<{ projectId: string }> = ({ projectId }) => {
   const stats: StatItem[] = [
     {
       label: 'Health Score',
-      value: `${summary.overallHealth.score}%`,
-      change: summary.overallHealth.trend === 'improving' ? 5 : summary.overallHealth.trend === 'degrading' ? -3 : 0,
-      trend: summary.overallHealth.trend === 'improving' ? 'up' : summary.overallHealth.trend === 'degrading' ? 'down' : 'neutral',
+      value: `${summary.overallHealth?.score ?? 0}%`,
+      change: summary.overallHealth?.trend === 'improving' ? 5 : summary.overallHealth?.trend === 'degrading' ? -3 : 0,
+      trend: summary.overallHealth?.trend === 'improving' ? 'up' : summary.overallHealth?.trend === 'degrading' ? 'down' : 'neutral',
       icon: Activity,
       color: 'bg-emerald-500/10 text-emerald-400',
     },
     {
       label: 'Active Violations',
-      value: summary.criticalIssues.length,
+      value: summary.criticalIssues?.length ?? 0,
       icon: AlertTriangle,
-      color: summary.criticalIssues.length > 0 ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400',
+      color: (summary.criticalIssues?.length ?? 0) > 0 ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400',
     },
     {
       label: 'Compliance',
-      value: `${summary.complianceStatus.overall}%`,
+      value: `${summary.complianceStatus?.overall ?? 0}%`,
       icon: CheckCircle2,
       color: 'bg-blue-500/10 text-blue-400',
     },
     {
       label: 'Components',
-      value: summary.keyMetrics.find(m => m.label.includes('Component'))?.value || '0',
+      value: summary.keyMetrics?.find(m => m.label.includes('Component'))?.value || '0',
       icon: FolderKanban,
       color: 'bg-purple-500/10 text-purple-400',
     },
@@ -536,10 +536,10 @@ const ExecutiveView: React.FC<{ projectId: string }> = ({ projectId }) => {
 
   return (
     <div className="space-y-6">
-      {summary.criticalIssues.length > 0 && (
+      {(summary.criticalIssues?.length ?? 0) > 0 && (
         <ViolationsAlert 
-          count={summary.criticalIssues.length} 
-          criticalCount={summary.criticalIssues.filter(i => i.severity === 'critical').length} 
+          count={summary.criticalIssues?.length ?? 0} 
+          criticalCount={summary.criticalIssues?.filter(i => i.severity === 'critical').length ?? 0} 
         />
       )}
 
@@ -548,17 +548,17 @@ const ExecutiveView: React.FC<{ projectId: string }> = ({ projectId }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <HealthScoreCard
-            score={summary.overallHealth.score}
-            trend={summary.overallHealth.trend}
+            score={summary.overallHealth?.score ?? 0}
+            trend={summary.overallHealth?.trend ?? 'stable'}
             label="Overall System Health"
-            description={summary.overallHealth.summary}
+            description={summary.overallHealth?.summary ?? 'No health data available'}
           />
 
-          {summary.criticalIssues.length > 0 && (
+          {(summary.criticalIssues?.length ?? 0) > 0 && (
             <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
               <h3 className="text-sm font-medium text-slate-300 mb-4">Critical Issues Requiring Attention</h3>
               <div className="space-y-3">
-                {summary.criticalIssues.slice(0, 3).map((issue) => (
+                {summary.criticalIssues?.slice(0, 3).map((issue) => (
                   <div key={issue.id} className="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg">
                     <AlertTriangle size={16} className={cn(
                       "mt-0.5",
@@ -606,25 +606,25 @@ const ArchitectView: React.FC<{ projectId: string }> = ({ projectId }) => {
   const stats: StatItem[] = [
     {
       label: 'Modularity Score',
-      value: `${summary.modularityScore}%`,
+      value: `${summary.modularityScore ?? 0}%`,
       icon: LayoutDashboard,
       color: 'bg-blue-500/10 text-blue-400',
     },
     {
       label: 'Internal Dependencies',
-      value: summary.dependencies.internal,
+      value: summary.dependencies?.internal ?? 0,
       icon: GitBranch,
       color: 'bg-purple-500/10 text-purple-400',
     },
     {
       label: 'Deprecated APIs',
-      value: summary.dependencies.deprecated,
+      value: summary.dependencies?.deprecated ?? 0,
       icon: AlertTriangle,
-      color: summary.dependencies.deprecated > 0 ? 'bg-amber-500/10 text-amber-400' : 'bg-emerald-500/10 text-emerald-400',
+      color: (summary.dependencies?.deprecated ?? 0) > 0 ? 'bg-amber-500/10 text-amber-400' : 'bg-emerald-500/10 text-emerald-400',
     },
     {
       label: 'Documentation',
-      value: `${summary.documentationCoverage}%`,
+      value: `${summary.documentationCoverage ?? 0}%`,
       icon: FileText,
       color: 'bg-emerald-500/10 text-emerald-400',
     },
@@ -640,25 +640,25 @@ const ArchitectView: React.FC<{ projectId: string }> = ({ projectId }) => {
             <h3 className="text-sm font-medium text-slate-300 mb-4">System Health Metrics</h3>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-4 bg-slate-800/50 rounded-lg">
-                <p className="text-2xl font-bold text-slate-200">{summary.systemHealth.coupling.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-slate-200">{(summary.systemHealth?.coupling ?? 0).toFixed(2)}</p>
                 <p className="text-xs text-slate-500 mt-1">Avg Coupling</p>
               </div>
               <div className="text-center p-4 bg-slate-800/50 rounded-lg">
-                <p className="text-2xl font-bold text-slate-200">{summary.systemHealth.cohesion.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-slate-200">{(summary.systemHealth?.cohesion ?? 0).toFixed(2)}</p>
                 <p className="text-xs text-slate-500 mt-1">Cohesion</p>
               </div>
               <div className="text-center p-4 bg-slate-800/50 rounded-lg">
-                <p className="text-2xl font-bold text-slate-200">{summary.systemHealth.complexity.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-slate-200">{(summary.systemHealth?.complexity ?? 0).toFixed(2)}</p>
                 <p className="text-xs text-slate-500 mt-1">Complexity</p>
               </div>
             </div>
           </div>
 
-          {summary.topViolations.length > 0 && (
+          {(summary.topViolations?.length ?? 0) > 0 && (
             <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
               <h3 className="text-sm font-medium text-slate-300 mb-4">Top Architecture Violations</h3>
               <div className="space-y-3">
-                {summary.topViolations.map((violation) => (
+                {summary.topViolations?.map((violation) => (
                   <div key={violation.id} className="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg">
                     <AlertTriangle size={16} className={cn(
                       "mt-0.5",
@@ -703,27 +703,27 @@ const SecurityView: React.FC<{ projectId: string }> = ({ projectId }) => {
   const stats: StatItem[] = [
     {
       label: 'Security Score',
-      value: `${summary.securityScore}%`,
+      value: `${summary.securityScore ?? 0}%`,
       icon: Shield,
-      color: summary.securityScore >= 90 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400',
+      color: (summary.securityScore ?? 0) >= 90 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400',
     },
     {
       label: 'Critical Vulns',
-      value: summary.vulnerabilities.critical,
+      value: summary.vulnerabilities?.critical ?? 0,
       icon: AlertTriangle,
-      color: summary.vulnerabilities.critical > 0 ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400',
+      color: (summary.vulnerabilities?.critical ?? 0) > 0 ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400',
     },
     {
       label: 'PII Boundaries',
-      value: summary.dataFlowBoundaries.withPii,
+      value: summary.dataFlowBoundaries?.withPii ?? 0,
       icon: Lock,
       color: 'bg-purple-500/10 text-purple-400',
     },
     {
       label: 'AI Code Audited',
-      value: `${summary.aiGeneratedCode.auditedPercentage}%`,
+      value: `${summary.aiGeneratedCode?.auditedPercentage ?? 0}%`,
       icon: Sparkles,
-      color: summary.aiGeneratedCode.auditedPercentage >= 80 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400',
+      color: (summary.aiGeneratedCode?.auditedPercentage ?? 0) >= 80 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400',
     },
   ];
 
@@ -737,19 +737,19 @@ const SecurityView: React.FC<{ projectId: string }> = ({ projectId }) => {
             <h3 className="text-sm font-medium text-slate-300 mb-4">Vulnerability Distribution</h3>
             <div className="grid grid-cols-4 gap-4">
               <div className="text-center p-4 bg-red-500/5 border border-red-500/20 rounded-lg">
-                <p className="text-2xl font-bold text-red-400">{summary.vulnerabilities.critical}</p>
+                <p className="text-2xl font-bold text-red-400">{summary.vulnerabilities?.critical ?? 0}</p>
                 <p className="text-xs text-slate-500 mt-1">Critical</p>
               </div>
               <div className="text-center p-4 bg-amber-500/5 border border-amber-500/20 rounded-lg">
-                <p className="text-2xl font-bold text-amber-400">{summary.vulnerabilities.high}</p>
+                <p className="text-2xl font-bold text-amber-400">{summary.vulnerabilities?.high ?? 0}</p>
                 <p className="text-xs text-slate-500 mt-1">High</p>
               </div>
               <div className="text-center p-4 bg-blue-500/5 border border-blue-500/20 rounded-lg">
-                <p className="text-2xl font-bold text-blue-400">{summary.vulnerabilities.medium}</p>
+                <p className="text-2xl font-bold text-blue-400">{summary.vulnerabilities?.medium ?? 0}</p>
                 <p className="text-xs text-slate-500 mt-1">Medium</p>
               </div>
               <div className="text-center p-4 bg-slate-800/50 rounded-lg">
-                <p className="text-2xl font-bold text-slate-400">{summary.vulnerabilities.low}</p>
+                <p className="text-2xl font-bold text-slate-400">{summary.vulnerabilities?.low ?? 0}</p>
                 <p className="text-xs text-slate-500 mt-1">Low</p>
               </div>
             </div>
@@ -761,23 +761,23 @@ const SecurityView: React.FC<{ projectId: string }> = ({ projectId }) => {
               <div className="p-4 bg-slate-800/50 rounded-lg">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-400">Cross-Region</span>
-                  <span className="text-lg font-bold text-slate-200">{summary.dataFlowBoundaries.crossRegion}</span>
+                  <span className="text-lg font-bold text-slate-200">{summary.dataFlowBoundaries?.crossRegion ?? 0}</span>
                 </div>
               </div>
               <div className="p-4 bg-slate-800/50 rounded-lg">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-400">Non-Compliant</span>
-                  <span className="text-lg font-bold text-red-400">{summary.dataFlowBoundaries.nonCompliant}</span>
+                  <span className="text-lg font-bold text-red-400">{summary.dataFlowBoundaries?.nonCompliant ?? 0}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {summary.complianceGaps.length > 0 && (
+          {(summary.complianceGaps?.length ?? 0) > 0 && (
             <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
               <h3 className="text-sm font-medium text-slate-300 mb-4">Compliance Gaps</h3>
               <div className="space-y-3">
-                {summary.complianceGaps.map((gap, idx) => (
+                {summary.complianceGaps?.map((gap, idx) => (
                   <div key={idx} className="p-3 bg-slate-800/50 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-slate-200">{gap.framework}</span>
@@ -823,25 +823,25 @@ const EngineerView: React.FC<{ projectId: string }> = ({ projectId }) => {
   const stats: StatItem[] = [
     {
       label: 'Total Nodes',
-      value: dashboard.project.stats.totalNodes,
+      value: dashboard.project?.stats?.totalNodes ?? 0,
       icon: GitBranch,
       color: 'bg-blue-500/10 text-blue-400',
     },
     {
       label: 'Active Policies',
-      value: dashboard.project.stats.policiesCount,
+      value: dashboard.project?.stats?.policiesCount ?? 0,
       icon: Shield,
       color: 'bg-emerald-500/10 text-emerald-400',
     },
     {
       label: 'Violations',
-      value: dashboard.project.stats.activeViolations,
+      value: dashboard.project?.stats?.activeViolations ?? 0,
       icon: AlertTriangle,
-      color: dashboard.project.stats.activeViolations > 0 ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400',
+      color: (dashboard.project?.stats?.activeViolations ?? 0) > 0 ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400',
     },
     {
       label: 'Health Score',
-      value: `${dashboard.project.stats.healthScore}%`,
+      value: `${dashboard.project?.stats?.healthScore ?? 0}%`,
       icon: Activity,
       color: 'bg-purple-500/10 text-purple-400',
     },
@@ -854,7 +854,7 @@ const EngineerView: React.FC<{ projectId: string }> = ({ projectId }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <HealthScoreCard
-            score={dashboard.project.stats.healthScore}
+            score={dashboard.project?.stats?.healthScore ?? 0}
             trend="stable"
             label="Project Health"
             description="Overall system health based on policy compliance and drift detection"

@@ -203,7 +203,7 @@ class ProjectService extends TenantBaseService {
 
   // Activity
   getActivity(projectId: string, filters?: ActivityFilters): Promise<{ data: ProjectActivity[] }> {
-    return this.get(this.buildProjectPath(projectId, '/activity'), filters);
+    return this.get(this.buildProjectPath(projectId, '/activity'), filters as Record<string, string | undefined>);
   }
 }
 

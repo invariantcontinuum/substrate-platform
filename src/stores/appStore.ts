@@ -50,7 +50,7 @@ interface AppState {
 // ============================================================================
 
 const initialState = {
-  activeTab: 'graph',
+  activeTab: 'dashboard',
   activeLens: 'drift' as LensType,
   isSyncing: false,
   syncType: null as SyncType | null,

@@ -106,7 +106,7 @@ export interface ConfigSchema {
 
 export interface ConfigProperty {
   type: 'string' | 'number' | 'boolean' | 'array' | 'object';
-  title: string;
+  title?: string;
   description?: string;
   default?: unknown;
   enum?: unknown[];

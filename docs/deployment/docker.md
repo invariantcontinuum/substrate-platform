@@ -199,10 +199,10 @@ With `ENABLE_LOGGING=true`, logs are stored in `/var/log/nginx`:
 
 ```bash
 # View access logs
-docker exec substrate-platform-http tail -f /var/log/nginx/access.log
+docker exec substrate-platform tail -f /var/log/nginx/access.log
 
 # View error logs
-docker exec substrate-platform-http tail -f /var/log/nginx/error.log
+docker exec substrate-platform tail -f /var/log/nginx/error.log
 
 # Or mount logs volume for host access
 docker compose --profile http up -d
@@ -332,17 +332,17 @@ docker run -d \
 
 ### Check Container Logs
 ```bash
-docker logs substrate-platform-http
+docker logs substrate-platform
 ```
 
 ### Test Nginx Configuration
 ```bash
-docker exec substrate-platform-http nginx -t
+docker exec substrate-platform nginx -t
 ```
 
 ### Restart Container
 ```bash
-docker restart substrate-platform-http
+docker restart substrate-platform
 ```
 
 ### Check Metrics
@@ -404,5 +404,5 @@ docker rmi substrate-platform:latest
 
 For issues or questions, please check the container logs first:
 ```bash
-docker logs substrate-platform-http -f
+docker logs substrate-platform -f
 ```

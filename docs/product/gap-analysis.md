@@ -1,26 +1,29 @@
 # 📊 Substrate Platform: Gap Analysis
 
 ## Summary
-Based on a comprehensive analysis of the codebase against the README.md requirements, the current implementation is a frontend prototype/MVP with visualization features, but it's missing the majority of the core platform capabilities described in the README. The README describes a full B2B SaaS platform for AI code governance, but the current implementation is primarily a UI shell with mock data.
+Based on a comprehensive analysis of the codebase against the README.md requirements, the substrate-platform has evolved into a sophisticated frontend application with a strong foundation for multi-tenancy, role-based access control (RBAC), and persona-specific dashboards. While it remains a frontend prototype with mock data, the architectural patterns (SOLID, API-first with mock fallbacks, consolidated state management) are mature. The principal gaps remain the actual backend services, database persistence, and a functioning ingestion/governance pipeline.
 
 ## ✅ What's Implemented
 
 ### 1. Basic Dashboard Structure
 | Requirement | Status | Implementation |
 | :--- | :--- | :--- |
-| Project-scoped dashboard | ✅ Partial | App has a single-project view structure |
+| Project-scoped dashboard | ✅ Done | Context-aware dashboard showing project specific data |
+| Multi-tenant management | ✅ Done | UI for switching between Organizations and Projects |
+| Persona-specific views | ✅ Done | Specialized dashboards for Executive, Architect, Security, and Engineer |
 | Tab-based navigation | ✅ Done | Sidebar with tabs (graph, memory, rag, policy, terminal, settings) |
 | Settings page | ✅ Done | Comprehensive settings with LLM config, API settings, graph settings |
-| Dark mode UI | ✅ Done | Modern dark theme with Tailwind CSS |
+| Dark mode UI | ✅ Done | Modern dark theme with Tailwind CSS 4.x |
 
 ### 2. Visual Components
 | Component | Status | Details |
 | :--- | :--- | :--- |
 | Graph visualization | ✅ Done | Both Sigma.js (WebGL) and Cytoscape.js implementations |
 | Knowledge Fabric view | ✅ Done | Interactive graph with lens switching (reality/intent/drift) |
-| Policy management UI | ✅ Done | CRUD operations for policies with modals |
-| RAG Interface | ✅ Done | GraphRAG Studio with semantic search UI |
-| Memory Interface | ✅ Done | Chat-like interface for institutional memory |
+| Policy management UI | ✅ Done | CRUD operations for policies with rich modals and templates |
+| RAG Interface | ✅ Done | GraphRAG Studio with semantic search UI and evidence modals |
+| Memory Interface | ✅ Done | Chat-like interface for institutional memory and decision tracking |
+| Audit Trail UI | ✅ Done | Detailed audit view for capturing and viewing historical context |
 
 ### 3. Frontend Technical Stack
 | Technology | Required | Implemented |
@@ -28,202 +31,116 @@ Based on a comprehensive analysis of the codebase against the README.md requirem
 | Vite | ✅ | Vite 6.x |
 | React | ✅ | React 19 |
 | Tailwind CSS | ✅ | Tailwind CSS 4.x |
-| Zustand | ✅ | State management implemented |
+| Zustand | ✅ | State management for app, graph, and project contexts |
+| React Query | ✅ | Standardized API hooks with mock fallbacks |
 | Lucide Icons | ✅ | Used throughout |
 
-## ❌ Critical Gaps (Not Implemented)
+## ❌ Current Gaps (In Progress / Missing)
 
-### 1. Multi-Tenant + Role-Based System (README Lines 34-68)
+### 1. Multi-Tenant + Role-Based System
 | Requirement | Status | Notes |
 | :--- | :--- | :--- |
-| Project creation flow | ❌ Missing | No project creation wizard |
-| Multiple projects per user | ❌ Missing | Single-project view only |
-| User roles | ❌ Missing | No role system (Owner, Admin, Engineer, etc.) |
-| Role-based feature access | ❌ Missing | Everyone sees the same UI |
-| Permission management | ❌ Missing | No permission controls |
-| User invitation system | ❌ Missing | No team management |
+| Project creation flow | ⚠️ UI Only | "Create New" triggers UI but no persistence |
+| Multiple projects per user | ✅ Done | Full support in state management and mock data |
+| User roles | ✅ Done | Owner, Admin, Security, Engineer roles implemented in state |
+| Role-based feature access | ✅ Done | Sidebar and dashboard content adapted to user role |
+| Permission management | ✅ Done | `useHasPermission` hook and logic implemented |
+| User invitation system | ⚠️ UI Only | Logic for invitations exists in store but no backend flow |
 
-### 2. Authentication & Team Management
+### 2. Authentication & Security
 | Requirement | Status | Notes |
 | :--- | :--- | :--- |
-| User signup/login | ❌ Missing | No auth implementation |
-| Team creation/management | ❌ Missing | No team features |
-| Account settings | ❌ Missing | Only app settings exist |
-| OAuth/SSO integration | ❌ Missing | Configured in settings but not functional |
+| User signup/login | ❌ Missing | No auth pages/forms yet |
+| OAuth/SSO integration | ❌ Missing | UI configuration exists but no functional integration |
+| JWT/Session management | ❌ Missing | No secure session handling |
+| API Token management | ❌ Missing | No system for managing machine-to-machine tokens |
 
-### 3. Core Platform Capabilities (README Lines 152-172)
+### 3. Core Platform Capabilities
 | Capability | Status | Notes |
 | :--- | :--- | :--- |
-| Architecture-aware code analysis | ❌ Missing | Only mock data displayed |
+| Architecture-aware code analysis | ⚠️ Mock | UI shows analysis results from mock data |
 | Policy-as-code enforcement | ⚠️ UI Only | Policy UI exists but no OPA integration |
 | AI-generated code governance | ❌ Missing | No actual governance engine |
-| Dependency and data-flow graphs | ⚠️ Mock | Graph displays mock data |
+| Dependency and data-flow graphs | ⚠️ Mock | Graph displays rich mock relationships |
 | Continuous compliance validation | ❌ Missing | No validation pipeline |
-| Evidence-backed alerts | ❌ Missing | Only mock alerts |
-| Blast-radius and impact analysis | ❌ Missing | No impact analysis |
-| Living documentation & decision history | ❌ Missing | No doc tracking |
-| Role-based dashboards | ❌ Missing | Single view for all users |
+| Evidence-backed alerts | ⚠️ UI Only | Evidence modals show mock audit trails |
+| Blast-radius and impact analysis | ❌ Missing | No impact analysis logic |
+| Living documentation | ⚠️ UI Only | Memory and ADR tracking UI exists |
 
-### 4. Dashboard Requirements (README Lines 174-196)
+### 4. Dashboard Requirements
 | Dashboard Feature | Status | Notes |
 | :--- | :--- | :--- |
-| Default landing page per project | ❌ Missing | No project context |
-| Content adapted by user role | ❌ Missing | No role awareness |
-| Surface insights, not raw alerts | ⚠️ Partial | Shows some insights but with mock data |
-| Trends, risks, confidence levels | ⚠️ Partial | Some metrics displayed but not real |
-| Drill-down executive → architectural → code-level | ❌ Missing | No hierarchical drill-down |
-
-### 5. Core Problem Features (README Lines 70-82)
-| Feature | Status | Notes |
-| :--- | :--- | :--- |
-| AI-generated code governance | ❌ Missing | No AI code analysis |
-| Architectural intent preservation | ❌ Missing | No intent tracking |
-| Tribal knowledge capture | ⚠️ UI Only | Memory Interface exists but not functional |
-| Auditable evidence of correctness | ❌ Missing | No audit trail |
-| Security compliance | ❌ Missing | No security checks |
-
-### 6. Persona-Specific Features
-
-**Engineering Leadership (VP/Head)**
-*   Visibility into architectural health: ⚠️ Mock data
-*   Proof of standards enforcement: ❌ Missing
-*   Reduced manual code review load: ❌ Missing
-*   SOC 2 / audit-ready evidence: ❌ Missing
-*   Confidence the system is refactorable: ❌ Missing
-
-**Staff/Principal Engineers**
-*   Architecture enforcement at scale: ❌ Missing
-*   Living documentation generated from reality: ❌ Missing
-*   Protection against pattern drift: ⚠️ UI Only
-*   Data-backed proof architecture rules are followed: ❌ Missing
-
-**Security & AppSec**
-*   Detect architectural security flaws: ❌ Missing
-*   Verify data flow boundaries: ❌ Missing
-*   AI-aware security analysis: ❌ Missing
-*   Continuous compliance evidence: ❌ Missing
-*   High signal, low false positives: ❌ Missing
-
-**Product & Engineering Management**
-*   Traceability from requirements → code → behavior: ❌ Missing
-*   Visibility into technical debt: ❌ Missing
-*   Predictable roadmap confidence: ❌ Missing
-*   Reduced incidents and surprises: ❌ Missing
-
-**Enterprise Leadership**
-*   Independent validation: ❌ Missing
-*   Risk, security, AI governance transparency: ❌ Missing
-*   Audit-grade attestations: ❌ Missing
-*   Real-time "actual vs planned" architecture: ⚠️ Graph exists but with mock data
+| Default landing page per project | ✅ Done | ProjectGuard and auto-selection implemented |
+| Content adapted by user role | ✅ Done | Distinct Executive/Architect/Security summaries |
+| Surface insights, not raw alerts | ✅ Done | Summaries focus on health scores and critical issues |
+| Trends, risks, confidence levels | ✅ Done | Trend indicators and health scores integrated in UI |
+| Drill-down executive → architectural | ✅ Done | Navigation from high-level summary to graph/policy |
 
 ## ⚠️ Partial Implementations (Mock/UI Only)
 
-### 1. Graph Visualization
-*   ✅ Beautiful UI with Sigma.js and Cytoscape.js
-*   ❌ All data is mock/hardcoded in JSON files
-*   ❌ No real code analysis pipeline feeding the graph
+### 1. Tenant & RBAC Engine
+*   ✅ Consolidated `projectStore` managing Org/Project/Member context.
+*   ✅ Reactive UI that updates when switching contexts.
+*   ✅ Permission-aware components (e.g., hiding "Install" buttons for read-only users).
+*   ❌ No backend to persist Project/Organization changes.
 
-### 2. Policy Engine
-*   ✅ Policy CRUD UI with modals
-*   ✅ Status and severity indicators
-*   ❌ No OPA Rego integration
-*   ❌ No actual policy enforcement
+### 2. Graph Visualization & Analysis
+*   ✅ High-performance WebGL rendering.
+*   ✅ Context-aware "Lenses" for different analysis types.
+*   ❌ All data is mock/hardcoded in YAML/JSON files.
+*   ❌ No real code analysis pipeline feeding the graph.
 
-### 3. Drift Detection
-*   ✅ Drift lens visualization
-*   ✅ Drift resolver modal
-*   ❌ No actual drift detection algorithm
-*   ❌ Mock violations only
+### 3. Policy & Governance
+*   ✅ Rich Policy CRUD UI with severities and enforcement modes.
+*   ✅ Status and severity indicators for violations.
+*   ❌ No actual OPA Rego evaluation or enforcement.
+*   ❌ No real-time violation detection.
 
-### 4. LLM/RAG Integration
-*   ✅ Settings UI for LLM configuration
-*   ✅ RAG Interface UI
-*   ❌ No actual LLM integration
-*   ❌ No GraphRAG pipeline
-*   ❌ No vector database (Qdrant)
-
-### 5. Connectors
-*   ✅ Connector settings UI (GitHub, Jira, Confluence, Slack)
-*   ❌ No actual OAuth flows
-*   ❌ No data ingestion pipelines
+### 4. AI/RAG Search
+*   ✅ Semantic search UI with "Reasoning" steps and evidence links.
+*   ✅ Vector-style results with relevance scores.
+*   ❌ No actual vector database (Qdrant) or LLM integration.
 
 ## 🏗️ Architecture Comparison
 
-### README Vision (Full Stack)
+### Current Framework
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Frontend (React)                          │
-├─────────────────────────────────────────────────────────────────┤
-│ Rust Ingestion (tree-sitter, stack-graphs)                       │
-│ Go Governance Engine (OPA)                                       │
-│ Python GraphRAG (FastAPI, vLLM)                                  │
-├─────────────────────────────────────────────────────────────────┤
-│ PostgreSQL │ Neo4j │ Qdrant │ Redis │ NATS JetStream            │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                    Advanced React Frontend                   │
+│      React 19 + Vite + Tailwind 4 + Zustand + Sigma.js       │
+├──────────────────────────────┬───────────────────────────────┤
+│        State Management      │           API Layer           │
+│  Context-aware ProjectStore  │  React Query + Mock Fallback  │
+├──────────────────────────────┴───────────────────────────────┤
+│                      Mock Data (YAML/JSON)                   │
+│       Rich dataset for Organizations, Projects, Graphs       │
+└──────────────────────────────────────────────────────────────┘
 ```
-
-### Current Implementation
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Frontend (React)                          │
-│              Vite + Tailwind + Zustand + Sigma.js                │
-├─────────────────────────────────────────────────────────────────┤
-│                      Mock Data (JSON files)                      │
-│              No backend │ No database │ No APIs                  │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-## 📁 Files Needed But Missing
-Based on the ROADMAP.md, these components are not implemented:
-
-**Backend Services**
-*   Rust ingestion pipeline
-*   Go governance engine
-*   Python GraphRAG service
-
-**Database Schemas**
-*   PostgreSQL migrations
-*   Neo4j graph schema
-*   Qdrant vector collections
-
-**Authentication**
-*   Auth provider integration
-*   JWT/session management
-*   Role-based access control
-
-**CI/CD Integration**
-*   GitHub Actions for policy evaluation
-*   Pre-commit hooks
-*   Automated testing
 
 ## 📈 Completion Estimate
-| Category | Estimated Completion |
-| :--- | :--- |
-| Frontend UI/UX | 70% |
-| Multi-tenancy & RBAC | 0% |
-| Backend Services | 0% |
-| Database Layer | 0% |
-| Authentication | 0% |
-| AI/ML Integration | 0% |
-| CI/CD Integration | 0% |
-| **Overall Platform** | **~15%** |
+| Category | Estimated Completion | Status |
+| :--- | :--- | :--- |
+| Frontend UI/UX | 85% | 🟢 Advanced |
+| Multi-tenancy & RBAC | 50% | 🟡 UI Logic Done |
+| Backend Services | 5% | 🔴 Not Started |
+| Database Layer | 0% | 🔴 Not Started |
+| Authentication | 10% | 🔴 Context Only |
+| AI/ML Integration | 5% | 🔴 UI Shell Only |
+| **Overall Platform** | **~25%** | 🟡 Prototype |
 
 ## 🎯 Recommendations
 
 ### Immediate Priorities
-1.  **Implement Authentication**: User signup/login with role assignment.
-2.  **Add Project Management**: Create/switch projects per user.
-3.  **Implement Basic Backend**: Start with a simple API for CRUD operations.
-4.  **Connect Real Data Sources**: GitHub connector as first integration.
+1.  **Introduce Authentication**: Build login/signup pages and connect to a mock auth service to move toward session management.
+2.  **Project CRUD Hookup**: Implement local-storage or simple API persistence for creating and managing projects.
+3.  **Real Data Ingestion**: Create a proof-of-concept GitHub crawler to replace a small portion of mock data with real repository data.
 
 ### Medium-Term
-*   Rust ingestion pipeline for code analysis.
-*   OPA integration for policy enforcement.
-*   Neo4j for graph storage.
-*   Basic RBAC implementation.
+*   Transition from mock data to a local SQLite/PostgreSQL backend (Dockerized).
+*   Implement a basic Rust service for extracting simple dependency graphs.
+*   Integrate OPA for local policy evaluation.
 
 ### Long-Term
-*   Full GraphRAG pipeline.
-*   Multi-tenancy.
-*   Enterprise features (SSO, audit logs).
-*   Kubernetes deployment.
+*   Full GraphRAG pipeline with Neo4j and Qdrant.
+*   Enterprise SSO/SAML support.
+*   Kubernetes deployment and observability stack.

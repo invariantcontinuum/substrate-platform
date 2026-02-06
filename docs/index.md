@@ -47,6 +47,16 @@ The documentation is organized as follows:
     npm run dev
     ```
 
+### 🐳 Quick Start with Docker
+
+1.  **Start in HTTP mode**
+    ```bash
+    docker compose --profile http up -d
+    ```
+
+2.  **Access the application**
+    Open [http://localhost:8080](http://localhost:8080)
+
 For detailed setup instructions, see the [Contributing Guide](development/contributing.md).
 
 ## 📄 License

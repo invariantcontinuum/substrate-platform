@@ -21,7 +21,6 @@ import type {
   EvidenceItem,
   ReasoningResult,
   AuditItem,
-  GraphMetrics,
   Community,
 } from '@/types';
 
@@ -34,6 +33,27 @@ import syncData from './sync/jobs.json';
 import uiData from './ui/config.json';
 import memoryData from './memory/audit.json';
 import searchData from './search/evidence.json';
+
+// Tenant and Connector mock data
+import {
+  mockCurrentUser,
+  mockOrganizations,
+  mockProjects,
+  mockProjectMembers,
+  mockOrganizationMembers,
+  mockActivity,
+  mockExecutiveSummary,
+  mockArchitectSummary,
+  mockSecuritySummary,
+  mockProjectDashboard,
+} from './tenant';
+
+import {
+  mockConnectorDefinitions,
+  mockInstalledConnectors,
+  mockConnectorTemplates,
+  getMockMarketplaceItems,
+} from './connector';
 
 // ============================================================================
 // Type Definitions
@@ -152,7 +172,7 @@ export async function mockProvider(endpoint: string, method: string): Promise<un
 
   switch (resource) {
     case 'graph':
-      return handleGraphRequest(segments.slice(1), id);
+      return handleGraphRequest(segments.slice(1));
     
     case 'policies':
       return handlePoliciesRequest(segments.slice(1), id);
@@ -174,6 +194,24 @@ export async function mockProvider(endpoint: string, method: string): Promise<un
     
     case 'search':
       return handleSearchRequest(segments.slice(1));
+    
+    case 'users':
+      return handleUserRequest(segments.slice(1));
+    
+    case 'organizations':
+      return handleOrganizationRequest(segments.slice(1), id);
+    
+    case 'projects':
+      return handleProjectRequest(segments.slice(1), id);
+    
+    case 'dashboard':
+      return handleDashboardRequest(segments.slice(1));
+    
+    // Dashboard summaries are under /projects/{id}/{executive|architect|security}
+    // but we need to handle them after projects handler doesn't match
+    
+    case 'connectors':
+      return handleConnectorRequest(segments.slice(1), id);
 
     default:
       throw new Error(`Unknown endpoint: ${endpoint}`);
@@ -184,7 +222,7 @@ export async function mockProvider(endpoint: string, method: string): Promise<un
 // Domain Handlers - Each follows Single Responsibility Principle
 // ============================================================================
 
-function handleGraphRequest(segments: string[], id?: string): unknown {
+function handleGraphRequest(segments: string[]): unknown {
   const subResource = segments[0];
 
   switch (subResource) {
@@ -417,8 +455,219 @@ function getPolicyTemplates(): PolicyTemplate[] {
   );
 }
 
+// ============================================================================
+// Tenant Handlers
+// ============================================================================
+
+function handleUserRequest(segments: string[]): unknown {
+  const subResource = segments[0];
+
+  if (subResource === 'me') {
+    const nextSegment = segments[1];
+    
+    switch (nextSegment) {
+      case 'organizations':
+        return mockOrganizations;
+      
+      case 'projects':
+        return mockProjects;
+      
+      case 'invitations':
+        return [];
+      
+      default:
+        return mockCurrentUser;
+    }
+  }
+
+  return mockCurrentUser;
+}
+
+function handleOrganizationRequest(segments: string[], id?: string): unknown {
+  if (id) {
+    const org = mockOrganizations.find(o => o.id === id);
+    if (!org) throw new Error(`Organization not found: ${id}`);
+    
+    const subResource = segments[1];
+    if (subResource === 'members') {
+      return mockOrganizationMembers.filter(m => m.organizationId === id);
+    }
+    
+    return org;
+  }
+
+  // Check for slug lookup
+  if (segments[0] === 'slug') {
+    const slug = segments[1];
+    const org = mockOrganizations.find(o => o.slug === slug);
+    if (!org) throw new Error(`Organization not found: ${slug}`);
+    return org;
+  }
+
+  return mockOrganizations;
+}
+
+function handleProjectRequest(segments: string[], id?: string): unknown {
+  if (id) {
+    const project = mockProjects.find(p => p.id === id);
+    if (!project) throw new Error(`Project not found: ${id}`);
+    
+    const subResource = segments[1];
+    
+    switch (subResource) {
+      case 'members': {
+        const memberId = segments[2];
+        if (memberId === 'me') {
+          return mockProjectMembers.find(m => m.projectId === id) || mockProjectMembers[0];
+        }
+        return mockProjectMembers.filter(m => m.projectId === id);
+      }
+      
+      case 'invitations':
+        return [];
+      
+      case 'activity':
+        return mockActivity.filter(a => a.projectId === id);
+      
+      // Dashboard summaries
+      case 'executive':
+        return mockExecutiveSummary;
+      
+      case 'architect':
+        return mockArchitectSummary;
+      
+      case 'security':
+        return mockSecuritySummary;
+      
+      default:
+        return project;
+    }
+  }
+
+  return mockProjects;
+}
+
+function handleDashboardRequest(segments: string[]): unknown {
+  const projectId = segments[0];
+  const subResource = segments[1];
+
+  switch (subResource) {
+    case 'executive':
+      return mockExecutiveSummary;
+    
+    case 'architect':
+      return mockArchitectSummary;
+    
+    case 'security':
+      return mockSecuritySummary;
+    
+    default:
+      // Return full dashboard
+      return {
+        ...mockProjectDashboard,
+        project: mockProjects.find(p => p.id === projectId) || mockProjects[0],
+      };
+  }
+}
+
+// ============================================================================
+// Connector Handlers
+// ============================================================================
+
+function handleConnectorRequest(segments: string[], id?: string): unknown {
+  const subResource = segments[0];
+
+  // Marketplace routes
+  if (subResource === 'marketplace') {
+    const marketplaceSub = segments[1];
+    
+    switch (marketplaceSub) {
+      case 'categories':
+        return [
+          { id: 'vcs', name: 'Version Control', description: 'Git repositories, pull requests, commits', icon: 'GitBranch' },
+          { id: 'its', name: 'Issue Tracking', description: 'Tickets, epics, sprints', icon: 'Ticket' },
+          { id: 'docs', name: 'Documentation', description: 'Wikis, docs, knowledge base', icon: 'FileText' },
+          { id: 'comm', name: 'Communication', description: 'Slack, teams, discussions', icon: 'MessageSquare' },
+          { id: 'security', name: 'Security', description: 'Vulnerability scanning, compliance', icon: 'Shield' },
+        ];
+      
+      case 'templates':
+        return mockConnectorTemplates;
+      
+      default:
+        // Return marketplace items
+        if (marketplaceSub && marketplaceSub !== 'search') {
+          const def = mockConnectorDefinitions.find(d => d.id === marketplaceSub);
+          if (!def) throw new Error(`Connector not found: ${marketplaceSub}`);
+          return def;
+        }
+        return getMockMarketplaceItems();
+    }
+  }
+
+  // Installed connector routes
+  if (id) {
+    const connector = mockInstalledConnectors.find(c => c.id === id);
+    if (!connector) throw new Error(`Connector not found: ${id}`);
+    
+    const connectorSub = segments[1];
+    
+    switch (connectorSub) {
+      case 'health':
+        return {
+          connectorId: id,
+          status: connector.status === 'error' ? 'unhealthy' : 'healthy',
+          lastCheckAt: new Date().toISOString(),
+          checks: [
+            {
+              name: 'Authentication',
+              status: connector.status === 'error' ? 'fail' : 'pass',
+              message: connector.statusMessage,
+            },
+            {
+              name: 'API Connectivity',
+              status: connector.status === 'error' ? 'fail' : 'pass',
+              responseTime: 150,
+            },
+          ],
+        };
+      
+      case 'sync':
+        return {
+          id: `sync-${Date.now()}`,
+          connectorId: id,
+          status: 'completed',
+          startedAt: new Date(Date.now() - 30000).toISOString(),
+          completedAt: new Date().toISOString(),
+          progress: {
+            phase: 'completed',
+            percent: 100,
+            entitiesProcessed: connector.stats?.entitiesTotal || 0,
+            entitiesTotal: connector.stats?.entitiesTotal || 0,
+          },
+          results: {
+            entitiesCreated: 0,
+            entitiesUpdated: 0,
+            entitiesDeleted: 0,
+            relationshipsCreated: 0,
+            errors: [],
+          },
+        };
+      
+      default:
+        return connector;
+    }
+  }
+
+  // List installed connectors
+  return mockInstalledConnectors;
+}
+
 // Initialize the mock provider
+// Note: This is called by the API setup module
 export function initializeMockProvider(): void {
+  // Dynamic import to avoid circular dependency
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { apiClient } = require('../client');
   apiClient.setMockProvider(mockProvider);
 }

@@ -32,7 +32,6 @@ import type {
   ProjectCreateParams,
   ProjectUpdateParams,
   MemberInviteParams,
-  MemberUpdateParams,
   ActivityFilters,
 } from '../services/tenant';
 

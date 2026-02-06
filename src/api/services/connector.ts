@@ -27,7 +27,7 @@ class ConnectorMarketplaceService extends BaseService {
    * Get available connectors from the marketplace
    */
   getAvailable(filters?: ConnectorMarketplaceFilters): Promise<{ data: ConnectorMarketplaceItem[] }> {
-    return this.get('', filters);
+    return this.get('', filters as Record<string, string | undefined>);
   }
 
   /**

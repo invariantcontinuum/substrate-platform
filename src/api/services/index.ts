@@ -52,6 +52,20 @@ export {
   connectorCredentialService,
 } from './connector';
 
+// Import services for local use
+import {
+  organizationService,
+  projectService,
+  dashboardService,
+  userService,
+} from './tenant';
+
+import {
+  connectorMarketplaceService,
+  installedConnectorService,
+  connectorCredentialService,
+} from './connector';
+
 // ============================================================================
 // Parameter Types
 // ============================================================================
@@ -94,7 +108,6 @@ export interface PolicyMetadata {
 
 // Import from legacy service files for backward compatibility
 import { BaseService } from './base';
-import { apiClient } from '../client';
 
 class GraphService extends BaseService {
   protected readonly basePath = '/graph';
@@ -294,15 +307,6 @@ export const api = {
   health: healthService,
   ui: uiService,
   memory: memoryService,
-  // New tenant services
-  organizations: organizationService,
-  projects: projectService,
-  dashboard: dashboardService,
-  users: userService,
-  // Connector services
-  connectorMarketplace: connectorMarketplaceService,
-  connectors: installedConnectorService,
-  connectorCredentials: connectorCredentialService,
-} as const;
+};
 
 export type Api = typeof api;
