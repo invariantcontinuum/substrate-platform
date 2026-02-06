@@ -26,7 +26,7 @@ class ApiClient {
   private baseURL: string;
   private defaultTimeout: number;
   private fallbackConfig: FallbackConfig;
-  private mockImporter: (endpoint: string, method: string) => Promise<unknown>;
+  private mockImporter: (endpoint: string, method: string, body?: unknown) => Promise<unknown>;
 
   constructor(fallbackConfig?: Partial<FallbackConfig>) {
     this.baseURL = apiConfig.baseURL;
@@ -41,7 +41,7 @@ class ApiClient {
   }
 
   /** Set the mock data provider (called during initialization) */
-  setMockProvider(importer: (endpoint: string, method: string) => Promise<unknown>): void {
+  setMockProvider(importer: (endpoint: string, method: string, body?: unknown) => Promise<unknown>): void {
     this.mockImporter = importer;
   }
 
@@ -133,11 +133,11 @@ class ApiClient {
     return this.handleResponse<T>(response);
   }
 
-  private async fallbackToMock<T>(endpoint: string, method: string): Promise<ApiResponse<T>> {
+  private async fallbackToMock<T>(endpoint: string, method: string, body?: unknown): Promise<ApiResponse<T>> {
     // Simulate network delay for realistic mock behavior
     await new Promise(resolve => setTimeout(resolve, this.fallbackConfig.delay));
     
-    const data = await this.mockImporter(endpoint, method);
+    const data = await this.mockImporter(endpoint, method, body);
     
     if (data === null) {
       throw new Error(`No mock data available for ${method} ${endpoint}`);
@@ -151,11 +151,11 @@ class ApiClient {
    * Following Dependency Inversion - depends on abstraction, not concrete implementation
    */
   async request<T>(endpoint: string, config: RequestConfig = {}): Promise<ApiResponse<T>> {
-    const { retries = 0 } = config;
+    const { retries = 0, body } = config;
 
     // If mock-only mode, skip real API
     if (this.fallbackConfig.enabled && this.isMockOnly()) {
-      return this.fallbackToMock<T>(endpoint, config.method || 'GET');
+      return this.fallbackToMock<T>(endpoint, config.method || 'GET', body);
     }
 
     // Try real API with retries
@@ -177,7 +177,7 @@ class ApiClient {
     // Fallback to mock if enabled and real API failed
     if (this.fallbackConfig.enabled && lastError) {
       this.fallbackConfig.onFallback?.(endpoint, lastError);
-      return this.fallbackToMock<T>(endpoint, config.method || 'GET');
+      return this.fallbackToMock<T>(endpoint, config.method || 'GET', body);
     }
 
     throw lastError;

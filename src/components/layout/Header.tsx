@@ -4,14 +4,28 @@
  */
 
 import React from 'react';
-import { Layers, Activity, AlertTriangle, Bell } from 'lucide-react';
+import { Layers, Activity, AlertTriangle, Bell, ArrowLeft } from 'lucide-react';
 import { useDriftSummary } from '@/hooks';
-import { useCurrentProject } from '@/stores';
+import { useCurrentProject, useProjectStore } from '@/stores';
 import { env } from '@/config/env';
 import { cn } from '@/lib/utils';
 import { ContextSelector } from './ContextSelector';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  onBackToProjects?: () => void;
+  showBackButton?: boolean;
+  onNavigateToProjects?: () => void;
+  onNavigateToAccount?: () => void;
+  onLogout?: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ 
+  onBackToProjects, 
+  showBackButton = false,
+  onNavigateToProjects,
+  onNavigateToAccount,
+  onLogout,
+}) => {
   const { data: driftSummary } = useDriftSummary();
   const currentProject = useCurrentProject();
 
@@ -25,8 +39,19 @@ export const Header: React.FC = () => {
 
   return (
     <header className="border-b border-slate-800 bg-slate-900/50 px-4 py-3 flex items-center justify-between backdrop-blur-md z-20">
-      {/* Left: Logo and Context Selector */}
+      {/* Left: Logo, Back Button and Context Selector */}
       <div className="flex items-center gap-4">
+        {showBackButton && onBackToProjects && (
+          <button
+            onClick={onBackToProjects}
+            className="flex items-center gap-2 px-3 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+            title="Back to projects"
+          >
+            <ArrowLeft size={18} />
+            <span className="hidden sm:inline text-sm font-medium">Projects</span>
+          </button>
+        )}
+        
         <div className="flex items-center gap-3">
           <div className="p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-900/20">
             <Layers size={20} className="text-white" />
@@ -43,7 +68,11 @@ export const Header: React.FC = () => {
 
         {/* Context Selector - shows when we have org/project data */}
         <div className="h-8 w-px bg-slate-800 hidden md:block" />
-        <ContextSelector />
+        <ContextSelector 
+          onNavigateToProjects={onNavigateToProjects}
+          onNavigateToAccount={onNavigateToAccount}
+          onLogout={onLogout}
+        />
       </div>
 
       {/* Right: Indicators and Actions */}

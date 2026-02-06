@@ -15,6 +15,7 @@ import {
   PanelLeftClose,
   PanelLeft,
   Settings,
+  Users,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAppStore, useIsSyncing } from '@/stores';
@@ -36,6 +37,7 @@ const navItems = [
 
 const bottomItems = [
   { id: 'terminal', icon: Terminal, label: 'System Logs' },
+  { id: 'teams', icon: Users, label: 'Teams' },
   { id: 'settings', icon: Settings, label: 'Settings' },
 ];
 

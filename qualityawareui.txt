@@ -1,0 +1,458 @@
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { 
+  Database, 
+  GitBranch, 
+  Activity, 
+  ShieldCheck, 
+  Search, 
+  Cpu, 
+  Layers,
+  Zap,
+  ChevronRight,
+  Terminal,
+  AlertTriangle,
+  MessageSquare,
+  User,
+  History,
+  CheckCircle2,
+  AlertCircle,
+  Sparkles,
+  Target,
+  Lock,
+  Unlock,
+  RefreshCw,
+  Info
+} from 'lucide-react';
+
+/**
+ * INVARIANT CONTINUUM: SUBSTRATE LAYER v0.3.0
+ * Feature: Quality-Aware UI & Integrity Scoring.
+ * Measuring: Density, Freshness, Validation Coverage, and Human Check %
+ */
+
+const SubstratePlatform = () => {
+  const [activeTab, setActiveTab] = useState('graph');
+  const [lens, setLens] = useState('drift'); 
+  const [ingestionStatus, setIngestionStatus] = useState('idle');
+  
+  // QUALITY METRICS STATE
+  const [integrityScore, setIntegrityScore] = useState(38); // Starting low to demonstrate Quality-Aware UI
+  const [metrics, setMetrics] = useState({
+    density: 0.42, // Edge/Node ratio
+    freshness: 0.65, // Weighted timestamp age
+    validation: 0.28, // % of nodes with linked Docs/Jira
+    humanCheck: 0.15  // % of nodes verified by human logging
+  });
+
+  const [logs, setLogs] = useState([
+    { time: '10:00:01', msg: 'Substrate Core Initialized.' },
+    { time: '10:00:05', msg: 'Warning: Low graph density detected (0.42). Reasoning reliability: DEGRADED.' },
+  ]);
+
+  const runSync = (type) => {
+    setIngestionStatus('running');
+    setTimeout(() => {
+      setIngestionStatus('idle');
+      // Simulate quality improvement after sync
+      setIntegrityScore(prev => Math.min(prev + 12, 100));
+      setMetrics(prev => ({ 
+        ...prev, 
+        freshness: Math.min(prev.freshness + 0.2, 1),
+        validation: Math.min(prev.validation + 0.1, 1)
+      }));
+      setLogs(prev => [...prev, { time: new Date().toLocaleTimeString(), msg: `${type} Sync Complete. Integrity Score +12%.` }]);
+    }, 1500);
+  };
+
+  const isDegraded = integrityScore < 50;
+  const isLocked = integrityScore < 30;
+
+  return (
+    <div className="flex flex-col h-screen bg-slate-950 text-slate-200 font-sans overflow-hidden">
+      {/* Top Header */}
+      <header className="border-b border-slate-800 bg-slate-900/50 p-4 flex items-center justify-between backdrop-blur-md z-30">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-blue-600 rounded-lg shadow-lg">
+            <Layers size={20} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold tracking-tight">INVARIANT CONTINUUM</h1>
+            <p className="text-[10px] text-slate-400 font-mono uppercase tracking-widest">Integrity-Aware Substrate</p>
+          </div>
+        </div>
+
+        {/* INTEGRITY SCORE DISPLAY */}
+        <div className="flex items-center gap-6">
+          <div className="flex flex-col items-end">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] text-slate-500 font-bold uppercase">Substrate Integrity</span>
+              {isDegraded && <AlertCircle size={12} className="text-amber-500 animate-pulse" />}
+            </div>
+            <div className="w-48 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50 relative">
+              <div 
+                className={`h-full transition-all duration-1000 ${isDegraded ? 'bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.4)]' : 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.4)]'}`} 
+                style={{ width: `${integrityScore}%` }}
+              />
+            </div>
+          </div>
+          <div className="text-2xl font-mono font-bold tabular-nums">
+            {integrityScore}<span className="text-sm text-slate-500">%</span>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar Nav */}
+        <aside className="w-64 border-r border-slate-800 bg-slate-900/30 flex flex-col z-20">
+          <nav className="p-4 space-y-2">
+            <NavButton active={activeTab === 'graph'} onClick={() => setActiveTab('graph')} icon={<Database size={18} />} label="Knowledge Fabric" />
+            <NavButton active={activeTab === 'memory'} onClick={() => setActiveTab('memory')} icon={<MessageSquare size={18} />} label="Institutional Memory" />
+            
+            {/* Condition-based Visual Indicators on Nav */}
+            <NavButton 
+              active={activeTab === 'rag'} 
+              onClick={() => setActiveTab('rag')} 
+              icon={<Search size={18} />} 
+              label="GraphRAG Studio" 
+              status={isDegraded ? 'degraded' : 'optimal'}
+            />
+            
+            <NavButton 
+              active={activeTab === 'policy'} 
+              onClick={() => setActiveTab('policy')} 
+              icon={<ShieldCheck size={18} />} 
+              label="Active Governance" 
+              status={isLocked ? 'locked' : 'available'}
+            />
+            
+            <NavButton active={activeTab === 'terminal'} onClick={() => setActiveTab('terminal')} icon={<Terminal size={18} />} label="System Logs" />
+          </nav>
+          
+          <div className="mt-auto p-4 border-t border-slate-800/50">
+             <div className="space-y-4">
+                <MetricRing label="Freshness" value={metrics.freshness} color="text-emerald-400" />
+                <MetricRing label="Validation" value={metrics.validation} color="text-blue-400" />
+                <MetricRing label="Human Check" value={metrics.humanCheck} color="text-purple-400" />
+             </div>
+          </div>
+        </aside>
+
+        {/* Main Content Area */}
+        <main className="flex-1 relative overflow-hidden bg-slate-950">
+          {activeTab === 'graph' && <KnowledgeFabric lens={lens} setLens={setLens} onSync={runSync} integrity={integrityScore} />}
+          {activeTab === 'memory' && <MemoryInterface onLog={(inc) => setIntegrityScore(s => Math.min(s + inc, 100))} />}
+          {activeTab === 'rag' && <RAGInterface degraded={isDegraded} score={integrityScore} />}
+          {activeTab === 'policy' && <PolicyView locked={isLocked} />}
+          {activeTab === 'terminal' && <TerminalLogs logs={logs} />}
+        </main>
+      </div>
+
+      {/* Footer */}
+      <footer className="h-8 border-t border-slate-800 bg-slate-900 px-4 flex items-center justify-between text-[10px] font-mono text-slate-500 uppercase">
+        <div className="flex items-center gap-4">
+          <span>SurrealDB: 124k Nodes</span>
+          <span>Trust Layer: {integrityScore > 70 ? 'High' : 'Advisory Only'}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <RefreshCw size={10} className={ingestionStatus === 'running' ? 'animate-spin' : ''} />
+          Substrate {ingestionStatus === 'running' ? 'Syncing...' : 'Stable'}
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+const NavButton = ({ active, onClick, icon, label, status }) => (
+  <button 
+    onClick={onClick}
+    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm transition-all relative group ${
+      active ? 'bg-blue-600/10 text-blue-400 border border-blue-600/20 shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+    }`}
+  >
+    <div className="flex items-center gap-3">
+      {icon}
+      {label}
+    </div>
+    {status === 'degraded' && <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" title="Degraded Performance" />}
+    {status === 'locked' && <Lock size={12} className="text-slate-600" />}
+  </button>
+);
+
+const MetricRing = ({ label, value, color }) => (
+  <div className="space-y-1">
+    <div className="flex justify-between text-[9px] uppercase font-bold tracking-tighter">
+      <span className="text-slate-500">{label}</span>
+      <span className={color}>{Math.round(value * 100)}%</span>
+    </div>
+    <div className="h-1 bg-slate-800 rounded-full">
+      <div className={`h-full rounded-full transition-all duration-700 ${color.replace('text', 'bg')}`} style={{ width: `${value * 100}%` }} />
+    </div>
+  </div>
+);
+
+// --- KNOWLEDGE FABRIC (QUALITY-AWARE) ---
+
+const KnowledgeFabric = ({ lens, setLens, onSync, integrity }) => {
+  const isFuzzy = integrity < 40;
+  
+  return (
+    <div className="p-8 h-full flex flex-col relative">
+      {/* QUALITY OVERLAY for Low Integrity */}
+      {isFuzzy && (
+        <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px] z-10 flex items-center justify-center pointer-events-none transition-all">
+          <div className="bg-slate-900/90 border border-slate-700 p-6 rounded-2xl flex flex-col items-center gap-3 shadow-2xl animate-in fade-in zoom-in duration-500 pointer-events-auto">
+             <AlertTriangle className="text-amber-500" size={32} />
+             <div className="text-center">
+               <h3 className="text-lg font-bold">Low Fidelity Visualizer</h3>
+               <p className="text-sm text-slate-400 max-w-[300px]">Substrate density is below 40%. The fabric represents a fragmented mental model. Sync intent and reality to sharpen focus.</p>
+             </div>
+             <button onClick={() => onSync('reality')} className="mt-2 w-full py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-bold uppercase transition-all">
+                Improve Fidelity Now
+             </button>
+          </div>
+        </div>
+      )}
+
+      <div className="flex justify-between items-start mb-6">
+        <div>
+          <h2 className="text-2xl font-bold flex items-center gap-3">
+            Knowledge Fabric 
+            {isFuzzy && <span className="text-[10px] text-amber-500 font-mono flex items-center gap-1 border border-amber-500/30 px-2 py-0.5 rounded bg-amber-500/5">UNSTABLE_STATE</span>}
+          </h2>
+          <p className="text-slate-400 text-sm mt-1">Multi-modal mapping of Reality vs. Architectural Intent.</p>
+        </div>
+        <div className="flex flex-col gap-3 items-end">
+          <div className="flex bg-slate-900 border border-slate-800 p-1 rounded-lg">
+            <LensButton label="Reality" active={lens === 'reality'} onClick={() => setLens('reality')} color="border-blue-500 text-blue-400" />
+            <LensButton label="Intent" active={lens === 'intent'} onClick={() => setLens('intent')} color="border-purple-500 text-purple-400" />
+            <LensButton label="Drift" active={lens === 'drift'} onClick={() => setLens('drift')} color="border-red-500 text-red-400" />
+          </div>
+        </div>
+      </div>
+      
+      <div className={`flex-1 rounded-3xl border border-slate-800 bg-slate-900/40 relative overflow-hidden flex items-center justify-center transition-all duration-1000 ${isFuzzy ? 'grayscale-[0.5] contrast-[0.8] blur-[1px]' : ''}`}>
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#334155 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        
+        <div className="relative w-full h-full flex items-center justify-center">
+            <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                <line x1="50%" y1="50%" x2="70%" y2="40%" stroke="#3b82f6" strokeWidth="2" strokeOpacity={isFuzzy ? 0.1 : 0.6} />
+                <line x1="70%" y1="40%" x2="80%" y2="60%" stroke="#3b82f6" strokeWidth="2" strokeOpacity={isFuzzy ? 0.1 : 0.6} />
+            </svg>
+
+            {/* Nodes jitter or fade when low integrity */}
+            <div className={isFuzzy ? 'animate-pulse' : ''}>
+              <Node icon={<Cpu size={20} />} label="CORE_API" color={isFuzzy ? 'slate' : 'blue'} />
+            </div>
+
+            <div className="absolute top-[35%] right-[25%]">
+               <Node icon={<Database size={16} />} label="DB_ORDERS" color={integrity < 60 ? 'slate' : 'blue'} />
+            </div>
+
+            <div className="absolute bottom-[20%] left-[30%]">
+               <Node icon={<AlertTriangle size={18} />} label="SHADOW_DRIFT" color="red" />
+            </div>
+        </div>
+
+        {/* Legend */}
+        <div className="absolute bottom-6 left-6 space-y-2 bg-slate-950/60 p-4 rounded-xl backdrop-blur-sm border border-slate-800">
+           <LegendItem color="bg-blue-500" label="Implementation" />
+           <LegendItem color="bg-purple-500" label="Requirement" />
+           <LegendItem color="bg-red-500" label="Structural Failure" dashed />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- GRAPHRAG (DEGRADED MODE) ---
+
+const RAGInterface = ({ degraded, score }) => (
+  <div className="p-12 h-full flex flex-col items-center justify-center max-w-4xl mx-auto transition-all">
+    <div className={`text-center mb-8 ${degraded ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
+       <Sparkles size={64} className="text-blue-400 mx-auto mb-6" />
+       <h2 className="text-3xl font-bold mb-3 italic">GraphRAG Reasoning Studio</h2>
+       <p className="text-slate-400 max-w-xl mx-auto">Reason across your organizational memory. Ask about dependencies, risks, or architectural debt.</p>
+    </div>
+
+    {degraded && (
+      <div className="w-full max-w-lg bg-amber-500/10 border border-amber-500/30 p-8 rounded-3xl text-center mb-10 animate-in slide-in-from-bottom-4 duration-700">
+         <Lock className="text-amber-500 mx-auto mb-4" size={32} />
+         <h3 className="text-amber-400 font-bold text-lg mb-2 uppercase tracking-wider">Reasoning Engine Degraded</h3>
+         <p className="text-amber-100/70 text-sm mb-6 leading-relaxed">
+            LLM confidence is currently <span className="font-bold underline">Low ({score}%)</span>.
+            Providing answers now would likely result in hallucinations.
+         </p>
+         <div className="space-y-3">
+            <div className="flex justify-between items-center text-xs text-amber-500/80 font-mono">
+               <span>REQUIRED_INTEGRITY: 50%</span>
+               <span>CURRENT_STATE: {score}%</span>
+            </div>
+            <div className="w-full h-1 bg-amber-900/50 rounded-full">
+               <div className="h-full bg-amber-500 transition-all duration-1000" style={{ width: `${score}%` }} />
+            </div>
+            <p className="text-[10px] text-amber-500/50 mt-4 italic uppercase">To unlock, sync your Jira project and update at least 3 stale ADRs.</p>
+         </div>
+      </div>
+    )}
+
+    <div className={`w-full relative ${degraded ? 'opacity-30 pointer-events-none cursor-not-allowed' : ''}`}>
+       <div className="flex gap-2">
+          <input disabled placeholder="Ask a structural question..." className="flex-1 bg-slate-900 border border-slate-700 rounded-2xl px-6 py-4 focus:outline-none" />
+          <button disabled className="px-8 py-4 bg-blue-600/50 text-white rounded-2xl font-bold">REASON</button>
+       </div>
+    </div>
+  </div>
+);
+
+// --- INSTITUTIONAL MEMORY (INTEGRITY FEEDBACK) ---
+
+const MemoryInterface = ({ onLog }) => {
+  const [logContent, setLogContent] = useState('');
+  const [chatHistory, setChatHistory] = useState([
+    { type: 'bot', text: 'System Integrity is currently 38%. I am missing critical context on the "Checkout_V4" transition. Was this part of your daily sprint?' }
+  ]);
+
+  const handleSend = () => {
+    if (!logContent.trim()) return;
+    setChatHistory([...chatHistory, { type: 'user', text: logContent }]);
+    setLogContent('');
+    
+    // Each human input increases substrate integrity
+    onLog(4); // +4% for every fact shared
+
+    setTimeout(() => {
+      setChatHistory(prev => [...prev, { 
+        type: 'bot', 
+        text: 'Context absorbed. Mapping linked to PR #124. Integrity Score +4%.' 
+      }]);
+    }, 1000);
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-slate-950 p-6 overflow-hidden">
+      <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col gap-6 overflow-hidden">
+        
+        <div className="flex-1 bg-slate-900/50 border border-slate-800 rounded-3xl flex flex-col overflow-hidden">
+          <div className="flex-1 p-6 overflow-auto space-y-6">
+            {chatHistory.map((msg, i) => (
+              <div key={i} className={`flex gap-4 ${msg.type === 'user' ? 'flex-row-reverse' : ''}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${msg.type === 'bot' ? 'bg-blue-600/20 border-blue-500/50' : 'bg-slate-700 border-slate-600'}`}>
+                  {msg.type === 'bot' ? <Cpu size={14} className="text-blue-400" /> : <User size={14} />}
+                </div>
+                <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${msg.type === 'bot' ? 'bg-slate-800 border border-slate-700 text-slate-300' : 'bg-blue-600 text-white'}`}>
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/50">
+             <div className="flex items-center gap-2 text-[10px] font-bold text-blue-400 uppercase mb-3">
+                <Target size={12} /> Proactive Context Gaps
+             </div>
+             <div className="flex gap-2 overflow-x-auto pb-2">
+                <button className="flex-shrink-0 px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs hover:border-blue-500 transition-all">Verify Owner: Checkout_V4</button>
+                <button className="flex-shrink-0 px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs hover:border-blue-500 transition-all">Clarify ADR-104 Intent</button>
+                <button className="flex-shrink-0 px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs hover:border-blue-500 transition-all">Link PR #12 to Jira-882</button>
+             </div>
+          </div>
+
+          <div className="p-4 border-t border-slate-800">
+            <div className="relative flex items-center gap-3">
+              <input 
+                value={logContent}
+                onChange={(e) => setLogContent(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                placeholder="Share work details to increase Substrate Integrity..."
+                className="flex-1 bg-slate-950 border border-slate-700 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-all"
+              />
+              <button onClick={handleSend} className="p-3 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all"><ChevronRight size={20} /></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- POLICY VIEW (LOCKED MODE) ---
+
+const PolicyView = ({ locked }) => (
+  <div className="p-12 h-full flex flex-col items-center justify-center relative">
+    {locked && (
+      <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-20 flex items-center justify-center p-8">
+         <div className="max-w-md text-center">
+            <Lock size={64} className="text-slate-600 mx-auto mb-6" />
+            <h2 className="text-2xl font-bold mb-4">Active Governance Locked</h2>
+            <p className="text-slate-400 mb-8 leading-relaxed">
+               You cannot enforce policies against a low-fidelity substrate. Automated remediation requires at least <span className="text-white font-bold">30% Integrity</span> to prevent cascading failures.
+            </p>
+            <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl text-left space-y-3">
+               <div className="flex items-center gap-2 text-xs text-red-400 font-bold uppercase">
+                  <AlertTriangle size={14} /> Critical Deficiencies:
+               </div>
+               <ul className="text-xs text-slate-500 space-y-1 ml-6 list-disc">
+                  <li>Incomplete Dependency Graph</li>
+                  <li>Zero Ownership Mapping</li>
+                  <li>Outdated Confluence Webhooks</li>
+               </ul>
+            </div>
+         </div>
+      </div>
+    )}
+    <div className="opacity-20 flex flex-col items-center">
+       <ShieldCheck size={120} />
+       <h1 className="text-4xl font-bold mt-4 tracking-tighter uppercase">Governance Core</h1>
+    </div>
+  </div>
+);
+
+// --- UTILS ---
+
+const LensButton = ({ label, active, onClick, color }) => (
+  <button onClick={onClick} className={`px-4 py-1.5 text-[10px] font-bold uppercase rounded-md transition-all ${active ? `bg-slate-800 border-b-2 ${color}` : 'text-slate-500 hover:text-slate-300'}`}>{label}</button>
+);
+
+const Node = ({ icon, label, color }) => {
+  const colorMap = {
+    blue: 'border-blue-500 bg-blue-500/10 text-blue-400',
+    red: 'border-red-500 bg-red-500/10 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.2)]',
+    slate: 'border-slate-800 bg-slate-800 text-slate-600'
+  };
+  return (
+    <div className={`p-4 rounded-2xl border-2 flex flex-col items-center gap-2 min-w-[100px] transition-all duration-700 ${colorMap[color]}`}>
+      {icon}
+      <span className="text-[10px] font-mono font-bold tracking-tight">{label}</span>
+    </div>
+  );
+};
+
+const LegendItem = ({ color, label, dashed }) => (
+  <div className="flex items-center gap-3">
+    <div className={`w-6 h-[2px] ${color} ${dashed ? 'border-t-2 border-dashed bg-transparent' : ''}`} />
+    <span className="text-[9px] text-slate-500 font-bold uppercase">{label}</span>
+  </div>
+);
+
+const TerminalLogs = ({ logs }) => (
+  <div className="p-8 h-full bg-black/50">
+    <div className="bg-black border border-slate-800 rounded-2xl h-full font-mono text-sm p-6 overflow-auto shadow-2xl">
+      <div className="flex items-center gap-2 mb-4 text-slate-500 text-xs uppercase font-bold tracking-widest">
+        <Activity size={14} /> Substrate_System_Log
+      </div>
+      {logs.map((log, i) => (
+        <div key={i} className="mb-2 flex gap-4 text-xs">
+          <span className="text-slate-700">[{log.time}]</span>
+          <span className={log.msg.includes('Warning') ? 'text-amber-500' : log.msg.includes('Sync') ? 'text-emerald-400' : 'text-slate-400'}>
+            {log.msg}
+          </span>
+        </div>
+      ))}
+      <div className="animate-pulse inline-block w-2 h-4 bg-blue-500 ml-1 mt-2" />
+    </div>
+  </div>
+);
+
+export default function App() {
+  return <SubstratePlatform />;
+}

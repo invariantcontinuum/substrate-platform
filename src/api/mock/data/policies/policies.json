@@ -1,9 +1,11 @@
 {
     "regoTemplates": {
-        "apiEnforcement": "package substrate.api\n\nimport future.keywords.if\nimport future.keywords.in\n\n# Deny API calls without mTLS\ndeny contains msg if {\n    input.request.protocol != \"mTLS\"\n    msg := sprintf(\"API call to %s must use mTLS\", [input.request.service])\n}\n\n# Deny services not in allowlist\ndeny contains msg if {\n    not input.request.service in data.allowed_services\n    msg := sprintf(\"Service %s is not in the allowed services list\", [input.request.service])\n}",
-        "circularDependency": "package substrate.dependencies\n\nimport future.keywords.if\n\n# Detect circular imports\ndeny contains msg if {\n    input.imports[_] == input.module_path\n    msg := sprintf(\"Circular dependency detected in %s\", [input.module_path])\n}\n\n# Limit dependency depth\ndeny contains msg if {\n    input.dependency_depth > 5\n    msg := \"Dependency depth exceeds maximum allowed (5)\"\n}",
-        "gdprCompliance": "package substrate.gdpr\n\nimport future.keywords.if\nimport future.keywords.in\n\n# PII fields that require encryption\npii_fields := {\"email\", \"ssn\", \"phone\", \"address\"}\n\n# Deny unencrypted PII storage\ndeny contains msg if {\n    some field in input.schema.fields\n    field.name in pii_fields\n    not field.encrypted\n    msg := sprintf(\"PII field %s must be encrypted\", [field.name])\n}\n\n# Require data residency in EU\ndeny contains msg if {\n    input.data_classification == \"PII\"\n    not input.storage.region in {\"eu-west-1\", \"eu-central-1\"}\n    msg := \"PII data must be stored in EU regions\"\n}",
-        "licenseCompliance": "package substrate.licenses\n\nimport future.keywords.if\nimport future.keywords.in\n\n# Forbidden licenses\nforbidden_licenses := {\"GPL-2.0\", \"GPL-3.0\", \"AGPL-3.0\"}\n\n# Deny forbidden licenses\ndeny contains msg if {\n    input.dependency.license in forbidden_licenses\n    msg := sprintf(\"Dependency %s uses forbidden license %s\", [input.dependency.name, input.dependency.license])\n}\n\n# Require license whitelist for production\ndeny contains msg if {\n    input.environment == \"production\"\n    not input.dependency.license in data.whitelisted_licenses\n    msg := sprintf(\"License %s not whitelisted for production\", [input.dependency.license])\n}"
+        "apiEnforcement": "package substrate.api\n\nimport future.keywords.if\nimport future.keywords.in\n\n# Deny API calls without mTLS\ndeny contains msg if {\n    input.request.protocol != \"mTLS\"\n    msg := sprintf(\"API call to %s must use mTLS\", [input.request.service])\n}\n\n# Deny services not in allowlist\ndeny contains msg if {\n    not input.request.service in data.allowed_services\n    msg := sprintf(\"Service %s is not in the allowed services list\", [input.request.service])\n}\n",
+        "circularDependency": "package substrate.dependencies\n\nimport future.keywords.if\nimport rego.v1\n\n# Detect circular imports using graph.reachable\ncircular_dependency contains cycle if {\n    some component\n    data.architecture.dependencies[component]\n    some neighbor in data.architecture.dependencies[component]\n    reachable := graph.reachable(data.architecture.dependencies, {neighbor})\n    component in reachable\n    cycle := {\n        \"component\": component,\n        \"via\": neighbor,\n        \"msg\": sprintf(\"Circular: '%s' -> '%s' -> ... -> '%s'\", [component, neighbor, component])\n    }\n}\n\n# Limit dependency depth\ndeny contains msg if {\n    input.dependency_depth > 5\n    msg := \"Dependency depth exceeds maximum allowed (5)\"\n}\n",
+        "gdprCompliance": "package substrate.gdpr\n\nimport future.keywords.if\nimport future.keywords.in\n\n# PII fields that require encryption\npii_fields := {\"email\", \"ssn\", \"phone\", \"address\", \"dob\"}\n\n# Deny unencrypted PII storage\ndeny contains msg if {\n    some field in input.schema.fields\n    field.name in pii_fields\n    not field.encrypted\n    msg := sprintf(\"PII field %s must be encrypted\", [field.name])\n}\n\n# Require data residency in EU\ndeny contains msg if {\n    input.data_classification == \"PII\"\n    not input.storage.region in {\"eu-west-1\", \"eu-central-1\", \"eu-north-1\"}\n    msg := \"PII data must be stored in EU regions (GDPR Article 44)\"\n}\n\n# Require @Private decorator for PII access\ndeny contains msg if {\n    some field in input.accessed_fields\n    field.name in pii_fields\n    not field.has_decorator(\"@Private\")\n    msg := sprintf(\"PII field %s access lacks @Private decorator\", [field.name])\n}\n",
+        "licenseCompliance": "package substrate.licenses\n\nimport future.keywords.if\nimport future.keywords.in\n\n# Forbidden licenses\nforbidden_licenses := {\"GPL-2.0\", \"GPL-3.0\", \"AGPL-3.0\", \"SSPL-1.0\"}\n\n# Deny forbidden licenses\ndeny contains msg if {\n    input.dependency.license in forbidden_licenses\n    msg := sprintf(\"Dependency %s uses forbidden license %s\", [input.dependency.name, input.dependency.license])\n}\n\n# Require license whitelist for production\ndeny contains msg if {\n    input.environment == \"production\"\n    not input.dependency.license in data.whitelisted_licenses\n    msg := sprintf(\"License %s not whitelisted for production\", [input.dependency.license])\n}\n",
+        "secretManagement": "package substrate.secrets\n\nimport future.keywords.if\nimport future.keywords.regex\n\n# Pattern for detecting API keys\napi_key_pattern := `[A-Za-z0-9_]{32,}`\n\n# Deny hardcoded secrets\ndeny contains msg if {\n    regex.match(api_key_pattern, input.code)\n    not input.is_test_file\n    msg := sprintf(\"Potential hardcoded secret detected in %s\", [input.file_path])\n}\n\n# Require vault injection\ndeny contains msg if {\n    input.requires_secret\n    not input.secret_source == \"vault\"\n    msg := \"Secrets must be injected via Vault, not environment variables\"\n}\n\n# Deny secrets in logs\ndeny contains msg if {\n    input.logs[_] contains api_key_pattern\n    msg := \"Potential secret leak in log output\"\n}\n",
+        "layerViolation": "package substrate.layers\n\nimport future.keywords.if\nimport rego.v1\n\n# Layer definitions (lower number = lower layer)\nlayer_order := {\n    \"presentation\": 4,\n    \"application\": 3,\n    \"domain\": 2,\n    \"infrastructure\": 1,\n    \"data\": 0\n}\n\n# Detect layer violations - lower layers should not depend on higher layers\nlayer_violation contains violation if {\n    some source, targets in data.architecture.dependencies\n    some target in targets\n    layer_order[data.architecture.component_layers[source]] < layer_order[data.architecture.component_layers[target]]\n    violation := {\n        \"source\": source,\n        \"target\": target,\n        \"msg\": sprintf(\"Layer violation: '%s' (%s) depends on '%s' (%s)\",\n            [source, data.architecture.component_layers[source], target, data.architecture.component_layers[target]])\n    }\n}\n"
     },
     "policies": [
         {
@@ -12,9 +14,9 @@
             "description": "Enforces mTLS and service allowlist for all internal API communications",
             "package": "substrate.api",
             "status": "Enforced",
+            "severity": "Critical",
             "rules": 12,
             "violations": 0,
-            "severity": "Critical",
             "regoKey": "apiEnforcement",
             "metadata": {
                 "author": "Platform Team",
@@ -41,9 +43,9 @@
             "description": "Prevents circular imports and limits dependency depth to maintain architecture integrity",
             "package": "substrate.dependencies",
             "status": "Enforced",
+            "severity": "High",
             "rules": 4,
             "violations": 1,
-            "severity": "High",
             "regoKey": "circularDependency",
             "metadata": {
                 "author": "Architecture Team",
@@ -69,9 +71,9 @@
             "description": "Ensures PII data is encrypted at rest and stored in EU regions only",
             "package": "substrate.gdpr",
             "status": "Warning",
+            "severity": "Critical",
             "rules": 18,
             "violations": 2,
-            "severity": "Critical",
             "regoKey": "gdprCompliance",
             "metadata": {
                 "author": "Compliance Team",
@@ -90,7 +92,7 @@
                     "production",
                     "eu-regions"
                 ],
-                "autoRemediate: false": false
+                "autoRemediate": false
             }
         },
         {
@@ -99,9 +101,9 @@
             "description": "Blocks dependencies with copyleft licenses in production environments",
             "package": "substrate.licenses",
             "status": "Enforced",
+            "severity": "Medium",
             "rules": 8,
             "violations": 0,
-            "severity": "Medium",
             "regoKey": "licenseCompliance",
             "metadata": {
                 "author": "Legal Tech",
@@ -127,10 +129,10 @@
             "description": "Prevents hardcoded secrets and enforces vault-based secret injection",
             "package": "substrate.secrets",
             "status": "Enforced",
+            "severity": "Critical",
             "rules": 6,
             "violations": 3,
-            "severity": "Critical",
-            "rego": "package substrate.secrets\n\nimport future.keywords.if\nimport future.keywords.regex\n\n# Pattern for detecting API keys\napi_key_pattern := `[A-Za-z0-9_]{32,}`\n\n# Deny hardcoded secrets\ndeny contains msg if {\n    regex.match(api_key_pattern, input.code)\n    msg := sprintf(\"Potential hardcoded secret detected in %s\", [input.file_path])\n}\n\n# Require vault injection\ndeny contains msg if {\n    input.requires_secret\n    not input.secret_source == \"vault\"\n    msg := \"Secrets must be injected via Vault, not environment variables\"\n}",
+            "regoKey": "secretManagement",
             "metadata": {
                 "author": "Security Team",
                 "created": "2024-05-10",
@@ -150,15 +152,43 @@
             }
         },
         {
+            "id": "pol-layers",
+            "name": "Layer Violation Detection",
+            "description": "Enforces clean architecture layer dependencies",
+            "package": "substrate.layers",
+            "status": "Warning",
+            "severity": "High",
+            "rules": 3,
+            "violations": 1,
+            "regoKey": "layerViolation",
+            "metadata": {
+                "author": "Architecture Team",
+                "created": "2024-06-15",
+                "updated": "2024-09-10",
+                "tags": [
+                    "architecture",
+                    "layers",
+                    "clean-code"
+                ]
+            },
+            "enforcement": {
+                "mode": "Warn",
+                "scope": [
+                    "all"
+                ],
+                "autoRemediate": false
+            }
+        },
+        {
             "id": "pol-rate-limit",
             "name": "Rate Limiting",
             "description": "Enforces rate limits on API endpoints to prevent abuse",
             "package": "substrate.rate_limit",
             "status": "Draft",
+            "severity": "Medium",
             "rules": 3,
             "violations": 0,
-            "severity": "Medium",
-            "rego": "package substrate.rate_limit\n\nimport future.keywords.if\n\n# Default rate limit: 1000 requests per minute\ndefault_rate_limit := 1000\n\n# Deny requests exceeding rate limit\ndeny contains msg if {\n    input.request_count > default_rate_limit\n    msg := sprintf(\"Rate limit exceeded: %d requests (limit: %d)\", [input.request_count, default_rate_limit])\n}",
+            "rego": "package substrate.rate_limit\nimport future.keywords.if\n\ndefault_rate_limit := 1000\n\ndeny contains msg if {\n    input.request_count > default_rate_limit\n    msg := sprintf(\"Rate limit exceeded: %d requests (limit: %d)\", [input.request_count, default_rate_limit])\n}\n",
             "metadata": {
                 "author": "SRE Team",
                 "created": "2024-09-01",

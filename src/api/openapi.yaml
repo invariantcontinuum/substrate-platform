@@ -3,8 +3,11 @@ info:
   title: Substrate Platform API
   description: |
     API for the Substrate Platform - a multi-modal knowledge graph platform for architectural governance.
-    
     This API provides endpoints for:
+    - Authentication and user management
+    - Organizations and team management
+    - Projects CRUD operations
+    - Account settings
     - Graph visualization and analysis
     - Policy management and enforcement
     - Drift detection and violation tracking
@@ -19,20 +22,852 @@ servers:
     description: Default API server
 
 paths:
-  # Graph Endpoints
+  # ==========================================
+  # Authentication Endpoints
+  # ==========================================
+  /auth/register:
+    post:
+      summary: Register new user
+      description: Create a new user account
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /auth/login:
+    post:
+      summary: Login user
+      description: Authenticate user and return tokens
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /auth/logout:
+    post:
+      summary: Logout user
+      description: Invalidate user session/token
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Logout successful
+        "401":
+          description: Unauthorized
+
+  /auth/refresh:
+    post:
+      summary: Refresh access token
+      description: Get new access token using refresh token
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "401":
+          description: Invalid refresh token
+
+  /auth/forgot-password:
+    post:
+      summary: Request password reset
+      description: Send password reset email
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordRequest"
+      responses:
+        "200":
+          description: Password reset email sent
+        "404":
+          description: Email not found
+
+  /auth/reset-password:
+    post:
+      summary: Reset password
+      description: Reset password using token
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+      responses:
+        "200":
+          description: Password reset successful
+        "400":
+          description: Invalid or expired token
+
+  /auth/verify-email:
+    post:
+      summary: Verify email
+      description: Verify email address using token
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyEmailRequest"
+      responses:
+        "200":
+          description: Email verified successfully
+        "400":
+          description: Invalid or expired token
+
+  # ==========================================
+  # User/Account Endpoints
+  # ==========================================
+  /users/me:
+    get:
+      summary: Get current user
+      description: Get current authenticated user profile
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+    patch:
+      summary: Update current user
+      description: Update current user profile
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /users/me/password:
+    put:
+      summary: Change password
+      description: Change current user password
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
+      responses:
+        "200":
+          description: Password changed successfully
+        "401":
+          description: Unauthorized
+        "400":
+          description: Invalid current password
+
+  /users/me/preferences:
+    get:
+      summary: Get user preferences
+      description: Get current user preferences
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPreferences"
+
+    put:
+      summary: Update user preferences
+      description: Update current user preferences
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPreferences"
+      responses:
+        "200":
+          description: Preferences updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPreferences"
+
+  /users/me/sessions:
+    get:
+      summary: Get active sessions
+      description: Get all active user sessions
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of active sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserSession"
+
+  /users/me/sessions/{sessionId}:
+    delete:
+      summary: Revoke session
+      description: Revoke a specific user session
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Session revoked
+
+  # ==========================================
+  # Organization Endpoints
+  # ==========================================
+  /organizations:
+    get:
+      summary: List organizations
+      description: Get all organizations for current user
+      tags: [Organizations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+      responses:
+        "200":
+          description: List of organizations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationListResponse"
+
+    post:
+      summary: Create organization
+      description: Create a new organization
+      tags: [Organizations]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrganizationRequest"
+      responses:
+        "201":
+          description: Organization created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+
+  /organizations/{orgId}:
+    get:
+      summary: Get organization
+      description: Get organization by ID
+      tags: [Organizations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+      responses:
+        "200":
+          description: Organization details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "404":
+          description: Organization not found
+
+    patch:
+      summary: Update organization
+      description: Update organization details
+      tags: [Organizations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOrganizationRequest"
+      responses:
+        "200":
+          description: Organization updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+
+    delete:
+      summary: Delete organization
+      description: Delete an organization
+      tags: [Organizations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+      responses:
+        "204":
+          description: Organization deleted
+        "403":
+          description: Not authorized to delete organization
+
+  /organizations/{orgId}/members:
+    get:
+      summary: List organization members
+      description: Get all members of an organization
+      tags: [Organizations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+      responses:
+        "200":
+          description: List of organization members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrganizationMember"
+
+    post:
+      summary: Invite member
+      description: Invite a user to the organization
+      tags: [Organizations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InviteMemberRequest"
+      responses:
+        "201":
+          description: Invitation sent
+
+  /organizations/{orgId}/members/{userId}:
+    patch:
+      summary: Update member role
+      description: Update a member's role in the organization
+      tags: [Organizations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMemberRoleRequest"
+      responses:
+        "200":
+          description: Member role updated
+
+    delete:
+      summary: Remove member
+      description: Remove a member from the organization
+      tags: [Organizations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Member removed
+
+  /organizations/{orgId}/teams:
+    get:
+      summary: List teams
+      description: Get all teams in an organization
+      tags: [Teams]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+      responses:
+        "200":
+          description: List of teams
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Team"
+
+    post:
+      summary: Create team
+      description: Create a new team in the organization
+      tags: [Teams]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTeamRequest"
+      responses:
+        "201":
+          description: Team created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+
+  /organizations/{orgId}/teams/{teamId}:
+    get:
+      summary: Get team
+      description: Get team details
+      tags: [Teams]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+        - $ref: "#/components/parameters/TeamIdParam"
+      responses:
+        "200":
+          description: Team details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+
+    patch:
+      summary: Update team
+      description: Update team details
+      tags: [Teams]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+        - $ref: "#/components/parameters/TeamIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTeamRequest"
+      responses:
+        "200":
+          description: Team updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+
+    delete:
+      summary: Delete team
+      description: Delete a team
+      tags: [Teams]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+        - $ref: "#/components/parameters/TeamIdParam"
+      responses:
+        "204":
+          description: Team deleted
+
+  /organizations/{orgId}/teams/{teamId}/members:
+    get:
+      summary: List team members
+      description: Get all members of a team
+      tags: [Teams]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+        - $ref: "#/components/parameters/TeamIdParam"
+      responses:
+        "200":
+          description: List of team members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TeamMember"
+
+    post:
+      summary: Add team member
+      description: Add a member to the team
+      tags: [Teams]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+        - $ref: "#/components/parameters/TeamIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddTeamMemberRequest"
+      responses:
+        "201":
+          description: Member added
+
+  /organizations/{orgId}/teams/{teamId}/members/{userId}:
+    delete:
+      summary: Remove team member
+      description: Remove a member from the team
+      tags: [Teams]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrgIdParam"
+        - $ref: "#/components/parameters/TeamIdParam"
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Member removed
+
+  # ==========================================
+  # Project Endpoints
+  # ==========================================
+  /projects:
+    get:
+      summary: List projects
+      description: Get all projects accessible to current user
+      tags: [Projects]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - name: organizationId
+          in: query
+          schema:
+            type: string
+          description: Filter by organization
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, archived, setup]
+      responses:
+        "200":
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectListResponse"
+
+    post:
+      summary: Create project
+      description: Create a new project
+      tags: [Projects]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectRequest"
+      responses:
+        "201":
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+
+  /projects/{projectId}:
+    get:
+      summary: Get project
+      description: Get project by ID
+      tags: [Projects]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      responses:
+        "200":
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "404":
+          description: Project not found
+
+    patch:
+      summary: Update project
+      description: Update project details
+      tags: [Projects]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectRequest"
+      responses:
+        "200":
+          description: Project updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+
+    delete:
+      summary: Delete project
+      description: Delete a project
+      tags: [Projects]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      responses:
+        "204":
+          description: Project deleted
+        "403":
+          description: Not authorized to delete project
+
+  /projects/{projectId}/archive:
+    post:
+      summary: Archive project
+      description: Archive a project (soft delete)
+      tags: [Projects]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      responses:
+        "200":
+          description: Project archived
+
+  /projects/{projectId}/restore:
+    post:
+      summary: Restore project
+      description: Restore an archived project
+      tags: [Projects]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      responses:
+        "200":
+          description: Project restored
+
+  /projects/{projectId}/members:
+    get:
+      summary: List project members
+      description: Get all members of a project
+      tags: [Projects]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      responses:
+        "200":
+          description: List of project members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectMember"
+
+    post:
+      summary: Add project member
+      description: Add a member to the project
+      tags: [Projects]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddProjectMemberRequest"
+      responses:
+        "201":
+          description: Member added
+
+  /projects/{projectId}/members/{userId}:
+    patch:
+      summary: Update project member role
+      description: Update a member's role in the project
+      tags: [Projects]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectMemberRequest"
+      responses:
+        "200":
+          description: Member role updated
+
+    delete:
+      summary: Remove project member
+      description: Remove a member from the project
+      tags: [Projects]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Member removed
+
+  # ==========================================
+  # Existing App Endpoints (from openapi.yaml)
+  # ==========================================
   /graph/nodes:
     get:
       summary: Get graph nodes
       description: Retrieve nodes from the knowledge graph with optional filtering
-      tags:
-        - Graph
+      tags: [Graph]
       parameters:
         - name: type
           in: query
           description: Filter by entity type
           schema:
             type: string
-            enum: [Service, API, Module, Database, Component, Team, Repository, Package, Function, Class, Interface, Endpoint, Queue, Cache]
+            enum:
+              [
+                Service,
+                API,
+                Module,
+                Database,
+                Component,
+                Team,
+                Repository,
+                Package,
+                Function,
+                Class,
+                Interface,
+                Endpoint,
+                Queue,
+                Cache,
+              ]
         - name: lens
           in: query
           description: Filter by lens type
@@ -45,7 +880,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: List of graph nodes
           content:
             application/json:
@@ -55,14 +890,13 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/GraphNode'
+                      $ref: "#/components/schemas/GraphNode"
 
   /graph/edges:
     get:
       summary: Get graph edges
       description: Retrieve edges from the knowledge graph with optional filtering
-      tags:
-        - Graph
+      tags: [Graph]
       parameters:
         - name: from
           in: query
@@ -81,7 +915,7 @@ paths:
             type: string
             enum: [reality, intent, drift]
       responses:
-        '200':
+        "200":
           description: List of graph edges
           content:
             application/json:
@@ -91,22 +925,21 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/GraphEdge'
+                      $ref: "#/components/schemas/GraphEdge"
 
   /graph/subgraph:
     post:
       summary: Extract subgraph
       description: Extract a subgraph based on starting nodes and depth
-      tags:
-        - Graph
+      tags: [Graph]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubgraphRequest'
+              $ref: "#/components/schemas/SubgraphRequest"
       responses:
-        '200':
+        "200":
           description: Subgraph data
           content:
             application/json:
@@ -114,16 +947,15 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/GraphData'
+                    $ref: "#/components/schemas/GraphData"
 
   /graph/communities:
     get:
       summary: Get communities
       description: Retrieve detected communities in the graph
-      tags:
-        - Graph
+      tags: [Graph]
       responses:
-        '200':
+        "200":
           description: List of communities
           content:
             application/json:
@@ -133,16 +965,15 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Community'
+                      $ref: "#/components/schemas/Community"
 
   /graph/metrics:
     get:
       summary: Get graph metrics
       description: Retrieve various metrics about the graph
-      tags:
-        - Graph
+      tags: [Graph]
       responses:
-        '200':
+        "200":
           description: Graph metrics
           content:
             application/json:
@@ -150,15 +981,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/GraphMetrics'
+                    $ref: "#/components/schemas/GraphMetrics"
 
-  # Policy Endpoints
+  # Policy Endpoints (Legacy/App Version)
   /policies:
     get:
       summary: Get all policies
       description: Retrieve all policies with optional filtering
-      tags:
-        - Policies
+      tags: [Policies]
       parameters:
         - name: status
           in: query
@@ -173,7 +1003,7 @@ paths:
             type: string
             enum: [Critical, High, Medium, Low]
       responses:
-        '200':
+        "200":
           description: List of policies
           content:
             application/json:
@@ -183,21 +1013,18 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Policy'
-
+                      $ref: "#/components/schemas/Policy"
     post:
       summary: Create policy
-      description: Create a new policy
-      tags:
-        - Policies
+      tags: [Policies]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicyCreate'
+              $ref: "#/components/schemas/PolicyCreate"
       responses:
-        '201':
+        "201":
           description: Created policy
           content:
             application/json:
@@ -205,14 +1032,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Policy'
+                    $ref: "#/components/schemas/Policy"
 
   /policies/{id}:
     get:
       summary: Get policy by ID
-      description: Retrieve a specific policy by its ID
-      tags:
-        - Policies
+      tags: [Policies]
       parameters:
         - name: id
           in: path
@@ -220,7 +1045,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Policy details
           content:
             application/json:
@@ -228,15 +1053,10 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Policy'
-        '404':
-          description: Policy not found
-
+                    $ref: "#/components/schemas/Policy"
     put:
       summary: Update policy
-      description: Update an existing policy
-      tags:
-        - Policies
+      tags: [Policies]
       parameters:
         - name: id
           in: path
@@ -248,23 +1068,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicyCreate'
+              $ref: "#/components/schemas/PolicyCreate"
       responses:
-        '200':
+        "200":
           description: Updated policy
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Policy'
-
     delete:
       summary: Delete policy
-      description: Delete a policy
-      tags:
-        - Policies
+      tags: [Policies]
       parameters:
         - name: id
           in: path
@@ -272,15 +1082,13 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: Policy deleted
 
   /policies/{id}/evaluate:
     post:
       summary: Evaluate policy
-      description: Evaluate a policy against input data
-      tags:
-        - Policies
+      tags: [Policies]
       parameters:
         - name: id
           in: path
@@ -297,7 +1105,7 @@ paths:
                 input:
                   type: object
       responses:
-        '200':
+        "200":
           description: Evaluation result
           content:
             application/json:
@@ -305,16 +1113,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PolicyEvaluationResult'
+                    $ref: "#/components/schemas/PolicyEvaluationResult"
 
   /policies/templates:
     get:
       summary: Get policy templates
-      description: Retrieve available policy templates
-      tags:
-        - Policies
+      tags: [Policies]
       responses:
-        '200':
+        "200":
           description: List of policy templates
           content:
             application/json:
@@ -324,16 +1130,14 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/PolicyTemplate'
+                      $ref: "#/components/schemas/PolicyTemplate"
 
   /policies/metadata:
     get:
       summary: Get policy metadata
-      description: Retrieve metadata including status config, severity levels, and enforcement modes
-      tags:
-        - Policies
+      tags: [Policies]
       responses:
-        '200':
+        "200":
           description: Policy metadata
           content:
             application/json:
@@ -341,30 +1145,26 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PolicyMetadata'
+                    $ref: "#/components/schemas/PolicyMetadata"
 
   # Drift Endpoints
   /drift/violations:
     get:
       summary: Get drift violations
-      description: Retrieve drift violations with optional filtering
-      tags:
-        - Drift
+      tags: [Drift]
       parameters:
         - name: status
           in: query
-          description: Filter by violation status
           schema:
             type: string
             enum: [open, resolved, false_positive, investigating]
         - name: severity
           in: query
-          description: Filter by severity
           schema:
             type: string
             enum: [Critical, High, Medium, Low]
       responses:
-        '200':
+        "200":
           description: List of violations
           content:
             application/json:
@@ -374,14 +1174,12 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/DriftViolation'
+                      $ref: "#/components/schemas/DriftViolation"
 
   /drift/violations/{id}:
     get:
       summary: Get violation by ID
-      description: Retrieve a specific violation
-      tags:
-        - Drift
+      tags: [Drift]
       parameters:
         - name: id
           in: path
@@ -389,7 +1187,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Violation details
           content:
             application/json:
@@ -397,14 +1195,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/DriftViolation'
+                    $ref: "#/components/schemas/DriftViolation"
 
   /drift/violations/{id}/resolve:
     post:
       summary: Resolve violation
-      description: Mark a violation as resolved
-      tags:
-        - Drift
+      tags: [Drift]
       parameters:
         - name: id
           in: path
@@ -416,9 +1212,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ViolationResolution'
+              $ref: "#/components/schemas/ViolationResolution"
       responses:
-        '200':
+        "200":
           description: Resolved violation
           content:
             application/json:
@@ -426,16 +1222,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/DriftViolation'
+                    $ref: "#/components/schemas/DriftViolation"
 
   /drift/summary:
     get:
       summary: Get drift summary
-      description: Retrieve summary statistics about drift violations
-      tags:
-        - Drift
+      tags: [Drift]
       responses:
-        '200':
+        "200":
           description: Drift summary
           content:
             application/json:
@@ -443,31 +1237,27 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/DriftSummary'
+                    $ref: "#/components/schemas/DriftSummary"
 
   /drift/timeline:
     get:
       summary: Get drift timeline
-      description: Retrieve timeline of drift violations
-      tags:
-        - Drift
+      tags: [Drift]
       parameters:
         - name: from
           in: query
           required: true
-          description: Start date (ISO 8601)
           schema:
             type: string
             format: date
         - name: to
           in: query
           required: true
-          description: End date (ISO 8601)
           schema:
             type: string
             format: date
       responses:
-        '200':
+        "200":
           description: Drift timeline
           content:
             application/json:
@@ -477,23 +1267,21 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/DriftTimelinePoint'
+                      $ref: "#/components/schemas/DriftTimelinePoint"
 
   # Search Endpoints
   /search:
     post:
       summary: Search
-      description: Perform semantic search across the knowledge graph
-      tags:
-        - Search
+      tags: [Search]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SearchRequest'
+              $ref: "#/components/schemas/SearchRequest"
       responses:
-        '200':
+        "200":
           description: Search results
           content:
             application/json:
@@ -501,14 +1289,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SearchResponse'
+                    $ref: "#/components/schemas/SearchResponse"
 
   /search/evidence:
     get:
       summary: Get evidence
-      description: Retrieve evidence for a search result
-      tags:
-        - Search
+      tags: [Search]
       parameters:
         - name: resultId
           in: query
@@ -516,7 +1302,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Evidence items
           content:
             application/json:
@@ -526,16 +1312,14 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/EvidenceItem'
+                      $ref: "#/components/schemas/EvidenceItem"
 
   /search/reasoning:
     get:
       summary: Get reasoning results
-      description: Retrieve reasoning/analysis results
-      tags:
-        - Search
+      tags: [Search]
       responses:
-        '200':
+        "200":
           description: Reasoning results
           content:
             application/json:
@@ -545,23 +1329,21 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ReasoningResult'
+                      $ref: "#/components/schemas/ReasoningResult"
 
   # Sync Endpoints
   /sync:
     post:
       summary: Trigger sync
-      description: Trigger a synchronization job
-      tags:
-        - Sync
+      tags: [Sync]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SyncRequest'
+              $ref: "#/components/schemas/SyncRequest"
       responses:
-        '200':
+        "200":
           description: Sync job started
           content:
             application/json:
@@ -569,14 +1351,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SyncJob'
+                    $ref: "#/components/schemas/SyncJob"
 
   /sync/{id}/status:
     get:
       summary: Get sync status
-      description: Retrieve status of a sync job
-      tags:
-        - Sync
+      tags: [Sync]
       parameters:
         - name: id
           in: path
@@ -584,7 +1364,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Sync job status
           content:
             application/json:
@@ -592,17 +1372,15 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SyncJob'
+                    $ref: "#/components/schemas/SyncJob"
 
   # Health Endpoints
   /health:
     get:
       summary: Check health
-      description: Check system health status
-      tags:
-        - Health
+      tags: [Health]
       responses:
-        '200':
+        "200":
           description: Health status
           content:
             application/json:
@@ -610,16 +1388,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/HealthStatus'
+                    $ref: "#/components/schemas/HealthStatus"
 
   /health/metrics/dashboard:
     get:
       summary: Get dashboard metrics
-      description: Retrieve metrics for the dashboard
-      tags:
-        - Health
+      tags: [Health]
       responses:
-        '200':
+        "200":
           description: Dashboard metrics
           content:
             application/json:
@@ -627,36 +1403,29 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/DashboardMetrics'
+                    $ref: "#/components/schemas/DashboardMetrics"
 
   # UI Config Endpoints
   /ui-config/lens:
     get:
       summary: Get lens configuration
-      description: Retrieve lens configuration for the UI
-      tags:
-        - UI Config
+      tags: [UI Config]
       responses:
-        '200':
+        "200":
           description: Lens configuration
           content:
             application/json:
               schema:
                 type: object
-                properties:
-                  data:
-                    type: object
-                    additionalProperties:
-                      $ref: '#/components/schemas/LensConfig'
+                additionalProperties:
+                  $ref: "#/components/schemas/LensConfig"
 
   /ui-config/legend:
     get:
       summary: Get legend items
-      description: Retrieve legend items for the UI
-      tags:
-        - UI Config
+      tags: [UI Config]
       responses:
-        '200':
+        "200":
           description: Legend items
           content:
             application/json:
@@ -666,16 +1435,14 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/LegendItemConfig'
+                      $ref: "#/components/schemas/LegendItemConfig"
 
   /ui-config/actions/analysis:
     get:
       summary: Get analysis actions
-      description: Retrieve analysis actions for the UI
-      tags:
-        - UI Config
+      tags: [UI Config]
       responses:
-        '200':
+        "200":
           description: Analysis actions
           content:
             application/json:
@@ -687,16 +1454,14 @@ paths:
                     additionalProperties:
                       type: array
                       items:
-                        $ref: '#/components/schemas/AnalysisAction'
+                        $ref: "#/components/schemas/AnalysisAction"
 
   /ui-config/actions/drift:
     get:
       summary: Get drift actions
-      description: Retrieve drift resolution actions for the UI
-      tags:
-        - UI Config
+      tags: [UI Config]
       responses:
-        '200':
+        "200":
           description: Drift actions
           content:
             application/json:
@@ -706,17 +1471,89 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/AnalysisAction'
+                      $ref: "#/components/schemas/AnalysisAction"
+
+  /ui-config/preferences:
+    get:
+      summary: Get user preference options
+      description: Get available options for user preferences (themes, languages, timezones, dashboard views)
+      tags: [UI Config]
+      responses:
+        "200":
+          description: Preference options
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PreferenceOptions"
+
+  /ui-config/dashboard-views:
+    get:
+      summary: Get available dashboard views
+      description: Get dashboard view configurations based on user permissions
+      tags: [UI Config]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Dashboard view configurations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/DashboardViewConfig"
+
+  /settings/defaults:
+    get:
+      summary: Get default application settings
+      description: Get default values for LLM, API, Graph, and Feature settings
+      tags: [Settings]
+      responses:
+        "200":
+          description: Default settings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/DefaultSettings"
+
+  /cms/landing:
+    get:
+      summary: Get landing page content
+      description: Get marketing content for the landing page (features, pricing, FAQ)
+      tags: [CMS]
+      responses:
+        "200":
+          description: Landing page content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/LandingContent"
 
   # Memory Endpoints
   /memory/audit:
     get:
       summary: Get audit items
-      description: Retrieve audit items from the memory layer
-      tags:
-        - Memory
+      tags: [Memory]
       responses:
-        '200':
+        "200":
           description: List of audit items
           content:
             application/json:
@@ -726,14 +1563,12 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/AuditItem'
+                      $ref: "#/components/schemas/AuditItem"
 
   /memory/audit/{id}:
     get:
       summary: Get audit item by ID
-      description: Retrieve a specific audit item
-      tags:
-        - Memory
+      tags: [Memory]
       parameters:
         - name: id
           in: path
@@ -741,7 +1576,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Audit item details
           content:
             application/json:
@@ -749,844 +1584,753 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/AuditItem'
+                    $ref: "#/components/schemas/AuditItem"
+
+  # ==========================================
+  # Target Endpoints (from swagger_target.yaml, Unimplemented)
+  # ==========================================
+  /entities:
+    get:
+      tags: [Knowledge Fabric]
+      summary: List entities
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - name: type
+          in: query
+          schema:
+            $ref: "#/components/schemas/EntityType"
+      responses:
+        "200":
+          description: Entity list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EntityListResponse"
+
+  /entities/{entityId}:
+    get:
+      tags: [Knowledge Fabric]
+      summary: Get entity
+      parameters:
+        - $ref: "#/components/parameters/EntityIdParam"
+      responses:
+        "200":
+          description: Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Entity"
+
+  /graphrag/query:
+    post:
+      tags: [GraphRAG]
+      summary: Execute GraphRAG query
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GraphRAGQueryRequest"
+      responses:
+        "200":
+          description: Query result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GraphRAGQueryResponse"
+
+  /connectors:
+    get:
+      tags: [Connectors]
+      summary: List connectors
+      responses:
+        "200":
+          description: Connector list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectorListResponse"
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+    EntityIdParam:
+      name: entityId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    OrgIdParam:
+      name: orgId
+      in: path
+      required: true
+      schema:
+        type: string
+    ProjectIdParam:
+      name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+    TeamIdParam:
+      name: teamId
+      in: path
+      required: true
+      schema:
+        type: string
+
   schemas:
-    # Graph Schemas
-    Position:
+    # ============================================================================
+    # Authentication Schemas
+    # ============================================================================
+    RegisterRequest:
       type: object
+      required: [email, password, name]
       properties:
-        x:
-          type: number
-        y:
-          type: number
-      required: [x, y]
-
-    NodeColors:
-      type: object
-      properties:
-        reality:
+        email:
           type: string
-        intent:
+          format: email
+        password:
           type: string
-        drift:
-          type: string
-      required: [reality, intent, drift]
-
-    NodeMetrics:
-      type: object
-      properties:
-        coupling:
-          type: object
-          properties:
-            afferent:
-              type: number
-            efferent:
-              type: number
-            instability:
-              type: number
-        cohesion:
-          type: number
-        complexity:
-          type: number
-
-    GraphNode:
-      type: object
-      properties:
-        id:
-          type: string
-        label:
-          type: string
-        type:
-          type: string
-          enum: [Service, API, Module, Database, Component, Team, Repository, Package, Function, Class, Interface, Endpoint, Queue, Cache]
-        position:
-          $ref: '#/components/schemas/Position'
-        colors:
-          $ref: '#/components/schemas/NodeColors'
-        icon:
-          type: string
-        altIcon:
-          type: string
-        metadata:
-          type: object
-          additionalProperties: true
-        metrics:
-          $ref: '#/components/schemas/NodeMetrics'
-      required: [id, label, type, position, colors, icon]
-
-    GraphEdge:
-      type: object
-      properties:
-        id:
-          type: string
-        from:
-          type: string
-        to:
-          type: string
-        type:
-          type: string
-        color:
-          type: string
-        width:
-          type: number
-        dashed:
-          type: string
-        animate:
-          type: boolean
-        isViolation:
-          type: boolean
-        lens:
-          type: array
-          items:
-            type: string
-            enum: [reality, intent, drift]
-        always:
-          type: boolean
-        opacityInDrift:
-          type: number
-        metadata:
-          type: object
-          additionalProperties: true
-      required: [from, to, color, width]
-
-    GraphData:
-      type: object
-      properties:
-        nodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/GraphNode'
-        edges:
-          type: array
-          items:
-            $ref: '#/components/schemas/GraphEdge'
-      required: [nodes, edges]
-
-    SubgraphRequest:
-      type: object
-      properties:
-        nodeIds:
-          type: array
-          items:
-            type: string
-        depth:
-          type: number
-          default: 2
-        includeMetadata:
-          type: boolean
-      required: [nodeIds]
-
-    Community:
-      type: object
-      properties:
-        id:
-          type: string
-        level:
-          type: number
-        nodeCount:
-          type: number
-        density:
-          type: number
-        summary:
-          type: string
-        nodes:
-          type: array
-          items:
-            type: string
-      required: [id, level, nodeCount, density, summary, nodes]
-
-    GraphMetrics:
-      type: object
-      properties:
-        totalNodes:
-          type: number
-        totalEdges:
-          type: number
-        communities:
-          type: number
-        avgClustering:
-          type: number
-        conformanceScore:
-          type: number
-        couplingMetrics:
-          type: object
-          properties:
-            avgAfferent:
-              type: number
-            avgEfferent:
-              type: number
-            avgInstability:
-              type: number
-        healthScore:
-          type: object
-          properties:
-            overall:
-              type: number
-            architectural:
-              type: number
-            documentation:
-              type: number
-            codeQuality:
-              type: number
-      required: [totalNodes, totalEdges, communities, avgClustering, conformanceScore]
-
-    # Policy Schemas
-    PolicyMetadata:
-      type: object
-      properties:
-        author:
-          type: string
-        created:
-          type: string
-          format: date
-        updated:
-          type: string
-          format: date
-        tags:
-          type: array
-          items:
-            type: string
-      required: [author, created, updated, tags]
-
-    PolicyEnforcement:
-      type: object
-      properties:
-        mode:
-          type: string
-          enum: [Strict, Warn, DryRun]
-        scope:
-          type: array
-          items:
-            type: string
-        autoRemediate:
-          type: boolean
-      required: [mode, scope, autoRemediate]
-
-    Policy:
-      type: object
-      properties:
-        id:
-          type: string
+          minLength: 8
         name:
           type: string
-        description:
+        organizationName:
           type: string
-        package:
-          type: string
-        status:
-          type: string
-          enum: [Enforced, Warning, Draft, Disabled]
-        severity:
-          type: string
-          enum: [Critical, High, Medium, Low]
-        rules:
-          type: number
-        violations:
-          type: number
-        rego:
-          type: string
-        regoKey:
-          type: string
-        metadata:
-          $ref: '#/components/schemas/PolicyMetadata'
-        enforcement:
-          $ref: '#/components/schemas/PolicyEnforcement'
-      required: [id, name, description, package, status, severity, rules, violations, metadata, enforcement]
+          description: Optional organization name to create
 
-    PolicyCreate:
+    LoginRequest:
       type: object
+      required: [email, password]
       properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        rememberMe:
+          type: boolean
+          default: false
+
+    AuthResponse:
+      type: object
+      required: [user, tokens]
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        tokens:
+          $ref: "#/components/schemas/AuthTokens"
+
+    AuthTokens:
+      type: object
+      required: [accessToken, refreshToken]
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          description: Access token expiration time in seconds
+        tokenType:
+          type: string
+          default: Bearer
+
+    TokenResponse:
+      type: object
+      required: [accessToken]
+      properties:
+        accessToken:
+          type: string
+        expiresIn:
+          type: integer
+        tokenType:
+          type: string
+
+    RefreshTokenRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+
+    ForgotPasswordRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+
+    ResetPasswordRequest:
+      type: object
+      required: [token, newPassword]
+      properties:
+        token:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+
+    VerifyEmailRequest:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+
+    # ============================================================================
+    # User Schemas
+    # ============================================================================
+    User:
+      type: object
+      required: [id, email, name]
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
         name:
           type: string
-        description:
+        avatar:
           type: string
-        package:
-          type: string
-        severity:
-          type: string
-          enum: [Critical, High, Medium, Low]
-        rego:
-          type: string
-        metadata:
-          type: object
-        enforcement:
-          type: object
-      required: [name, description, package, severity]
-
-    PolicyTemplate:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        category:
-          type: string
-        rego:
-          type: string
-      required: [id, name, description, category, rego]
-
-    PolicyEvaluationResult:
-      type: object
-      properties:
-        allowed:
+          nullable: true
+        emailVerified:
           type: boolean
-        violations:
-          type: array
-          items:
-            type: string
-        details:
-          type: object
-          additionalProperties: true
-      required: [allowed, violations]
-
-    PolicyMetadataConfig:
-      type: object
-      properties:
-        statusConfig:
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              color:
-                type: string
-              icon:
-                type: string
-              description:
-                type: string
-        severityLevels:
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              color:
-                type: string
-              value:
-                type: number
-        enforcementModes:
-          type: object
-          additionalProperties:
-            type: string
-
-    # Drift Schemas
-    SuggestedAction:
-      type: object
-      properties:
-        id:
-          type: string
-        label:
-          type: string
-        icon:
-          type: string
-        description:
-          type: string
-      required: [id, label, icon, description]
-
-    DriftViolation:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum: [jira, doc, pr, owner, dependency, policy]
-        title:
-          type: string
-        description:
-          type: string
-        severity:
-          type: string
-          enum: [Critical, High, Medium, Low]
-        status:
-          type: string
-          enum: [open, resolved, false_positive, investigating]
-        highlight:
-          type: boolean
-        between:
-          type: array
-          items:
-            type: string
-        policy:
-          type: string
-        details:
-          type: object
-          properties:
-            issue:
-              type: string
-            impact:
-              type: string
-            detectedAt:
-              type: string
-              format: date-time
-            detectedBy:
-              type: string
-            location:
-              type: object
-              properties:
-                file:
-                  type: string
-                line:
-                  type: number
-                function:
-                  type: string
-        suggestedActions:
-          type: array
-          items:
-            $ref: '#/components/schemas/SuggestedAction'
+          default: false
         createdAt:
           type: string
           format: date-time
-        resolvedAt:
+        updatedAt:
           type: string
           format: date-time
-      required: [id, type, title, description, severity, status, highlight, suggestedActions]
+        preferences:
+          $ref: "#/components/schemas/UserPreferences"
 
-    DriftSummary:
-      type: object
-      properties:
-        totalViolations:
-          type: number
-        bySeverity:
-          type: object
-          additionalProperties:
-            type: number
-        byType:
-          type: object
-          additionalProperties:
-            type: number
-        trend:
-          type: string
-          enum: [improving, stable, worsening]
-      required: [totalViolations, bySeverity, byType, trend]
-
-    DriftTimelinePoint:
-      type: object
-      properties:
-        date:
-          type: string
-          format: date
-        newViolations:
-          type: number
-        resolvedViolations:
-          type: number
-        totalOpen:
-          type: number
-      required: [date, newViolations, resolvedViolations, totalOpen]
-
-    ViolationResolution:
-      type: object
-      properties:
-        strategy:
-          type: string
-          enum: [update_intent, refactor_reality, false_positive]
-        reason:
-          type: string
-        ticketId:
-          type: string
-      required: [strategy, reason]
-
-    # Search Schemas
-    SearchRequest:
-      type: object
-      properties:
-        query:
-          type: string
-        mode:
-          type: string
-          enum: [local, global, drift]
-        filters:
-          type: object
-          properties:
-            entityTypes:
-              type: array
-              items:
-                type: string
-            dateRange:
-              type: object
-              properties:
-                from:
-                  type: string
-                  format: date
-                to:
-                  type: string
-                  format: date
-        limit:
-          type: number
-      required: [query]
-
-    SearchResult:
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        description:
-          type: string
-        type:
-          type: string
-        score:
-          type: number
-        entityId:
-          type: string
-        metadata:
-          type: object
-          additionalProperties: true
-      required: [id, title, description, type, score, entityId]
-
-    SearchResponse:
-      type: object
-      properties:
-        query:
-          type: string
-        mode:
-          type: string
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/SearchResult'
-        total:
-          type: number
-        took:
-          type: number
-      required: [query, mode, results, total, took]
-
-    EvidenceItem:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum: [adr, source, policy, graph, pr, jira]
-        label:
-          type: string
-        title:
-          type: string
-        description:
-          type: string
-        content:
-          type: string
-        source:
-          type: string
-        language:
-          type: string
-        line:
-          type: number
-        confidence:
-          type: number
-      required: [id, type, label, title, description, content, source, confidence]
-
-    ReasoningResult:
-      type: object
-      properties:
-        id:
-          type: string
-        query:
-          type: string
-        summary:
-          type: string
-        analysis:
-          type: string
-        services:
-          type: array
-          items:
-            type: string
-        severity:
-          type: string
-        evidenceIds:
-          type: array
-          items:
-            type: string
-      required: [id, query, summary, analysis, services, severity, evidenceIds]
-
-    # Sync Schemas
-    SyncRequest:
-      type: object
-      properties:
-        type:
-          type: string
-          enum: [reality, intent, full]
-        sources:
-          type: array
-          items:
-            type: string
-        options:
-          type: object
-          properties:
-            incremental:
-              type: boolean
-            force:
-              type: boolean
-      required: [type]
-
-    SyncJob:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum: [reality, intent, full]
-        status:
-          type: string
-          enum: [pending, running, completed, failed]
-        progress:
-          type: number
-        startedAt:
-          type: string
-          format: date-time
-        completedAt:
-          type: string
-          format: date-time
-        error:
-          type: string
-        stats:
-          type: object
-          properties:
-            entitiesProcessed:
-              type: number
-            entitiesCreated:
-              type: number
-            entitiesUpdated:
-              type: number
-      required: [id, type, status, progress]
-
-    # Health Schemas
-    HealthCheck:
+    UpdateUserRequest:
       type: object
       properties:
         name:
           type: string
-        status:
+        avatar:
           type: string
-          enum: [pass, fail, warn]
-        responseTime:
-          type: number
-        message:
-          type: string
-      required: [name, status, responseTime]
+          nullable: true
 
-    HealthStatus:
+    UserPreferences:
       type: object
       properties:
-        status:
+        theme:
           type: string
-          enum: [healthy, degraded, unhealthy]
-        version:
+          enum: [dark, light, system]
+          default: dark
+        defaultView:
           type: string
-        uptime:
-          type: number
-        checks:
-          type: array
-          items:
-            $ref: '#/components/schemas/HealthCheck'
-      required: [status, version, uptime, checks]
+          enum: [executive, architect, security, engineer, product]
+          default: engineer
+        notifications:
+          $ref: "#/components/schemas/NotificationPreferences"
+        language:
+          type: string
+          default: en
+        timezone:
+          type: string
+          default: UTC
 
-    ActivityItem:
+    NotificationPreferences:
+      type: object
+      properties:
+        driftAlerts:
+          type: string
+          enum: [immediate, digest, none]
+          default: digest
+        policyViolations:
+          type: string
+          enum: [immediate, digest, none]
+          default: digest
+        connectorSync:
+          type: boolean
+          default: true
+        emailDigest:
+          type: string
+          enum: [daily, weekly, none]
+          default: weekly
+        browserNotifications:
+          type: boolean
+          default: true
+
+    ChangePasswordRequest:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+
+    UserSession:
       type: object
       properties:
         id:
           type: string
-        type:
+        device:
           type: string
-        title:
+        browser:
           type: string
-        timestamp:
+        ipAddress:
+          type: string
+        location:
+          type: string
+        createdAt:
           type: string
           format: date-time
-        metadata:
-          type: object
-          additionalProperties: true
-      required: [id, type, title, timestamp]
+        lastActive:
+          type: string
+          format: date-time
+        isCurrent:
+          type: boolean
 
-    DashboardMetrics:
+    # ============================================================================
+    # Organization Schemas
+    # ============================================================================
+    Organization:
       type: object
+      required: [id, name, slug, plan]
       properties:
-        systemHealth:
-          $ref: '#/components/schemas/HealthStatus'
-        graphMetrics:
-          $ref: '#/components/schemas/GraphMetrics'
-        driftSummary:
-          $ref: '#/components/schemas/DriftSummary'
-        policyStats:
-          type: object
-          properties:
-            total:
-              type: number
-            enforced:
-              type: number
-            violations:
-              type: number
-        recentActivity:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityItem'
-      required: [systemHealth, graphMetrics, driftSummary, policyStats, recentActivity]
-
-    # UI Config Schemas
-    LensConfig:
-      type: object
-      properties:
-        label:
+        id:
           type: string
-        color:
+        name:
           type: string
-        bgColor:
-          type: string
-        accentColor:
+        slug:
           type: string
         description:
           type: string
-        summary:
+          nullable: true
+        avatar:
           type: string
-        metrics:
-          type: object
-          properties:
-            entities:
-              type: number
-            score:
-              type: string
-            scoreLabel:
-              type: string
-            subCount:
-              type: number
-            subLabel:
-              type: string
-        violation:
-          type: object
-          properties:
-            policy:
-              type: string
-            between:
-              type: array
-              items:
-                type: string
-            description:
-              type: string
-      required: [label, color, bgColor, accentColor, description, summary]
+          nullable: true
+        plan:
+          type: string
+          enum: [free, team, enterprise]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        settings:
+          $ref: "#/components/schemas/OrganizationSettings"
+        limits:
+          $ref: "#/components/schemas/OrganizationLimits"
+        stats:
+          $ref: "#/components/schemas/OrganizationStats"
 
-    LegendItemConfig:
+    OrganizationSettings:
       type: object
+      properties:
+        allowPublicProjects:
+          type: boolean
+          default: false
+        requireApprovalForConnectors:
+          type: boolean
+          default: false
+        defaultProjectRole:
+          type: string
+          enum: [owner, admin, engineer, security, product, readonly]
+          default: engineer
+        ssoEnabled:
+          type: boolean
+          default: false
+        auditLogRetentionDays:
+          type: integer
+          default: 90
+
+    OrganizationLimits:
+      type: object
+      properties:
+        maxProjects:
+          type: integer
+        maxUsers:
+          type: integer
+        maxConnectorsPerProject:
+          type: integer
+        storageGB:
+          type: integer
+
+    OrganizationStats:
+      type: object
+      properties:
+        totalProjects:
+          type: integer
+        totalMembers:
+          type: integer
+        totalTeams:
+          type: integer
+
+    CreateOrganizationRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+
+    UpdateOrganizationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        settings:
+          $ref: "#/components/schemas/OrganizationSettings"
+
+    OrganizationListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Organization"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    OrganizationMember:
+      type: object
+      required: [id, userId, organizationId, role]
       properties:
         id:
           type: string
+        userId:
+          type: string
+        organizationId:
+          type: string
+        role:
+          type: string
+          enum: [owner, admin, engineer, security, product, readonly]
+        joinedAt:
+          type: string
+          format: date-time
+        invitedBy:
+          type: string
+          nullable: true
+        user:
+          $ref: "#/components/schemas/User"
+
+    InviteMemberRequest:
+      type: object
+      required: [email, role]
+      properties:
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [admin, engineer, security, product, readonly]
+        message:
+          type: string
+
+    UpdateMemberRoleRequest:
+      type: object
+      required: [role]
+      properties:
+        role:
+          type: string
+          enum: [owner, admin, engineer, security, product, readonly]
+
+    # ============================================================================
+    # Team Schemas
+    # ============================================================================
+    Team:
+      type: object
+      required: [id, organizationId, name]
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
         color:
           type: string
-        label:
+          nullable: true
+        createdAt:
           type: string
-        dashed:
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        memberCount:
+          type: integer
+        lead:
+          $ref: "#/components/schemas/User"
+
+    CreateTeamRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        color:
+          type: string
+        leadUserId:
+          type: string
+
+    UpdateTeamRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        color:
+          type: string
+        leadUserId:
+          type: string
+          nullable: true
+
+    TeamMember:
+      type: object
+      required: [id, userId, teamId]
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        teamId:
+          type: string
+        role:
+          type: string
+          enum: [lead, member]
+          default: member
+        joinedAt:
+          type: string
+          format: date-time
+        user:
+          $ref: "#/components/schemas/User"
+
+    AddTeamMemberRequest:
+      type: object
+      required: [userId]
+      properties:
+        userId:
+          type: string
+        role:
+          type: string
+          enum: [lead, member]
+          default: member
+
+    # ============================================================================
+    # Project Schemas
+    # ============================================================================
+    Project:
+      type: object
+      required: [id, organizationId, name, slug, status]
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, archived, setup]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        settings:
+          $ref: "#/components/schemas/ProjectSettings"
+        stats:
+          $ref: "#/components/schemas/ProjectStats"
+
+    ProjectSettings:
+      type: object
+      properties:
+        visibility:
+          type: string
+          enum: [private, organization]
+          default: private
+        defaultBranch:
+          type: string
+          default: main
+        autoSyncEnabled:
           type: boolean
-        lenses:
+          default: true
+        syncIntervalMinutes:
+          type: integer
+          default: 60
+        alertThresholds:
+          $ref: "#/components/schemas/AlertThresholds"
+
+    AlertThresholds:
+      type: object
+      properties:
+        criticalViolations:
+          type: integer
+          default: 1
+        highViolations:
+          type: integer
+          default: 5
+        driftPercentage:
+          type: integer
+          default: 10
+
+    ProjectStats:
+      type: object
+      properties:
+        totalNodes:
+          type: integer
+        totalEdges:
+          type: integer
+        policiesCount:
+          type: integer
+        activeViolations:
+          type: integer
+        lastSyncAt:
+          type: string
+          format: date-time
+          nullable: true
+        healthScore:
+          type: number
+          minimum: 0
+          maximum: 100
+
+    CreateProjectRequest:
+      type: object
+      required: [name, organizationId]
+      properties:
+        name:
+          type: string
+        organizationId:
+          type: string
+        description:
+          type: string
+        settings:
+          $ref: "#/components/schemas/ProjectSettings"
+
+    UpdateProjectRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        settings:
+          $ref: "#/components/schemas/ProjectSettings"
+
+    ProjectListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    ProjectMember:
+      type: object
+      required: [id, userId, projectId, role]
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        projectId:
+          type: string
+        role:
+          type: string
+          enum: [owner, admin, engineer, security, product, readonly]
+        permissions:
           type: array
           items:
             type: string
-            enum: [reality, intent, drift]
-      required: [id, color, label, lenses]
+        joinedAt:
+          type: string
+          format: date-time
+        invitedBy:
+          type: string
+          nullable: true
+        user:
+          $ref: "#/components/schemas/User"
 
-    AnalysisAction:
+    AddProjectMemberRequest:
+      type: object
+      required: [email, role]
+      properties:
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [admin, engineer, security, product, readonly]
+
+    UpdateProjectMemberRequest:
+      type: object
+      required: [role]
+      properties:
+        role:
+          type: string
+          enum: [owner, admin, engineer, security, product, readonly]
+
+    # ============================================================================
+    # Common Schemas
+    # ============================================================================
+    PaginationMeta:
       type: object
       properties:
-        id:
-          type: string
-        icon:
-          type: string
-        label:
-          type: string
-        description:
-          type: string
-        color:
-          type: string
-      required: [id, icon, label, description, color]
+        page:
+          type: integer
+        perPage:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
 
-    # Memory Schemas
-    AuditItem:
+    ApiError:
       type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum: [jira, doc, pr, owner]
-        title:
-          type: string
-        desc:
-          type: string
-        highlight:
-          type: boolean
-        details:
-          type: object
-          properties:
-            issue:
-              type: string
-            summary:
-              type: string
-            problem:
-              type: string
-            impact:
-              type: string
-            document:
-              type: string
-            title:
-              type: string
-            lastUpdated:
-              type: string
-            driftMetrics:
-              type: object
-              properties:
-                filesCompliant:
-                  type: number
-                filesDrifted:
-                  type: number
-                complianceRate:
-                  type: string
-            pr:
-              type: string
-            author:
-              type: string
-            conflicts:
-              type: array
-              items:
-                type: object
-            component:
-              type: string
-            previousOwner:
-              type: string
-            domain:
-              type: string
-            riskLevel:
-              type: string
-            pendingItems:
-              type: object
-              properties:
-                criticalBugs:
-                  type: number
-                openPRs:
-                  type: number
-                untriagedIssues:
-                  type: number
-            suggestedActions:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  label:
-                    type: string
-                  icon:
-                    type: string
-                  description:
-                    type: string
-      required: [id, type, title, desc, highlight, details]
-
-    # Error Response
-    Error:
-      type: object
+      required: [code, message]
       properties:
         code:
           type: string
@@ -1595,4 +2339,540 @@ components:
         details:
           type: object
           additionalProperties: true
-      required: [code, message]
+
+    # Original Schemas
+    Position:
+      type: object
+      properties:
+        x: { type: number }
+        y: { type: number }
+      required: [x, y]
+
+    NodeColors:
+      type: object
+      properties:
+        reality: { type: string }
+        intent: { type: string }
+        drift: { type: string }
+
+    NodeMetrics:
+      type: object
+      properties:
+        coupling:
+          type: object
+          properties:
+            afferent: { type: number }
+            efferent: { type: number }
+            instability: { type: number }
+        cohesion: { type: number }
+        complexity: { type: number }
+
+    GraphNode:
+      type: object
+      properties:
+        id: { type: string }
+        label: { type: string }
+        type:
+          type: string
+          enum:
+            [
+              Service,
+              API,
+              Module,
+              Database,
+              Component,
+              Team,
+              Repository,
+              Package,
+              Function,
+              Class,
+              Interface,
+              Endpoint,
+              Queue,
+              Cache,
+            ]
+        position:
+          $ref: "#/components/schemas/Position"
+        colors:
+          $ref: "#/components/schemas/NodeColors"
+        icon: { type: string }
+        altIcon: { type: string }
+        metadata:
+          type: object
+          additionalProperties: true
+        metrics:
+          $ref: "#/components/schemas/NodeMetrics"
+
+    GraphEdge:
+      type: object
+      properties:
+        id: { type: string }
+        from: { type: string }
+        to: { type: string }
+        type: { type: string }
+        color: { type: string }
+        width: { type: number }
+        dashed: { type: string }
+        animate: { type: boolean }
+        isViolation: { type: boolean }
+        metadata: { type: object }
+
+    GraphData:
+      type: object
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/GraphNode"
+        edges:
+          type: array
+          items:
+            $ref: "#/components/schemas/GraphEdge"
+
+    SubgraphRequest:
+      type: object
+      properties:
+        nodeIds:
+          type: array
+          items: { type: string }
+        depth: { type: number, default: 2 }
+
+    Community:
+      type: object
+      properties:
+        id: { type: string }
+        level: { type: number }
+        nodeCount: { type: number }
+        density: { type: number }
+        summary: { type: string }
+        nodes:
+          type: array
+          items: { type: string }
+
+    GraphMetrics:
+      type: object
+      properties:
+        totalNodes: { type: number }
+        totalEdges: { type: number }
+        communities: { type: number }
+        avgClustering: { type: number }
+        conformanceScore: { type: number }
+
+    PolicyMetadata:
+      type: object
+      properties:
+        author: { type: string }
+        created: { type: string }
+        updated: { type: string }
+        tags: { type: array, items: { type: string } }
+
+    Policy:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        package: { type: string }
+        status: { type: string }
+        severity: { type: string }
+        rules: { type: number }
+        violations: { type: number }
+        rego: { type: string }
+        metadata: { $ref: "#/components/schemas/PolicyMetadata" }
+
+    PolicyCreate:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        severity: { type: string }
+        rego: { type: string }
+
+    PolicyTemplate:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        category: { type: string }
+        rego: { type: string }
+
+    PolicyEvaluationResult:
+      type: object
+      properties:
+        allowed: { type: boolean }
+        violations: { type: array, items: { type: string } }
+
+    DriftViolation:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        title: { type: string }
+        description: { type: string }
+        severity: { type: string }
+        status: { type: string }
+        between: { type: array, items: { type: string } }
+
+    DriftSummary:
+      type: object
+      properties:
+        totalViolations: { type: number }
+        trend: { type: string }
+
+    DriftTimelinePoint:
+      type: object
+      properties:
+        date: { type: string }
+        totalOpen: { type: number }
+
+    ViolationResolution:
+      type: object
+      properties:
+        strategy: { type: string }
+        reason: { type: string }
+
+    SearchRequest:
+      type: object
+      properties:
+        query: { type: string }
+
+    SearchResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchResult"
+
+    SearchResult:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        score: { type: number }
+
+    EvidenceItem:
+      type: object
+      properties:
+        id: { type: string }
+        content: { type: string }
+
+    ReasoningResult:
+      type: object
+      properties:
+        id: { type: string }
+        analysis: { type: string }
+
+    SyncRequest:
+      type: object
+      properties:
+        type: { type: string }
+
+    SyncJob:
+      type: object
+      properties:
+        id: { type: string }
+        status: { type: string }
+
+    HealthStatus:
+      type: object
+      properties:
+        status: { type: string }
+        checks: { type: array, items: { type: object } }
+
+    DashboardMetrics:
+      type: object
+      properties:
+        systemHealth: { $ref: "#/components/schemas/HealthStatus" }
+
+    LensConfig:
+      type: object
+      properties:
+        label: { type: string }
+        color: { type: string }
+
+    LegendItemConfig:
+      type: object
+      properties:
+        id: { type: string }
+        color: { type: string }
+
+    AnalysisAction:
+      type: object
+      properties:
+        id: { type: string }
+        label: { type: string }
+
+    AuditItem:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+
+    # Target Schemas (Abbreviated, full list in swagger_target.yaml)
+    EntityListResponse:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: "#/components/schemas/Entity" } }
+
+    Entity:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        type: { $ref: "#/components/schemas/EntityType" }
+
+    EntityType:
+      type: string
+      enum: [repository, service, database]
+
+    GraphRAGQueryRequest:
+      type: object
+      properties:
+        query: { type: string }
+
+    GraphRAGQueryResponse:
+      type: object
+      properties:
+        answer: { type: string }
+
+    ConnectorListResponse:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: "#/components/schemas/Connector" } }
+
+    Connector:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+
+    # ============================================================================
+    # UI Config Schemas
+    # ============================================================================
+    PreferenceOptions:
+      type: object
+      properties:
+        themes:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+              label:
+                type: string
+              icon:
+                type: string
+        languages:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+              label:
+                type: string
+        timezones:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+              label:
+                type: string
+        notificationFrequencies:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+              label:
+                type: string
+        dashboardViews:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+              label:
+                type: string
+              description:
+                type: string
+              icon:
+                type: string
+
+    DashboardViewConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          enum: [executive, architect, security, engineer, product]
+        label:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        requiredPermission:
+          type: string
+          nullable: true
+        isDefault:
+          type: boolean
+          default: false
+
+    DefaultSettings:
+      type: object
+      properties:
+        llm:
+          type: object
+          properties:
+            provider:
+              type: string
+              default: ollama
+            baseUrl:
+              type: string
+              default: http://localhost:11434
+            model:
+              type: string
+              default: codellama:13b
+            temperature:
+              type: number
+              default: 0.7
+            maxTokens:
+              type: integer
+              default: 2048
+            providers:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  requiresApiKey:
+                    type: boolean
+        api:
+          type: object
+          properties:
+            baseUrl:
+              type: string
+              default: /api/v1
+            timeout:
+              type: integer
+              default: 30000
+            enableMock:
+              type: boolean
+              default: true
+            retryAttempts:
+              type: integer
+              default: 3
+        graph:
+          type: object
+          properties:
+            defaultLayout:
+              type: string
+              default: dagre
+            maxNodes:
+              type: integer
+              default: 1000
+            layouts:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+        features:
+          type: object
+          properties:
+            driftDetection:
+              type: boolean
+              default: true
+            policyEngine:
+              type: boolean
+              default: true
+            ragSearch:
+              type: boolean
+              default: true
+            memoryInterface:
+              type: boolean
+              default: true
+
+    LandingContent:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              description:
+                type: string
+              icon:
+                type: string
+        pricingTiers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              description:
+                type: string
+              price:
+                type: number
+                nullable: true
+              priceUnit:
+                type: string
+                nullable: true
+              popular:
+                type: boolean
+                default: false
+              features:
+                type: array
+                items:
+                  type: string
+              cta:
+                type: object
+                properties:
+                  text:
+                    type: string
+                  href:
+                    type: string
+                  variant:
+                    type: string
+                    enum: [primary, secondary]
+        faq:
+          type: array
+          items:
+            type: object
+            properties:
+              question:
+                type: string
+              answer:
+                type: string
+        trustBadges:
+          type: object
+          properties:
+            companies:
+              type: array
+              items:
+                type: string
+            certifications:
+              type: array
+              items:
+                type: string

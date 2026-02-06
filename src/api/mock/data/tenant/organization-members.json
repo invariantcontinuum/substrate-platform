@@ -1,0 +1,16 @@
+[
+    {
+        "id": "org-member-1",
+        "userId": "user-1",
+        "organizationId": "org-1",
+        "role": "owner",
+        "joinedAt": "2023-01-01T00:00:00Z"
+    },
+    {
+        "id": "org-member-2",
+        "userId": "user-2",
+        "organizationId": "org-1",
+        "role": "admin",
+        "joinedAt": "2023-06-15T10:00:00Z"
+    }
+]

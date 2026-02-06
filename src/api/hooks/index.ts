@@ -106,6 +106,19 @@ export const queryKeys = {
     audit: () => ['memory', 'audit'] as const,
     auditItem: (id: string) => ['memory', 'audit', id] as const,
   },
+  // UI Config
+  uiConfig: {
+    preferences: () => ['uiConfig', 'preferences'] as const,
+    dashboardViews: (projectId?: string) => ['uiConfig', 'dashboardViews', projectId] as const,
+  },
+  // Settings
+  settings: {
+    defaults: () => ['settings', 'defaults'] as const,
+  },
+  // CMS
+  cms: {
+    landing: () => ['cms', 'landing'] as const,
+  },
 } as const;
 
 // ============================================================================
@@ -432,7 +445,84 @@ export function useDriftActions(options?: UseQueryOptions<AnalysisAction[]>) {
   });
 }
 
+// ============================================================================
+// UI Config Hooks (New)
+// ============================================================================
 
+export interface PreferenceOptions {
+  themes: Array<{ value: string; label: string; icon: string }>;
+  languages: Array<{ value: string; label: string }>;
+  timezones: Array<{ value: string; label: string }>;
+  notificationFrequencies: Array<{ value: string; label: string }>;
+  dashboardViews: Array<{ value: string; label: string; description: string; icon: string }>;
+}
+
+export function usePreferenceOptions(options?: UseQueryOptions<PreferenceOptions>) {
+  return useQuery<PreferenceOptions>({
+    queryKey: queryKeys.uiConfig.preferences(),
+    queryFn: async () => {
+      const response = await api.ui.getPreferenceOptions();
+      return response.data.data;
+    },
+    staleTime: 60 * 60 * 1000, // 1 hour - these don't change often
+    ...options,
+  });
+}
+
+export interface DashboardViewConfig {
+  id: string;
+  label: string;
+  description: string;
+  icon: string;
+  requiredPermission: string | null;
+  isDefault: boolean;
+}
+
+export function useDashboardViews(projectId?: string, options?: UseQueryOptions<DashboardViewConfig[]>) {
+  return useQuery<DashboardViewConfig[]>({
+    queryKey: queryKeys.uiConfig.dashboardViews(projectId),
+    queryFn: async () => {
+      const response = await api.ui.getDashboardViews(projectId);
+      return response.data.data;
+    },
+    staleTime: 10 * 60 * 1000,
+    ...options,
+  });
+}
+
+// ============================================================================
+// Settings Hooks (New)
+// ============================================================================
+
+import type { DefaultSettings, LandingContent } from '../services';
+
+export function useDefaultSettings(options?: UseQueryOptions<DefaultSettings>) {
+  return useQuery<DefaultSettings>({
+    queryKey: queryKeys.settings.defaults(),
+    queryFn: async () => {
+      const response = await api.settings.getDefaults();
+      return response.data.data;
+    },
+    staleTime: 60 * 60 * 1000, // 1 hour
+    ...options,
+  });
+}
+
+// ============================================================================
+// CMS Hooks (New)
+// ============================================================================
+
+export function useLandingContent(options?: UseQueryOptions<LandingContent>) {
+  return useQuery<LandingContent>({
+    queryKey: queryKeys.cms.landing(),
+    queryFn: async () => {
+      const response = await api.cms.getLandingContent();
+      return response.data.data;
+    },
+    staleTime: 60 * 60 * 1000, // 1 hour
+    ...options,
+  });
+}
 
 /**
  * Hook to get drift analysis for the current context

@@ -9,7 +9,7 @@
  * - Drill-down: Executive → Architect → Code-level evidence
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   LayoutDashboard,
   Users,
@@ -35,7 +35,9 @@ import {
   ArrowRight,
   Sparkles,
   Filter,
+  Loader2,
 } from 'lucide-react';
+import { ProjectSetup } from './ProjectSetup';
 import { cn } from '@/lib/utils';
 import {
   useCurrentProject,
@@ -56,48 +58,105 @@ import {
   useProjectActivity,
   useInstalledConnectors,
 } from '@/hooks';
+import { useDashboardViews, type DashboardViewConfig } from '@/api/hooks';
+import { ROLE_DEFINITIONS } from '@/types';
 import type { DashboardView, Permission, ProjectActivity, UserRole } from '@/types';
+
+// ============================================================================
+// Icon Mapping (API returns icon name as string - map to Lucide icons)
+// ============================================================================
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  LayoutDashboard,
+  Users,
+  Settings,
+  Building2,
+  FolderKanban,
+  Shield,
+  Activity,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  MoreHorizontal,
+  RefreshCw,
+  Zap,
+  Target,
+  FileText,
+  GitBranch,
+  Lock,
+  BarChart3,
+  ArrowRight,
+  Sparkles,
+  Filter,
+  Plus,
+  ChevronDown,
+};
+
+const getIconComponent = (iconName: string): React.ElementType => {
+  return ICON_MAP[iconName] || LayoutDashboard;
+};
 
 // ============================================================================
 // View Selector Component
 // ============================================================================
 
-const VIEW_CONFIG: Record<DashboardView, { label: string; icon: React.ElementType; description: string }> = {
-  executive: {
-    label: 'Executive',
-    icon: BarChart3,
-    description: 'High-level health, compliance, and risk overview',
-  },
-  architect: {
-    label: 'Architect',
-    icon: LayoutDashboard,
-    description: 'System architecture, dependencies, and drift analysis',
-  },
-  security: {
-    label: 'Security',
-    icon: Shield,
-    description: 'Security posture, vulnerabilities, and compliance',
-  },
-  engineer: {
-    label: 'Engineer',
-    icon: GitBranch,
-    description: 'Code-level insights and development metrics',
-  },
-  product: {
-    label: 'Product',
-    icon: Target,
-    description: 'Delivery metrics and technical debt visibility',
-  },
-};
+interface ViewSelectorProps {
+  projectId: string;
+}
 
-const ViewSelector: React.FC = () => {
+const ViewSelector: React.FC<ViewSelectorProps> = ({ projectId }) => {
   const effectiveView = useEffectiveDashboardView();
   const currentView = useDashboardView();
   const setDashboardView = useProjectStore((state) => state.setDashboardView);
+  const currentMember = useCurrentMember();
   const [isOpen, setIsOpen] = useState(false);
 
-  const currentConfig = VIEW_CONFIG[currentView] || VIEW_CONFIG[effectiveView];
-  const CurrentIcon = currentConfig.icon;
+  // Fetch dashboard views from API
+  const { data: dashboardViews, isLoading } = useDashboardViews(projectId);
+
+  // Filter views based on user permissions
+  const availableViews = useMemo(() => {
+    if (!dashboardViews) return [];
+    if (!currentMember) return dashboardViews;
+    
+    const memberPerms = currentMember.permissions?.length > 0 
+      ? currentMember.permissions 
+      : ROLE_DEFINITIONS[currentMember.role].permissions;
+    
+    return dashboardViews.filter((view) => {
+      if (!view.requiredPermission) return true;
+      return memberPerms.includes(view.requiredPermission as Permission);
+    });
+  }, [dashboardViews, currentMember]);
+
+  // Get default view (isDefault flag or first available)
+  const defaultView = useMemo(() => {
+    return availableViews.find((v) => v.isDefault) || availableViews[0];
+  }, [availableViews]);
+
+  // Get current view config
+  const currentConfig = useMemo(() => {
+    const viewId = currentView || defaultView?.id;
+    return availableViews.find((v) => v.id === viewId) || defaultView;
+  }, [currentView, defaultView, availableViews]);
+
+  const CurrentIcon = currentConfig ? getIconComponent(currentConfig.icon) : LayoutDashboard;
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-sm text-slate-400">
+        <Loader2 size={16} className="animate-spin" />
+        <span className="font-medium">Loading views...</span>
+      </div>
+    );
+  }
+
+  // No views available
+  if (availableViews.length === 0) {
+    return null;
+  }
 
   return (
     <div className="relative">
@@ -106,7 +165,7 @@ const ViewSelector: React.FC = () => {
         className="flex items-center gap-2 px-3 py-1.5 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 transition-colors"
       >
         <CurrentIcon size={16} className="text-blue-400" />
-        <span className="font-medium">{currentConfig.label} View</span>
+        <span className="font-medium">{currentConfig?.label || 'Select View'} View</span>
         <ChevronDown size={14} className={cn("text-slate-400 transition-transform", isOpen && "rotate-180")} />
       </button>
 
@@ -118,14 +177,14 @@ const ViewSelector: React.FC = () => {
               <p className="text-xs font-medium text-slate-500 uppercase">Select Dashboard View</p>
             </div>
             <div className="p-2">
-              {(Object.entries(VIEW_CONFIG) as [DashboardView, typeof VIEW_CONFIG['executive']][]).map(([view, config]) => {
-                const Icon = config.icon;
-                const isActive = currentView === view || (!currentView && effectiveView === view);
+              {availableViews.map((view) => {
+                const Icon = getIconComponent(view.icon);
+                const isActive = currentView === view.id || (!currentView && view.isDefault);
                 return (
                   <button
-                    key={view}
+                    key={view.id}
                     onClick={() => {
-                      setDashboardView(view);
+                      setDashboardView(view.id as DashboardView);
                       setIsOpen(false);
                     }}
                     className={cn(
@@ -138,9 +197,9 @@ const ViewSelector: React.FC = () => {
                     <Icon size={18} className={cn("mt-0.5", isActive ? "text-blue-400" : "text-slate-400")} />
                     <div>
                       <p className={cn("text-sm font-medium", isActive ? "text-blue-400" : "text-slate-200")}>
-                        {config.label}
+                        {view.label}
                       </p>
-                      <p className="text-xs text-slate-500 mt-0.5">{config.description}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{view.description}</p>
                     </div>
                   </button>
                 );
@@ -939,7 +998,7 @@ export const ProjectDashboard: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <ViewSelector />
+          <ViewSelector projectId={project.id} />
           
           {canManageProject && (
             <button className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium text-white transition-colors">
@@ -951,22 +1010,18 @@ export const ProjectDashboard: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto">
         {project.status === 'setup' ? (
-          <div className="max-w-2xl mx-auto text-center py-12">
-            <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Zap size={32} className="text-blue-400" />
-            </div>
-            <h2 className="text-xl font-bold text-slate-200 mb-2">Complete Project Setup</h2>
-            <p className="text-slate-500 mb-6">
-              This project is in setup mode. Install connectors and configure policies to start tracking your architecture.
-            </p>
-            <button className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-medium transition-colors">
-              Continue Setup
-            </button>
-          </div>
+          <ProjectSetup 
+            projectId={project.id}
+            projectName={project.name}
+            onSetupComplete={() => {
+              // The setup wizard will update the project status
+              // This callback is called after successful completion
+            }}
+          />
         ) : (
-          renderView()
+          <div className="p-6">{renderView()}</div>
         )}
       </div>
     </div>

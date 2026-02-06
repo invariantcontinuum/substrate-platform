@@ -1,0 +1,121 @@
+{
+    "executive": {
+        "overallHealth": {
+            "score": 87,
+            "trend": "improving",
+            "summary": "System health is improving with 3 new policies enforced this week"
+        },
+        "keyMetrics": [
+            {
+                "label": "Components",
+                "value": 247,
+                "change": 12,
+                "trend": "up"
+            },
+            {
+                "label": "Dependencies",
+                "value": 892,
+                "change": 5,
+                "trend": "up"
+            },
+            {
+                "label": "Active Policies",
+                "value": 12,
+                "change": 3,
+                "trend": "up"
+            },
+            {
+                "label": "Tech Debt Items",
+                "value": 23,
+                "change": -8,
+                "trend": "down"
+            }
+        ],
+        "criticalIssues": [
+            {
+                "id": "issue-1",
+                "title": "Undocumented dependency between payment-service and external API",
+                "severity": "high",
+                "type": "architectural_drift",
+                "affectedComponents": 3
+            },
+            {
+                "id": "issue-2",
+                "title": "PII data crossing region boundaries without encryption",
+                "severity": "critical",
+                "type": "security_compliance",
+                "affectedComponents": 1
+            }
+        ],
+        "complianceStatus": {
+            "overall": 94,
+            "byFramework": {
+                "SOC 2": 96,
+                "PCI DSS": 91,
+                "GDPR": 95
+            },
+            "lastAudited": "2024-06-01T00:00:00Z"
+        }
+    },
+    "architect": {
+        "systemHealth": {
+            "coupling": 0.32,
+            "cohesion": 0.78,
+            "complexity": 4.2
+        },
+        "topViolations": [
+            {
+                "id": "viol-1",
+                "policy": "ADR-022: No direct database access from frontend",
+                "description": "Frontend service accessing database directly instead of through API",
+                "severity": "High",
+                "location": "src/services/DatabaseClient.ts:45"
+            },
+            {
+                "id": "viol-2",
+                "policy": "ADR-015: All services must have health checks",
+                "description": "Missing health check endpoint for notification-service",
+                "severity": "Medium",
+                "location": "services/notification/"
+            }
+        ],
+        "dependencies": {
+            "internal": 142,
+            "external": 28,
+            "deprecated": 3
+        },
+        "modularityScore": 78,
+        "documentationCoverage": 65
+    },
+    "security": {
+        "securityScore": 91,
+        "vulnerabilities": {
+            "critical": 0,
+            "high": 2,
+            "medium": 5,
+            "low": 12
+        },
+        "dataFlowBoundaries": {
+            "total": 24,
+            "withPii": 8,
+            "crossRegion": 3,
+            "nonCompliant": 1
+        },
+        "aiGeneratedCode": {
+            "totalFiles": 47,
+            "auditedPercentage": 68,
+            "highRiskFiles": 3
+        },
+        "complianceGaps": [
+            {
+                "framework": "PCI DSS",
+                "gap": 3,
+                "items": [
+                    "Requirement 3.4",
+                    "Requirement 8.2",
+                    "Requirement 10.1"
+                ]
+            }
+        ]
+    }
+}

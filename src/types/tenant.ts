@@ -60,6 +60,7 @@ export interface User {
   email: string;
   name: string;
   avatar?: string;
+  emailVerified?: boolean;
   createdAt: string;
   updatedAt: string;
   preferences?: UserPreferences;
@@ -69,6 +70,8 @@ export interface UserPreferences {
   theme: 'dark' | 'light' | 'system';
   defaultView: 'executive' | 'architect' | 'security' | 'engineer';
   notifications: NotificationPreferences;
+  language?: string;
+  timezone?: string;
 }
 
 export interface NotificationPreferences {
@@ -76,6 +79,7 @@ export interface NotificationPreferences {
   policyViolations: 'immediate' | 'digest' | 'none';
   connectorSync: boolean;
   emailDigest: 'daily' | 'weekly' | 'none';
+  browserNotifications?: boolean;
 }
 
 // ============================================================================

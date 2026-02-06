@@ -1,0 +1,57 @@
+[
+  {
+    "id": "team-1",
+    "organizationId": "org-1",
+    "name": "Platform Engineering",
+    "description": "Core platform and infrastructure team",
+    "color": "#3b82f6",
+    "createdAt": "2023-02-01T00:00:00Z",
+    "updatedAt": "2024-06-01T00:00:00Z",
+    "memberCount": 8,
+    "leadId": "user-1"
+  },
+  {
+    "id": "team-2",
+    "organizationId": "org-1",
+    "name": "Security Team",
+    "description": "Security and compliance management",
+    "color": "#ef4444",
+    "createdAt": "2023-03-15T00:00:00Z",
+    "updatedAt": "2024-06-01T00:00:00Z",
+    "memberCount": 4,
+    "leadId": "user-2"
+  },
+  {
+    "id": "team-3",
+    "organizationId": "org-1",
+    "name": "Backend Services",
+    "description": "API and microservices development",
+    "color": "#10b981",
+    "createdAt": "2023-04-01T00:00:00Z",
+    "updatedAt": "2024-06-01T00:00:00Z",
+    "memberCount": 12,
+    "leadId": "user-3"
+  },
+  {
+    "id": "team-4",
+    "organizationId": "org-1",
+    "name": "Frontend Team",
+    "description": "User interface and experience",
+    "color": "#8b5cf6",
+    "createdAt": "2023-05-01T00:00:00Z",
+    "updatedAt": "2024-06-01T00:00:00Z",
+    "memberCount": 6,
+    "leadId": "user-4"
+  },
+  {
+    "id": "team-5",
+    "organizationId": "org-2",
+    "name": "Personal Projects",
+    "description": "Individual project work",
+    "color": "#f59e0b",
+    "createdAt": "2024-01-15T00:00:00Z",
+    "updatedAt": "2024-06-01T00:00:00Z",
+    "memberCount": 1,
+    "leadId": "user-1"
+  }
+]

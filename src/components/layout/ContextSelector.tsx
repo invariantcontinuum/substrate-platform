@@ -16,12 +16,15 @@ import {
   Users,
   ArrowRight,
   LogOut,
+  LayoutGrid,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   useCurrentProject,
   useCurrentOrganization,
   useProjectStore,
+  useAuthStore,
+  useAuthUser,
 } from '@/stores';
 import { useUserOrganizations, useUserProjects } from '@/hooks';
 import type { Organization, Project } from '@/types';
@@ -119,9 +122,20 @@ const ProjectItem: React.FC<ProjectItemProps> = ({ project, isActive, onClick })
 // Main Context Selector
 // ============================================================================
 
-export const ContextSelector: React.FC = () => {
+interface ContextSelectorProps {
+  onNavigateToProjects?: () => void;
+  onNavigateToAccount?: () => void;
+  onLogout?: () => void;
+}
+
+export const ContextSelector: React.FC<ContextSelectorProps> = ({ 
+  onNavigateToProjects,
+  onNavigateToAccount,
+  onLogout,
+}) => {
   const currentOrg = useCurrentOrganization();
   const currentProject = useCurrentProject();
+  const user = useAuthUser();
   const switchOrganization = useProjectStore((state) => state.switchOrganization);
   const switchProject = useProjectStore((state) => state.switchProject);
   const setContextPanelOpen = useProjectStore((state) => state.setContextPanelOpen);
@@ -308,6 +322,20 @@ export const ContextSelector: React.FC = () => {
           )}
         </div>
 
+        {/* Quick Navigation */}
+        <div className="p-3 border-t border-slate-800 bg-slate-900/50">
+          <button
+            onClick={() => {
+              setContextPanelOpen(false);
+              onNavigateToProjects?.();
+            }}
+            className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-800 transition-colors text-slate-300 mb-2"
+          >
+            <LayoutGrid size={16} className="text-slate-400" />
+            <span className="text-sm">All Projects</span>
+          </button>
+        </div>
+
         {/* Footer */}
         <div className="p-3 border-t border-slate-800 bg-slate-900/50">
           <div className="flex items-center gap-3">
@@ -315,13 +343,27 @@ export const ContextSelector: React.FC = () => {
               <Users size={14} className="text-slate-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-slate-200 truncate">john.doe@example.com</p>
-              <p className="text-xs text-slate-500">Engineer</p>
+              <p className="text-sm text-slate-200 truncate">{user?.email || 'User'}</p>
+              <p className="text-xs text-slate-500">{user?.name || 'Member'}</p>
             </div>
-            <button className="p-2 hover:bg-slate-800 rounded-lg transition-colors" title="Settings">
+            <button 
+              onClick={() => {
+                setContextPanelOpen(false);
+                onNavigateToAccount?.();
+              }}
+              className="p-2 hover:bg-slate-800 rounded-lg transition-colors" 
+              title="Account Settings"
+            >
               <Settings size={16} className="text-slate-400" />
             </button>
-            <button className="p-2 hover:bg-slate-800 rounded-lg transition-colors" title="Sign Out">
+            <button 
+              onClick={() => {
+                setContextPanelOpen(false);
+                onLogout?.();
+              }}
+              className="p-2 hover:bg-slate-800 rounded-lg transition-colors" 
+              title="Sign Out"
+            >
               <LogOut size={16} className="text-slate-400" />
             </button>
           </div>

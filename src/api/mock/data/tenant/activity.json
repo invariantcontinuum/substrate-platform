@@ -1,0 +1,106 @@
+[
+    {
+        "id": "act-1",
+        "projectId": "proj-1",
+        "organizationId": "org-1",
+        "type": "connector.synced",
+        "actor": {
+            "userId": "user-1",
+            "name": "John Doe"
+        },
+        "target": {
+            "type": "Connector",
+            "id": "conn-1",
+            "name": "GitHub"
+        },
+        "severity": "info",
+        "createdAt": "2024-06-15T08:25:00Z"
+    },
+    {
+        "id": "act-2",
+        "projectId": "proj-1",
+        "organizationId": "org-1",
+        "type": "policy.violation_detected",
+        "actor": {
+            "userId": "system",
+            "name": "System"
+        },
+        "target": {
+            "type": "Policy",
+            "id": "policy-1",
+            "name": "API Authentication Required"
+        },
+        "metadata": {
+            "violationCount": 3
+        },
+        "severity": "warning",
+        "createdAt": "2024-06-15T08:00:00Z"
+    },
+    {
+        "id": "act-3",
+        "projectId": "proj-1",
+        "organizationId": "org-1",
+        "type": "member.invited",
+        "actor": {
+            "userId": "user-1",
+            "name": "John Doe"
+        },
+        "target": {
+            "type": "User",
+            "id": "user-4",
+            "name": "Jane Smith"
+        },
+        "severity": "info",
+        "createdAt": "2024-06-15T06:30:00Z"
+    },
+    {
+        "id": "act-4",
+        "projectId": "proj-1",
+        "organizationId": "org-1",
+        "type": "graph.synced",
+        "actor": {
+            "userId": "system",
+            "name": "System"
+        },
+        "metadata": {
+            "entitiesProcessed": 247,
+            "relationshipsCreated": 892
+        },
+        "severity": "info",
+        "createdAt": "2024-06-15T04:30:00Z"
+    },
+    {
+        "id": "act-5",
+        "projectId": "proj-1",
+        "organizationId": "org-1",
+        "type": "drift.detected",
+        "actor": {
+            "userId": "system",
+            "name": "System"
+        },
+        "target": {
+            "type": "Service",
+            "id": "svc-1",
+            "name": "payment-gateway"
+        },
+        "severity": "critical",
+        "createdAt": "2024-06-15T02:30:00Z"
+    },
+    {
+        "id": "act-6",
+        "projectId": "proj-1",
+        "organizationId": "org-1",
+        "type": "connector.installed",
+        "actor": {
+            "userId": "user-1",
+            "name": "John Doe"
+        },
+        "target": {
+            "type": "Connector",
+            "id": "conn-2",
+            "name": "Jira"
+        },
+        "severity": "info",
+        "createdAt": "2024-06-14T08:30:00Z"
+    }
+]

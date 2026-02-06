@@ -52,6 +52,16 @@
             "content": "Author: @developer-jane\nDate: 2024-09-01\nStatus: Merged\n\nChanges:\n+ Added AnalyticsV2 integration\n+ User behavior tracking\n- Missing: @Private decorators\n- Missing: PII classification tags\n\nReview Comments:\n> Security: Please add @Private to user.email access\n> (No response)",
             "source": "https://github.com/org/repo/pull/421",
             "confidence": 0.92
+        },
+        {
+            "id": "ev-006",
+            "type": "jira",
+            "label": "TASK-882",
+            "title": "TASK-882: Authentication Flow",
+            "description": "Jira ticket describing intended implementation",
+            "content": "Summary: Implement user authentication flow\nType: Task\nPriority: High\n\nDescription:\nImplement OAuth 2.0 authentication flow for web application.\n\nAcceptance Criteria:\n- [ ] OAuth login with Google\n- [ ] OAuth login with GitHub\n- [ ] Session management\n\nNote: SAML integration will be handled separately in TASK-900",
+            "source": "https://jira.company.com/browse/TASK-882",
+            "confidence": 0.89
         }
     ],
     "reasoningResults": [
@@ -59,7 +69,7 @@
             "id": "res-001",
             "query": "Which services handle PII but are not mentioned in our GDPR compliance doc?",
             "summary": "Structural inconsistency detected in UserTracking module",
-            "analysis": "Analyzing Checkout Service and Data Pipeline...\n\nBased on the Leiden Community Detection of your monorepo, I found a structural inconsistency.\n\nThe UserTracking module imports AnalyticsV2, which lacks the @Private decorator required by Policy-082 for PII handling.",
+            "analysis": "Analyzing Checkout Service and Data Pipeline...\n\nBased on the Leiden Community Detection of your monorepo, I found a structural inconsistency.\n\nThe UserTracking module imports AnalyticsV2, which lacks the @Private decorator required by Policy-082 for PII handling.\n\nEvidence chain:\n1. ADR-022 defines PII handling requirements\n2. Source code shows user.email access without @Private\n3. Policy-082 explicitly requires @Private decorator\n4. Graph analysis reveals community with high PII handling\n5. PR #421 introduced the violation",
             "services": [
                 "Checkout Service",
                 "Data Pipeline",
@@ -79,7 +89,7 @@
             "id": "res-002",
             "query": "Find circular dependencies in the payment module",
             "summary": "2 circular dependency chains detected",
-            "analysis": "Analyzing Payment Gateway dependencies...\n\nFound 2 circular dependency chains violating ADR-004:\n\n1. PaymentService → OrderService → PaymentService\n2. InvoiceGenerator → TaxCalculator → InvoiceGenerator\n\nThese patterns increase coupling and complicate testing.",
+            "analysis": "Analyzing Payment Gateway dependencies...\n\nFound 2 circular dependency chains violating ADR-004:\n\n1. PaymentService → OrderService → PaymentService\n   - File: src/payments/service.ts:45\n   - Imports OrderService for validation\n   \n2. InvoiceGenerator → TaxCalculator → InvoiceGenerator\n   - File: src/billing/invoice.ts:78\n   - Tax calculation requires invoice context\n\nThese patterns increase coupling and complicate testing.\nRecommendation: Extract shared interfaces to break cycles.",
             "services": [
                 "PaymentService",
                 "OrderService",
@@ -91,6 +101,26 @@
                 "ev-adr-004",
                 "ev-dep-graph",
                 "ev-pr-389"
+            ]
+        },
+        {
+            "id": "res-003",
+            "query": "What components are at risk due to the Checkout_API ownership gap?",
+            "summary": "5 components affected by ownership gap",
+            "analysis": "Analyzing downstream dependencies of Checkout_API...\n\nThe ownership gap in Checkout_API creates risk for:\n\n1. Payment Gateway (direct dependency)\n   - Payment processing may stall on critical issues\n   \n2. Order Service (indirect via events)\n   - Order state transitions depend on checkout completion\n   \n3. Inventory Service (event consumer)\n   - Stock reservation logic tied to checkout flow\n   \n4. Notification Service\n   - Order confirmation emails triggered by checkout\n   \n5. Analytics Pipeline\n   - Revenue tracking depends on checkout events\n\n3 critical bugs pending with no owner to triage.",
+            "services": [
+                "Checkout_API",
+                "Payment Gateway",
+                "Order Service",
+                "Inventory Service",
+                "Notification Service",
+                "Analytics Pipeline"
+            ],
+            "severity": "high",
+            "evidenceIds": [
+                "ev-owner-gap",
+                "ev-dep-graph",
+                "ev-bugs-001"
             ]
         }
     ],
@@ -119,6 +149,11 @@
             "label": "Pull Request",
             "color": "slate",
             "icon": "GitPullRequest"
+        },
+        "jira": {
+            "label": "Jira Ticket",
+            "color": "blue",
+            "icon": "Ticket"
         }
     }
 }

@@ -21,15 +21,18 @@ import {
   Shield,
   Layout,
   Bell,
-  Clock
+  Clock,
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAppStore } from '@/stores';
 import { api } from '@/api';
+import { useDefaultSettings } from '@/api/hooks';
+import type { DefaultSettings } from '@/api/services';
 
 // Settings sections
 interface LLMSettings {
-  provider: 'openai' | 'anthropic' | 'azure' | 'ollama' | 'custom';
+  provider: string;
   baseUrl: string;
   model: string;
   temperature: number;
@@ -43,10 +46,11 @@ interface APISettings {
   version: string;
   enableMock: boolean;
   mockDelay: number;
+  retryAttempts: number;
 }
 
 interface GraphSettings {
-  defaultLayout: 'forceatlas2' | 'dagre' | 'circle' | 'grid';
+  defaultLayout: string;
   maxNodes: number;
   enableWebGL: boolean;
   nodeSize: number;
@@ -54,11 +58,12 @@ interface GraphSettings {
 }
 
 interface FeatureFlags {
+  driftDetection: boolean;
+  policyEngine: boolean;
+  ragSearch: boolean;
+  memoryInterface: boolean;
   websocket: boolean;
   graphDiff: boolean;
-  policyEditor: boolean;
-  ragSearch: boolean;
-  driftRemediation: boolean;
 }
 
 interface ConnectorSettings {
@@ -69,56 +74,104 @@ interface ConnectorSettings {
   syncInterval: number;
 }
 
+// Default values (fallback while loading)
+const defaultLLMSettings: LLMSettings = {
+  provider: 'ollama',
+  baseUrl: 'http://localhost:11434',
+  model: 'codellama:13b',
+  temperature: 0.3,
+  maxTokens: 2048,
+  apiKey: '',
+};
+
+const defaultAPISettings: APISettings = {
+  baseUrl: '/api',
+  timeout: 30000,
+  version: 'v1',
+  enableMock: true,
+  mockDelay: 500,
+  retryAttempts: 3,
+};
+
+const defaultGraphSettings: GraphSettings = {
+  defaultLayout: 'dagre',
+  maxNodes: 1000,
+  enableWebGL: true,
+  nodeSize: 8,
+  edgeWidth: 1,
+};
+
+const defaultFeatureFlags: FeatureFlags = {
+  driftDetection: true,
+  policyEngine: true,
+  ragSearch: true,
+  memoryInterface: false,
+  websocket: false,
+  graphDiff: true,
+};
+
+const defaultConnectorSettings: ConnectorSettings = {
+  github: true,
+  jira: true,
+  confluence: true,
+  slack: false,
+  syncInterval: 15,
+};
+
 export const Settings: React.FC = () => {
   const addLog = useAppStore((state) => state.addLog);
   const [activeTab, setActiveTab] = useState<'general' | 'llm' | 'api' | 'graph' | 'connectors'>('general');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [testStatus, setTestStatus] = useState<Record<string, 'idle' | 'testing' | 'success' | 'error'>>({});
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Fetch default settings from API
+  const { data: defaultSettings, isLoading } = useDefaultSettings();
+  const settings = defaultSettings as DefaultSettings | undefined;
 
   // Settings state
-  const [llmSettings, setLlmSettings] = useState<LLMSettings>({
-    provider: 'ollama',
-    baseUrl: 'http://localhost:11434',
-    model: 'codellama:13b',
-    temperature: 0.3,
-    maxTokens: 2048,
-    apiKey: '',
-  });
+  const [llmSettings, setLlmSettings] = useState<LLMSettings>(defaultLLMSettings);
+  const [apiSettings, setApiSettings] = useState<APISettings>(defaultAPISettings);
+  const [graphSettings, setGraphSettings] = useState<GraphSettings>(defaultGraphSettings);
+  const [featureFlags, setFeatureFlags] = useState<FeatureFlags>(defaultFeatureFlags);
+  const [connectorSettings, setConnectorSettings] = useState<ConnectorSettings>(defaultConnectorSettings);
 
-  const [apiSettings, setApiSettings] = useState<APISettings>({
-    baseUrl: '/api',
-    timeout: 30000,
-    version: 'v1',
-    enableMock: true,
-    mockDelay: 500,
-  });
+  // Initialize from API data when available
+  useEffect(() => {
+    if (settings && !isInitialized) {
+      setLlmSettings(prev => ({
+        ...prev,
+        provider: settings.llm.provider,
+        baseUrl: settings.llm.baseUrl,
+        model: settings.llm.model,
+        temperature: settings.llm.temperature,
+        maxTokens: settings.llm.maxTokens,
+      }));
+      setApiSettings(prev => ({
+        ...prev,
+        baseUrl: settings.api.baseUrl,
+        timeout: settings.api.timeout,
+        enableMock: settings.api.enableMock,
+        retryAttempts: settings.api.retryAttempts,
+      }));
+      setGraphSettings(prev => ({
+        ...prev,
+        defaultLayout: settings.graph.defaultLayout,
+        maxNodes: settings.graph.maxNodes,
+      }));
+      setFeatureFlags(prev => ({
+        ...prev,
+        driftDetection: settings.features.driftDetection,
+        policyEngine: settings.features.policyEngine,
+        ragSearch: settings.features.ragSearch,
+        memoryInterface: settings.features.memoryInterface,
+      }));
+      setIsInitialized(true);
+    }
+  }, [settings, isInitialized]);
 
-  const [graphSettings, setGraphSettings] = useState<GraphSettings>({
-    defaultLayout: 'dagre',
-    maxNodes: 1000,
-    enableWebGL: true,
-    nodeSize: 8,
-    edgeWidth: 1,
-  });
-
-  const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
-    websocket: false,
-    graphDiff: true,
-    policyEditor: true,
-    ragSearch: true,
-    driftRemediation: true,
-  });
-
-  const [connectorSettings, setConnectorSettings] = useState<ConnectorSettings>({
-    github: true,
-    jira: true,
-    confluence: true,
-    slack: false,
-    syncInterval: 15,
-  });
-
-  // Load settings from localStorage on mount
+  // Load settings from localStorage on mount (overrides API defaults)
   useEffect(() => {
     const saved = localStorage.getItem('sip-settings');
     if (saved) {
@@ -197,6 +250,43 @@ export const Settings: React.FC = () => {
     { id: 'connectors', label: 'Connectors', icon: Database },
   ];
 
+  // Get LLM providers from API or use fallback
+  const llmProviders = settings?.llm.providers || [
+    { id: 'ollama', name: 'Ollama', requiresApiKey: false },
+    { id: 'openai', name: 'OpenAI', requiresApiKey: true },
+    { id: 'anthropic', name: 'Anthropic', requiresApiKey: true },
+    { id: 'azure', name: 'Azure', requiresApiKey: true },
+    { id: 'custom', name: 'Custom', requiresApiKey: false },
+  ];
+
+  // Get graph layouts from API or use fallback
+  const graphLayouts = settings?.graph.layouts || [
+    { id: 'forceatlas2', name: 'Force Atlas 2' },
+    { id: 'dagre', name: 'Dagre (Hierarchical)' },
+    { id: 'circle', name: 'Circle' },
+    { id: 'grid', name: 'Grid' },
+  ];
+
+  // Provider descriptions for UI
+  const providerDescriptions: Record<string, string> = {
+    ollama: 'Local LLM inference',
+    openai: 'OpenAI GPT models',
+    anthropic: 'Claude models',
+    azure: 'Azure OpenAI Service',
+    custom: 'Custom OpenAI-compatible endpoint',
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 h-full flex flex-col bg-slate-950 items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 size={32} className="text-blue-400 animate-spin" />
+          <p className="text-slate-400 text-sm">Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 h-full flex flex-col bg-slate-950">
       {/* Header */}
@@ -272,6 +362,30 @@ export const Settings: React.FC = () => {
               <Section title="Feature Flags" icon={ToggleLeft}>
                 <div className="grid grid-cols-2 gap-4">
                   <Toggle
+                    label="Drift Detection"
+                    description="Enable architectural drift detection"
+                    checked={featureFlags.driftDetection}
+                    onChange={(v) => setFeatureFlags(prev => ({ ...prev, driftDetection: v }))}
+                  />
+                  <Toggle
+                    label="Policy Engine"
+                    description="Enable policy enforcement engine"
+                    checked={featureFlags.policyEngine}
+                    onChange={(v) => setFeatureFlags(prev => ({ ...prev, policyEngine: v }))}
+                  />
+                  <Toggle
+                    label="RAG Search"
+                    description="Enable GraphRAG semantic search"
+                    checked={featureFlags.ragSearch}
+                    onChange={(v) => setFeatureFlags(prev => ({ ...prev, ragSearch: v }))}
+                  />
+                  <Toggle
+                    label="Memory Interface"
+                    description="Enable persistent memory capabilities"
+                    checked={featureFlags.memoryInterface}
+                    onChange={(v) => setFeatureFlags(prev => ({ ...prev, memoryInterface: v }))}
+                  />
+                  <Toggle
                     label="WebSocket Support"
                     description="Enable real-time updates via WebSocket"
                     checked={featureFlags.websocket}
@@ -282,24 +396,6 @@ export const Settings: React.FC = () => {
                     description="Show differences between graph versions"
                     checked={featureFlags.graphDiff}
                     onChange={(v) => setFeatureFlags(prev => ({ ...prev, graphDiff: v }))}
-                  />
-                  <Toggle
-                    label="Policy Editor"
-                    description="Enable in-app policy editing"
-                    checked={featureFlags.policyEditor}
-                    onChange={(v) => setFeatureFlags(prev => ({ ...prev, policyEditor: v }))}
-                  />
-                  <Toggle
-                    label="RAG Search"
-                    description="Enable GraphRAG semantic search"
-                    checked={featureFlags.ragSearch}
-                    onChange={(v) => setFeatureFlags(prev => ({ ...prev, ragSearch: v }))}
-                  />
-                  <Toggle
-                    label="Drift Remediation"
-                    description="Enable auto-remediation suggestions"
-                    checked={featureFlags.driftRemediation}
-                    onChange={(v) => setFeatureFlags(prev => ({ ...prev, driftRemediation: v }))}
                   />
                 </div>
               </Section>
@@ -338,13 +434,13 @@ export const Settings: React.FC = () => {
             <div className="space-y-6">
               <Section title="LLM Provider" icon={Cpu}>
                 <div className="grid grid-cols-2 gap-4">
-                  {(['ollama', 'openai', 'anthropic', 'azure', 'custom'] as const).map((provider) => (
+                  {llmProviders.map((provider) => (
                     <button
-                      key={provider}
-                      onClick={() => setLlmSettings(prev => ({ ...prev, provider }))}
+                      key={provider.id}
+                      onClick={() => setLlmSettings(prev => ({ ...prev, provider: provider.id }))}
                       className={cn(
                         "p-4 rounded-lg border text-left transition-all",
-                        llmSettings.provider === provider
+                        llmSettings.provider === provider.id
                           ? "bg-blue-500/10 border-blue-500/40"
                           : "bg-slate-800/50 border-slate-700 hover:border-slate-600"
                       )}
@@ -352,18 +448,14 @@ export const Settings: React.FC = () => {
                       <div className="flex items-center justify-between mb-1">
                         <span className={cn(
                           "font-medium",
-                          llmSettings.provider === provider ? "text-blue-400" : "text-slate-300"
+                          llmSettings.provider === provider.id ? "text-blue-400" : "text-slate-300"
                         )}>
-                          {provider.charAt(0).toUpperCase() + provider.slice(1)}
+                          {provider.name}
                         </span>
-                        {llmSettings.provider === provider && <Check size={16} className="text-blue-400" />}
+                        {llmSettings.provider === provider.id && <Check size={16} className="text-blue-400" />}
                       </div>
                       <p className="text-xs text-slate-500">
-                        {provider === 'ollama' && 'Local LLM inference'}
-                        {provider === 'openai' && 'OpenAI GPT models'}
-                        {provider === 'anthropic' && 'Claude models'}
-                        {provider === 'azure' && 'Azure OpenAI Service'}
-                        {provider === 'custom' && 'Custom OpenAI-compatible endpoint'}
+                        {providerDescriptions[provider.id] || 'LLM Provider'}
                       </p>
                     </button>
                   ))}
@@ -452,6 +544,15 @@ export const Settings: React.FC = () => {
                     step={5000}
                     description="Request timeout in milliseconds"
                   />
+                  <Slider
+                    label="Retry Attempts"
+                    value={apiSettings.retryAttempts}
+                    onChange={(v) => setApiSettings(prev => ({ ...prev, retryAttempts: v }))}
+                    min={0}
+                    max={5}
+                    step={1}
+                    description="Number of retry attempts for failed requests"
+                  />
                 </div>
               </Section>
 
@@ -487,13 +588,8 @@ export const Settings: React.FC = () => {
                   <Select
                     label="Default Layout"
                     value={graphSettings.defaultLayout}
-                    onChange={(v) => setGraphSettings(prev => ({ ...prev, defaultLayout: v as any }))}
-                    options={[
-                      { value: 'forceatlas2', label: 'Force Atlas 2' },
-                      { value: 'dagre', label: 'Dagre (Hierarchical)' },
-                      { value: 'circle', label: 'Circle' },
-                      { value: 'grid', label: 'Grid' },
-                    ]}
+                    onChange={(v) => setGraphSettings(prev => ({ ...prev, defaultLayout: v }))}
+                    options={graphLayouts.map(layout => ({ value: layout.id, label: layout.name }))}
                   />
                   <Slider
                     label="Max Nodes"

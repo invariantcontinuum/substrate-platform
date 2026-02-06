@@ -1,10 +1,11 @@
 /**
  * Knowledge Fabric Page
  * Refactored with new architecture
+ * Quality-aware: Disabled when setup incomplete or data quality is low
  */
 
 import React, { useState, useCallback } from 'react';
-import { Zap, Target } from 'lucide-react';
+import { Zap, Target, AlertTriangle } from 'lucide-react';
 import { useAppStore, useActiveLens, useGraphStore } from '@/stores';
 import { 
   useFullGraph, 
@@ -16,19 +17,31 @@ import { LensType } from '@/types';
 import { cn } from '@/lib/utils';
 
 // Components
-import { CytoscapeGraph, GraphLegend, GraphToolbar } from '@/components/graph';
+import { 
+  CytoscapeGraph, 
+  GraphLegend, 
+  GraphToolbar,
+  GraphNode,
+  NodePreview,
+} from '@/components/graph';
 import { LensButton } from '@/components/ui/LensButton';
 import { DriftResolverModal } from '@/components/modals/DriftResolverModal';
 import { AnalyzeSubgraphModal } from '@/components/modals/AnalyzeSubgraphModal';
+import { QualityGate, QualityMetrics, IntegrityScoreHeader } from '@/components/quality/QualityGate';
+import { Database, Cpu, GitBranch, Globe, Server } from 'lucide-react';
 
 interface KnowledgeFabricProps {
   onSync: (type: 'reality' | 'intent') => void;
   isSyncing?: boolean;
+  metrics?: QualityMetrics;
+  onCompleteSetup?: () => void;
 }
 
 export const KnowledgeFabric: React.FC<KnowledgeFabricProps> = ({
   onSync,
   isSyncing = false,
+  metrics,
+  onCompleteSetup,
 }) => {
   const activeLens = useActiveLens();
   const setActiveLens = useAppStore((state) => state.setActiveLens);
@@ -68,8 +81,29 @@ export const KnowledgeFabric: React.FC<KnowledgeFabricProps> = ({
   const nodes = graphData.nodes;
   const edges = graphData.edges;
 
+  // Calculate derived metrics
+  const derivedMetrics: QualityMetrics = metrics || {
+    integrityScore: 75, // Default to good quality if not provided
+    density: edges.length / Math.max(nodes.length, 1),
+    freshness: 0.8,
+    validation: 0.7,
+  };
+
   return (
-    <div className="p-6 h-full flex flex-col bg-slate-950">
+    <QualityGate
+      featureName="Knowledge Fabric"
+      featureIcon={Database}
+      metrics={derivedMetrics}
+      minIntegrity={30}
+      degradedThreshold={50}
+      onImproveQuality={() => onSync('reality')}
+      onCompleteSetup={onCompleteSetup}
+      className="h-full"
+    >
+      {/* Integrity Score Header - only show if we have metrics */}
+      {metrics && <IntegrityScoreHeader metrics={metrics} />}
+      
+      <div className="p-6 h-full flex flex-col bg-slate-950">
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div>
@@ -160,6 +194,31 @@ export const KnowledgeFabric: React.FC<KnowledgeFabricProps> = ({
           <GraphLegend items={legendItems} activeLens={activeLens} />
         )}
 
+        {/* Node Style Showcase - qualityawareui design - positioned top-left to avoid overlap */}
+        <div className="absolute top-20 left-6 space-y-3 bg-slate-950/80 backdrop-blur-sm border border-slate-800 p-4 rounded-2xl z-10">
+          <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-3">Entity Types</p>
+          <div className="flex flex-col gap-2">
+            <GraphNode
+              icon={<Database size={14} />}
+              label="SERVICE"
+              color="blue"
+              size="sm"
+            />
+            <GraphNode
+              icon={<GitBranch size={14} />}
+              label="API"
+              color="purple"
+              size="sm"
+            />
+            <GraphNode
+              icon={<Server size={14} />}
+              label="DB"
+              color="slate"
+              size="sm"
+            />
+          </div>
+        </div>
+
         {/* Lens Details Panel */}
         <div className="absolute top-1/2 right-0 transform -translate-y-1/2 translate-x-[calc(100%-24px)] hover:translate-x-0 transition-transform duration-300 ease-in-out z-20 flex items-start group">
           {/* Hover Trigger/Tab */}
@@ -175,7 +234,45 @@ export const KnowledgeFabric: React.FC<KnowledgeFabricProps> = ({
           </div>
 
           {/* Panel Content */}
-          <div className="p-5 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-bl-2xl w-72 shadow-2xl h-auto">
+          <div className="p-5 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-bl-2xl w-72 shadow-2xl h-auto max-h-[80vh] overflow-y-auto">
+            {/* Selected Node Display using qualityawareui Node style */}
+            {selectedNode ? (
+              <div className="mb-4 pb-4 border-b border-slate-800">
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-3">Selected Entity</p>
+                <NodePreview
+                  icon={<Cpu size={20} />}
+                  label={selectedNode}
+                  color={activeLens === 'reality' ? 'blue' : activeLens === 'intent' ? 'purple' : 'red'}
+                  subtitle={activeLens === 'reality' ? 'Implementation' : 'Architectural Intent'}
+                  isActive={true}
+                />
+              </div>
+            ) : (
+              <div className="mb-4 pb-4 border-b border-slate-800">
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-3">Example Nodes</p>
+                <div className="flex gap-2 flex-wrap">
+                  <GraphNode
+                    icon={<Database size={16} />}
+                    label="DB_ORDERS"
+                    color="blue"
+                    size="sm"
+                  />
+                  <GraphNode
+                    icon={<Server size={16} />}
+                    label="API_CORE"
+                    color="purple"
+                    size="sm"
+                  />
+                  <GraphNode
+                    icon={<Globe size={16} />}
+                    label="GATEWAY"
+                    color="slate"
+                    size="sm"
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center gap-2 mb-4">
               <div className={cn("w-2 h-2 rounded-full", 
                 activeLens === 'reality' ? 'bg-blue-500' : 
@@ -267,6 +364,7 @@ export const KnowledgeFabric: React.FC<KnowledgeFabricProps> = ({
         lensType={activeLens}
       />
     </div>
+    </QualityGate>
   );
 };
 

@@ -1,0 +1,117 @@
+[
+    {
+        "id": "proj-1",
+        "organizationId": "org-1",
+        "name": "Payment Platform",
+        "slug": "payment-platform",
+        "description": "Core payment processing system with PCI compliance",
+        "status": "active",
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-06-15T08:30:00Z",
+        "settings": {
+            "visibility": "private",
+            "defaultBranch": "main",
+            "autoSyncEnabled": true,
+            "syncIntervalMinutes": 15,
+            "alertThresholds": {
+                "criticalViolations": 1,
+                "highViolations": 5,
+                "driftPercentage": 10
+            }
+        },
+        "stats": {
+            "totalNodes": 247,
+            "totalEdges": 892,
+            "policiesCount": 12,
+            "activeViolations": 3,
+            "lastSyncAt": "2024-06-15T08:30:00Z",
+            "healthScore": 87
+        }
+    },
+    {
+        "id": "proj-2",
+        "organizationId": "org-1",
+        "name": "Customer Portal",
+        "slug": "customer-portal",
+        "description": "Customer-facing web portal and mobile API",
+        "status": "active",
+        "createdAt": "2024-02-10T14:00:00Z",
+        "updatedAt": "2024-06-14T16:45:00Z",
+        "settings": {
+            "visibility": "organization",
+            "defaultBranch": "main",
+            "autoSyncEnabled": true,
+            "syncIntervalMinutes": 30,
+            "alertThresholds": {
+                "criticalViolations": 2,
+                "highViolations": 10,
+                "driftPercentage": 15
+            }
+        },
+        "stats": {
+            "totalNodes": 156,
+            "totalEdges": 423,
+            "policiesCount": 8,
+            "activeViolations": 0,
+            "lastSyncAt": "2024-06-14T16:45:00Z",
+            "healthScore": 94
+        }
+    },
+    {
+        "id": "proj-3",
+        "organizationId": "org-1",
+        "name": "Data Pipeline",
+        "slug": "data-pipeline",
+        "description": "ETL pipeline for analytics and reporting",
+        "status": "setup",
+        "createdAt": "2024-06-10T09:00:00Z",
+        "updatedAt": "2024-06-10T09:00:00Z",
+        "settings": {
+            "visibility": "private",
+            "defaultBranch": "main",
+            "autoSyncEnabled": false,
+            "syncIntervalMinutes": 60,
+            "alertThresholds": {
+                "criticalViolations": 1,
+                "highViolations": 5,
+                "driftPercentage": 10
+            }
+        },
+        "stats": {
+            "totalNodes": 0,
+            "totalEdges": 0,
+            "policiesCount": 0,
+            "activeViolations": 0,
+            "healthScore": 0
+        }
+    },
+    {
+        "id": "proj-4",
+        "organizationId": "org-2",
+        "name": "My Side Project",
+        "slug": "side-project",
+        "description": "Personal learning and experimentation",
+        "status": "active",
+        "createdAt": "2024-03-01T10:00:00Z",
+        "updatedAt": "2024-06-01T12:00:00Z",
+        "settings": {
+            "visibility": "private",
+            "defaultBranch": "main",
+            "autoSyncEnabled": true,
+            "syncIntervalMinutes": 60,
+            "alertThresholds": {
+                "criticalViolations": 5,
+                "highViolations": 20,
+                "driftPercentage": 30
+            }
+        },
+        "stats": {
+            "totalNodes": 42,
+            "totalEdges": 89,
+            "policiesCount": 3,
+            "activeViolations": 1,
+            "lastSyncAt": "2024-06-01T12:00:00Z",
+            "healthScore": 76
+        }
+    }
+]

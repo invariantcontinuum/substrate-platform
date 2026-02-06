@@ -1,15 +1,26 @@
 /**
  * RAG Interface Page
  * Fixed imports - now uses API hooks instead of direct data imports
+ * Quality-aware: Disabled when setup incomplete or data quality is low
  */
 
 import React, { useState, useMemo } from 'react';
-import { Search, Brain, Layers, ArrowRight } from 'lucide-react';
+import { Search, Brain, Layers, ArrowRight, Sparkles, Lock } from 'lucide-react';
 import { EvidenceModal } from '@/components/modals/EvidenceModal';
 import { useReasoning, useEvidence } from '@/hooks';
 import { ReasoningResult } from '@/types';
+import { cn } from '@/lib/utils';
+import { QualityGate, QualityMetrics } from '@/components/quality/QualityGate';
 
-export const RAGInterface: React.FC = () => {
+interface RAGInterfaceProps {
+  metrics?: QualityMetrics;
+  onCompleteSetup?: () => void;
+}
+
+export const RAGInterface: React.FC<RAGInterfaceProps> = ({
+  metrics,
+  onCompleteSetup,
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedResult, setSelectedResult] = useState<ReasoningResult | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,23 +56,68 @@ export const RAGInterface: React.FC = () => {
     );
   }
 
+  // Determine if degraded based on metrics
+  const isDegraded = metrics && metrics.integrityScore < 50;
+  const isLocked = metrics && metrics.integrityScore < 30;
+
   return (
-    <div className="p-8 h-full flex flex-col">
+    <QualityGate
+      featureName="GraphRAG Studio"
+      featureIcon={Sparkles}
+      metrics={metrics}
+      minIntegrity={30}
+      degradedThreshold={50}
+      onCompleteSetup={onCompleteSetup}
+      className="h-full"
+    >
+    <div className={cn(
+      "p-8 h-full flex flex-col transition-all duration-500",
+      isDegraded && !isLocked && "opacity-40 grayscale"
+    )}>
       <div className="mb-8 text-center max-w-2xl mx-auto">
-        <div className="inline-flex items-center justify-center p-3 bg-blue-600/10 rounded-2xl mb-4">
-          <Brain size={32} className="text-blue-400" />
+        <div className={cn(
+          "inline-flex items-center justify-center p-3 rounded-2xl mb-4 transition-all",
+          isDegraded ? "bg-amber-500/10" : "bg-blue-600/10"
+        )}>
+          {isDegraded ? (
+            <Lock size={32} className="text-amber-500" />
+          ) : (
+            <Brain size={32} className="text-blue-400" />
+          )}
         </div>
         <h2 className="text-2xl font-bold text-slate-200 mb-2">GraphRAG Studio</h2>
         <p className="text-slate-400 text-sm">Semantic reasoning engine powered by SurrealDB and Graph Neural Networks.</p>
+
+        {/* Integrity Score Display when degraded */}
+        {metrics && isDegraded && (
+          <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <span className="text-[10px] text-amber-500 font-bold uppercase">Reasoning Engine Integrity</span>
+            </div>
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-32 h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-amber-500 transition-all duration-1000" 
+                  style={{ width: `${metrics.integrityScore}%` }} 
+                />
+              </div>
+              <span className="text-lg font-mono font-bold text-amber-500">{metrics.integrityScore}%</span>
+            </div>
+          </div>
+        )}
 
         <div className="mt-8 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
           <input
             type="text"
-            placeholder="Ask a question about your architecture..."
+            placeholder={isDegraded ? "Reasoning engine degraded..." : "Ask a question about your architecture..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl py-4 pl-12 pr-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 transition-all shadow-xl shadow-black/20"
+            disabled={isDegraded}
+            className={cn(
+              "w-full bg-slate-900 border border-slate-700 rounded-xl py-4 pl-12 pr-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 transition-all shadow-xl shadow-black/20",
+              isDegraded && "opacity-50 cursor-not-allowed border-amber-500/30"
+            )}
           />
         </div>
       </div>
@@ -108,6 +164,7 @@ export const RAGInterface: React.FC = () => {
         evidenceItems={getEvidenceForResult(selectedResult)}
       />
     </div>
+    </QualityGate>
   );
 };
 

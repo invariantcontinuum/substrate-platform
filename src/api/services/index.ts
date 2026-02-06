@@ -66,6 +66,18 @@ import {
   connectorCredentialService,
 } from './connector';
 
+// Import new services
+import { authService, userService as authUserService } from './auth';
+import { organizationsService } from './organizations';
+import { projectsService } from './projects';
+import { teamsService } from './teams';
+
+// Re-export new services
+export { authService, userService as authUserService } from './auth';
+export { organizationsService } from './organizations';
+export { projectsService } from './projects';
+export { teamsService } from './teams';
+
 // ============================================================================
 // Parameter Types
 // ============================================================================
@@ -103,7 +115,7 @@ export interface PolicyMetadata {
 }
 
 // ============================================================================
-// Legacy Domain Services - Import from respective files
+// Legacy Domain Services - Import from respective files for backward compatibility
 // ============================================================================
 
 // Import from legacy service files for backward compatibility
@@ -271,6 +283,114 @@ class UIConfigService extends BaseService {
   getDriftActions() {
     return this.get<AnalysisAction[]>('/actions/drift');
   }
+
+  getPreferenceOptions() {
+    return this.get<{
+      data: {
+        themes: Array<{ value: string; label: string; icon: string }>;
+        languages: Array<{ value: string; label: string }>;
+        timezones: Array<{ value: string; label: string }>;
+        notificationFrequencies: Array<{ value: string; label: string }>;
+        dashboardViews: Array<{ value: string; label: string; description: string; icon: string }>;
+      };
+    }>('/preferences');
+  }
+
+  getDashboardViews(projectId?: string) {
+    return this.get<{
+      data: Array<{
+        id: string;
+        label: string;
+        description: string;
+        icon: string;
+        requiredPermission: string | null;
+        isDefault: boolean;
+      }>;
+    }>('/dashboard-views', projectId ? { projectId } : undefined);
+  }
+}
+
+/**
+ * Settings Service
+ * Following OpenAPI spec paths: /settings/*
+ */
+export interface DefaultSettings {
+  llm: {
+    provider: string;
+    baseUrl: string;
+    model: string;
+    temperature: number;
+    maxTokens: number;
+    providers: Array<{ id: string; name: string; requiresApiKey: boolean }>;
+  };
+  api: {
+    baseUrl: string;
+    timeout: number;
+    enableMock: boolean;
+    retryAttempts: number;
+  };
+  graph: {
+    defaultLayout: string;
+    maxNodes: number;
+    layouts: Array<{ id: string; name: string }>;
+  };
+  features: {
+    driftDetection: boolean;
+    policyEngine: boolean;
+    ragSearch: boolean;
+    memoryInterface: boolean;
+  };
+}
+
+class SettingsService extends BaseService {
+  protected readonly basePath = '/settings';
+
+  getDefaults() {
+    return this.get<{ data: DefaultSettings }>('/defaults');
+  }
+}
+
+/**
+ * CMS Service
+ * Following OpenAPI spec paths: /cms/*
+ */
+export interface LandingContent {
+  features: Array<{
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+  }>;
+  pricingTiers: Array<{
+    id: string;
+    name: string;
+    description: string;
+    price: number | null;
+    priceUnit: string | null;
+    popular: boolean;
+    features: string[];
+    cta: {
+      text: string;
+      href: string;
+      variant: 'primary' | 'secondary';
+    };
+  }>;
+  faq: Array<{
+    question: string;
+    answer: string;
+  }>;
+  trustBadges: {
+    companies: string[];
+    certifications: string[];
+  };
+}
+
+class CMSService extends BaseService {
+  protected readonly basePath = '/cms';
+
+  getLandingContent() {
+    return this.get<{ data: LandingContent }>('/landing');
+  }
 }
 
 /**
@@ -331,21 +451,71 @@ export const healthService = new HealthService();
 export const uiService = new UIService();
 export const uiConfigService = new UIConfigService();
 export const memoryService = new MemoryService();
+export const settingsService = new SettingsService();
+export const cmsService = new CMSService();
 
 // ============================================================================
 // Unified API Export - Single entry point following Facade pattern
 // ============================================================================
 
-export const api = {
+// Define the API interface to avoid exposing protected members
+export interface Api {
+  auth: typeof authService;
+  user: typeof authUserService;
+  organizations: typeof organizationsService;
+  projects: typeof projectsService;
+  teams: typeof teamsService;
+  graph: typeof graphService;
+  policies: typeof policiesService;
+  drift: typeof driftService;
+  search: typeof searchService;
+  sync: typeof syncService;
+  health: typeof healthService;
+  ui: typeof uiConfigService;
+  uiLegacy: typeof uiService;
+  memory: typeof memoryService;
+  settings: typeof settingsService;
+  cms: typeof cmsService;
+  organization: typeof organizationService;
+  project: typeof projectService;
+  dashboard: typeof dashboardService;
+  tenantUser: typeof userService;
+  connector: {
+    marketplace: typeof connectorMarketplaceService;
+    installed: typeof installedConnectorService;
+    credential: typeof connectorCredentialService;
+  };
+}
+
+export const api: Api = {
+  // New services
+  auth: authService,
+  user: authUserService,
+  organizations: organizationsService,
+  projects: projectsService,
+  teams: teamsService,
+  
+  // Legacy services
   graph: graphService,
   policies: policiesService,
   drift: driftService,
   search: searchService,
   sync: syncService,
   health: healthService,
-  ui: uiConfigService,  // Use new ui-config paths
-  uiLegacy: uiService,   // Backward compatibility
+  ui: uiConfigService,
+  uiLegacy: uiService,
   memory: memoryService,
+  settings: settingsService,
+  cms: cmsService,
+  
+  // Legacy tenant services
+  organization: organizationService,
+  project: projectService,
+  dashboard: dashboardService,
+  tenantUser: userService,
+  connector: {
+    marketplace: connectorMarketplaceService,
+    installed: installedConnectorService,
+    credential: connectorCredentialService,
+  },
 };
-
-export type Api = typeof api;

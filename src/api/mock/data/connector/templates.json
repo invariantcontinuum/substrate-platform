@@ -1,0 +1,65 @@
+[
+    {
+        "id": "github-enterprise",
+        "name": "Enterprise GitHub",
+        "description": "Standard configuration for enterprise GitHub with all repositories",
+        "connectorId": "github",
+        "config": {
+            "organizations": [],
+            "repositories": [],
+            "includeForks": false,
+            "includeArchived": true
+        },
+        "syncConfig": {
+            "intervalMinutes": 15,
+            "realtimeEnabled": true
+        },
+        "tags": [
+            "enterprise",
+            "standard",
+            "all-repos"
+        ]
+    },
+    {
+        "id": "github-selective",
+        "name": "Selective Repositories",
+        "description": "Sync only specific repositories for focused analysis",
+        "connectorId": "github",
+        "config": {
+            "organizations": [],
+            "includeForks": false,
+            "includeArchived": false
+        },
+        "syncConfig": {
+            "intervalMinutes": 30,
+            "realtimeEnabled": false
+        },
+        "tags": [
+            "selective",
+            "focused"
+        ]
+    },
+    {
+        "id": "jira-agile",
+        "name": "Agile Team",
+        "description": "Configuration optimized for agile teams with sprints and epics",
+        "connectorId": "jira",
+        "config": {
+            "issueTypes": [
+                "Story",
+                "Bug",
+                "Task",
+                "Epic",
+                "Sub-task"
+            ]
+        },
+        "syncConfig": {
+            "intervalMinutes": 15
+        },
+        "tags": [
+            "agile",
+            "scrum",
+            "kanban"
+        ]
+    }
+]

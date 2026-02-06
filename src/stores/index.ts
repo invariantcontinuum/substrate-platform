@@ -16,7 +16,7 @@ export {
   useCurrentProject,
   useCurrentOrganization,
   useCurrentMember,
-  useCurrentUser,
+  useCurrentUser as useProjectCurrentUser,
   useProjectLoading,
   useContextPanelOpen,
   useDashboardView,
@@ -33,3 +33,17 @@ export {
   checkPermission,
   checkAnyPermission,
 } from './projectStore';
+
+// Auth Store
+export {
+  useAuthStore,
+  useAuthUser,
+  useIsAuthenticated,
+  useAuthLoading,
+  useAuthError,
+  useUserPreferences,
+  useIsEmailVerified,
+} from './authStore';
+
+// Types
+export type { AuthTokens, LoginCredentials, RegisterCredentials } from './authStore';

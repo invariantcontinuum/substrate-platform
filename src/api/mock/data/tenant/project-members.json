@@ -1,0 +1,28 @@
+[
+    {
+        "id": "member-1",
+        "userId": "user-1",
+        "projectId": "proj-1",
+        "role": "owner",
+        "joinedAt": "2024-01-20T10:00:00Z",
+        "permissions": []
+    },
+    {
+        "id": "member-2",
+        "userId": "user-2",
+        "projectId": "proj-1",
+        "role": "engineer",
+        "joinedAt": "2024-02-01T09:00:00Z",
+        "invitedBy": "user-1",
+        "permissions": []
+    },
+    {
+        "id": "member-3",
+        "userId": "user-3",
+        "projectId": "proj-1",
+        "role": "security",
+        "joinedAt": "2024-02-15T11:00:00Z",
+        "invitedBy": "user-1",
+        "permissions": []
+    }
+]

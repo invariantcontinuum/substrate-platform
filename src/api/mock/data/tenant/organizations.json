@@ -1,0 +1,46 @@
+[
+    {
+        "id": "org-1",
+        "name": "Acme Corporation",
+        "slug": "acme-corp",
+        "description": "Primary organization for Acme Corporation",
+        "plan": "enterprise",
+        "createdAt": "2023-01-01T00:00:00Z",
+        "updatedAt": "2024-06-01T00:00:00Z",
+        "settings": {
+            "allowPublicProjects": false,
+            "requireApprovalForConnectors": true,
+            "defaultProjectRole": "engineer",
+            "ssoEnabled": true,
+            "auditLogRetentionDays": 365
+        },
+        "limits": {
+            "maxProjects": 50,
+            "maxUsers": 100,
+            "maxConnectorsPerProject": 10,
+            "storageGB": 500
+        }
+    },
+    {
+        "id": "org-2",
+        "name": "Personal Workspace",
+        "slug": "personal",
+        "description": "Personal projects and experiments",
+        "plan": "free",
+        "createdAt": "2024-01-15T10:00:00Z",
+        "updatedAt": "2024-06-01T00:00:00Z",
+        "settings": {
+            "allowPublicProjects": true,
+            "requireApprovalForConnectors": false,
+            "defaultProjectRole": "owner",
+            "ssoEnabled": false,
+            "auditLogRetentionDays": 30
+        },
+        "limits": {
+            "maxProjects": 3,
+            "maxUsers": 1,
+            "maxConnectorsPerProject": 3,
+            "storageGB": 10
+        }
+    }
+]

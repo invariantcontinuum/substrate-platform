@@ -8,18 +8,32 @@
       "severity": "High",
       "status": "open",
       "highlight": true,
-      "between": ["DB_ORDERS", "SHADOW_TRACKER"],
+      "between": [
+        "DB_ORDERS",
+        "SHADOW_TRACKER"
+      ],
       "policy": "ADR-022",
       "details": {
-        "issue": "Shadow service accessing production database directly",
-        "impact": "Potential data inconsistency and security risk",
-        "detectedAt": "2024-09-20T14:30:00Z",
-        "detectedBy": "graph-analyzer",
+        "issue": "Shadow Tracker reads user order data without proper authorization",
+        "impact": "Potential GDPR violation - unauthorized PII access",
+        "detectedAt": "2024-09-15T10:30:00Z",
+        "detectedBy": "graph-analysis",
         "location": {
-          "file": "src/services/shadow_tracker.py",
-          "line": 45,
-          "function": "get_order_data"
-        }
+          "file": "src/analytics/tracker.ts",
+          "line": 142,
+          "function": "trackUserBehavior"
+        },
+        "evidence": [
+          {
+            "type": "code",
+            "content": "const orders = await db.query('SELECT * FROM orders WHERE user_id = ?', [userId])"
+          },
+          {
+            "type": "adr",
+            "reference": "ADR-022",
+            "excerpt": "All data access must be documented in the Intent layer"
+          }
+        ]
       },
       "suggestedActions": [
         {
@@ -40,8 +54,7 @@
           "icon": "CheckCircle",
           "description": "Provide reasoning and suppress this warning"
         }
-      ],
-      "createdAt": "2024-09-20T14:30:00Z"
+      ]
     },
     {
       "id": "drift-002",
@@ -53,10 +66,20 @@
       "highlight": true,
       "policy": "ADR-004",
       "details": {
-        "issue": "Documentation does not match current implementation",
-        "impact": "New developers may follow outdated patterns",
-        "detectedAt": "2024-09-18T09:15:00Z",
-        "detectedBy": "doc-analyzer"
+        "document": "ADR-004",
+        "title": "Repository Pattern Implementation",
+        "lastUpdated": "2024-03-15",
+        "problem": "Documented abstract base classes, codebase uses interfaces with DI",
+        "driftMetrics": {
+          "filesCompliant": 23,
+          "filesDrifted": 7,
+          "complianceRate": "76.7%"
+        },
+        "files": [
+          "src/orders/repo.ts",
+          "src/payments/repository.ts",
+          "src/inventory/data-access.ts"
+        ]
       },
       "suggestedActions": [
         {
@@ -70,157 +93,203 @@
           "label": "Refactor 7 Files",
           "icon": "ExternalLink",
           "description": "Migrate remaining files to new pattern"
+        },
+        {
+          "id": "deprecate",
+          "label": "Mark as Deprecated",
+          "icon": "History",
+          "description": "Create ADR-019 to supersede ADR-004"
         }
-      ],
-      "createdAt": "2024-09-18T09:15:00Z"
+      ]
     },
     {
       "id": "drift-003",
-      "type": "owner",
-      "title": "Missing Service Owner",
-      "description": "NOTIFY_SVC does not have an assigned owner in service catalog",
+      "type": "pr",
+      "title": "PR Deviation from Caching Strategy",
+      "description": "PR #112 uses custom TTL calculation instead of ADR-011 standard",
       "severity": "Medium",
-      "status": "investigating",
+      "status": "open",
+      "highlight": false,
+      "policy": "ADR-011",
+      "details": {
+        "pr": "#112",
+        "title": "Add caching layer to OrderService",
+        "author": "@developer-jane",
+        "problem": "Custom TTL formula instead of standardized cache policies",
+        "conflicts": [
+          {
+            "policy": "ADR-011",
+            "section": "TTL Calculation",
+            "prApproach": "Custom formula based on load",
+            "standardApproach": "Fixed tiers (60s, 300s, 3600s)"
+          }
+        ]
+      },
+      "suggestedActions": [
+        {
+          "id": "request_changes",
+          "label": "Request Changes",
+          "icon": "XCircle",
+          "description": "Ask author to align with ADR-011"
+        },
+        {
+          "id": "amend_adr",
+          "label": "Propose ADR Amendment",
+          "icon": "FileText",
+          "description": "If custom TTL is justified, update ADR-011"
+        },
+        {
+          "id": "override",
+          "label": "Override with Justification",
+          "icon": "CheckCircle",
+          "description": "Approve with documented exception"
+        }
+      ]
+    },
+    {
+      "id": "drift-004",
+      "type": "owner",
+      "title": "Stale Component Ownership",
+      "description": "Checkout_API has no assigned owner after team lead departure",
+      "severity": "Critical",
+      "status": "open",
       "highlight": false,
       "details": {
-        "issue": "No owner assigned in metadata",
-        "impact": "No clear responsibility for maintenance and incidents",
-        "detectedAt": "2024-09-15T11:00:00Z",
-        "detectedBy": "catalog-sync"
+        "component": "Checkout_API",
+        "previousOwner": "Alex Chen (departed 2024-08-15)",
+        "domain": "Payment Processing",
+        "riskLevel": "High",
+        "problem": "No domain expert assigned, critical bugs pending review",
+        "pendingItems": {
+          "criticalBugs": 3,
+          "openPRs": 2,
+          "untriagedIssues": 8
+        }
       },
       "suggestedActions": [
         {
           "id": "assign_owner",
-          "label": "Assign Owner",
-          "icon": "User",
-          "description": "Update service catalog with team ownership"
+          "label": "Assign New Owner",
+          "icon": "UserX",
+          "description": "Schedule knowledge transfer sessions"
+        },
+        {
+          "id": "document_gaps",
+          "label": "Document Knowledge Gaps",
+          "icon": "FileText",
+          "description": "Create tickets for missing context"
+        },
+        {
+          "id": "escalate",
+          "label": "Escalate to EM",
+          "icon": "AlertCircle",
+          "description": "Urgent - Risk of payment failures"
         }
-      ],
-      "createdAt": "2024-09-15T11:00:00Z"
+      ]
     },
     {
-      "id": "drift-004",
+      "id": "drift-005",
+      "type": "jira",
+      "title": "Misleading Jira Ticket Context",
+      "description": "TASK-882 scope differs from implementation",
+      "severity": "Low",
+      "status": "investigating",
+      "highlight": false,
+      "details": {
+        "issue": "TASK-882",
+        "summary": "Implement user authentication flow",
+        "problem": "Ticket describes OAuth only, PR includes SAML",
+        "impact": "Security review flagged unexpected scope expansion"
+      },
+      "suggestedActions": [
+        {
+          "id": "update_jira",
+          "label": "Update Jira Description",
+          "icon": "FileText",
+          "description": "Expand ticket to reflect actual scope"
+        },
+        {
+          "id": "split_ticket",
+          "label": "Split into Separate Tasks",
+          "icon": "ExternalLink",
+          "description": "Create TASK-882-1 for OAuth, TASK-882-2 for SAML"
+        },
+        {
+          "id": "revert_scope",
+          "label": "Revert to Documented Scope",
+          "icon": "History",
+          "description": "Remove SAML integration"
+        }
+      ]
+    },
+    {
+      "id": "drift-006",
       "type": "policy",
-      "title": "GDPR Data Residency Violation",
-      "description": "User data stored outside EU regions",
+      "title": "GDPR Policy Violation - PII Unencrypted",
+      "description": "User email field lacks @Private decorator",
       "severity": "Critical",
       "status": "open",
       "highlight": true,
       "policy": "pol-gdpr-data",
       "details": {
-        "issue": "DB_USERS replica in us-east-1",
-        "impact": "Compliance violation - potential legal risk",
-        "detectedAt": "2024-09-21T08:45:00Z",
-        "detectedBy": "compliance-scanner"
+        "field": "user.email",
+        "location": "src/auth/tracker.ts:142",
+        "issue": "Missing @Private decorator required for PII fields",
+        "regulation": "GDPR Article 32",
+        "dataClassification": "PII"
       },
       "suggestedActions": [
         {
-          "id": "migrate_data",
-          "label": "Migrate Data to EU",
-          "icon": "Database",
-          "description": "Move replica to eu-west-1 region"
+          "id": "add_decorator",
+          "label": "Add @Private Decorator",
+          "icon": "ShieldCheck",
+          "description": "Mark field as PII requiring encryption"
         },
         {
-          "id": "update_policy",
-          "label": "Update Policy Exception",
-          "icon": "Shield",
-          "description": "Document business justification"
+          "id": "review_access",
+          "label": "Review Access Patterns",
+          "icon": "Search",
+          "description": "Audit all access to this field"
         }
-      ],
-      "createdAt": "2024-09-21T08:45:00Z"
-    },
-    {
-      "id": "drift-005",
-      "type": "pr",
-      "title": "Unreviewed Breaking Change",
-      "description": "Payment gateway API change without approval",
-      "severity": "High",
-      "status": "resolved",
-      "highlight": false,
-      "details": {
-        "issue": "API contract modified in PR #2342",
-        "impact": "Potential breaking change for consumers",
-        "detectedAt": "2024-09-19T16:20:00Z",
-        "detectedBy": "pr-analyzer"
-      },
-      "suggestedActions": [
-        {
-          "id": "review_pr",
-          "label": "Review Pull Request",
-          "icon": "GitPullRequest",
-          "description": "Architecture review required"
-        }
-      ],
-      "createdAt": "2024-09-19T16:20:00Z",
-      "resolvedAt": "2024-09-20T10:00:00Z"
-    },
-    {
-      "id": "drift-006",
-      "type": "jira",
-      "title": "Stale JIRA Epic",
-      "description": "Architecture epic ARCH-102 has no updates for 90 days",
-      "severity": "Low",
-      "status": "false_positive",
-      "highlight": false,
-      "details": {
-        "issue": "Epic marked in progress but no activity",
-        "impact": "Stale documentation and planning",
-        "detectedAt": "2024-09-17T12:00:00Z",
-        "detectedBy": "jira-connector"
-      },
-      "suggestedActions": [
-        {
-          "id": "update_epic",
-          "label": "Update Epic Status",
-          "icon": "RefreshCw",
-          "description": "Mark as done or add progress update"
-        }
-      ],
-      "createdAt": "2024-09-17T12:00:00Z",
-      "resolvedAt": "2024-09-22T14:00:00Z"
+      ]
     },
     {
       "id": "drift-007",
       "type": "dependency",
-      "title": "Circular Dependency Detected",
-      "description": "AUTH_SVC and CORE_API have mutual dependencies",
-      "severity": "Critical",
+      "title": "Layer Violation - Service Bypassing Event Queue",
+      "description": "Inventory service directly calls Notification service",
+      "severity": "Medium",
       "status": "open",
-      "highlight": true,
-      "policy": "pol-circular-dep",
+      "highlight": false,
+      "policy": "substrate.layers",
       "details": {
-        "issue": "Circular import between services",
-        "impact": "Deployment ordering issues and tight coupling",
-        "detectedAt": "2024-09-22T07:30:00Z",
-        "detectedBy": "dependency-analyzer",
-        "location": {
-          "file": "src/auth/client.py",
-          "line": 12
-        }
+        "source": "inventory_svc",
+        "target": "notification_svc",
+        "issue": "Direct HTTP call instead of async event",
+        "impact": "Tight coupling, harder to scale"
       },
       "suggestedActions": [
         {
-          "id": "extract_shared",
-          "label": "Extract Shared Module",
+          "id": "use_queue",
+          "label": "Use Event Queue",
           "icon": "Layers",
-          "description": "Move common code to shared library"
+          "description": "Publish event instead of direct call"
         },
         {
-          "id": "refactor_api",
-          "label": "Refactor API Client",
-          "icon": "GitCompare",
-          "description": "Remove direct auth dependency from core"
+          "id": "document_exception",
+          "label": "Document Exception",
+          "icon": "FileText",
+          "description": "If sync call required, document rationale"
         }
-      ],
-      "createdAt": "2024-09-22T07:30:00Z"
+      ]
     }
   ],
   "summary": {
     "totalViolations": 7,
     "bySeverity": {
       "Critical": 2,
-      "High": 2,
-      "Medium": 2,
+      "High": 1,
+      "Medium": 3,
       "Low": 1
     },
     "byType": {
@@ -254,9 +323,9 @@
     },
     {
       "date": "2024-09-22",
-      "newViolations": 2,
-      "resolvedViolations": 1,
-      "totalOpen": 8
+      "newViolations": 0,
+      "resolvedViolations": 0,
+      "totalOpen": 7
     }
   ]
 }

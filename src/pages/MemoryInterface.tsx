@@ -69,17 +69,17 @@ export const MemoryInterface: React.FC = () => {
               <MemoryStat 
                 icon={<User className="text-blue-400" />} 
                 label="Persona Depth" 
-                value={memoryStats ? `Lvl ${memoryStats.personaDepth.level} (${memoryStats.personaDepth.label})` : 'Loading...'} 
+                value={memoryStats?.personaDepth ? `Lvl ${memoryStats.personaDepth.level} (${memoryStats.personaDepth.label})` : 'Loading...'} 
               />
               <MemoryStat 
                 icon={<History className="text-purple-400" />} 
                 label="Knowledge Saved" 
-                value={memoryStats?.knowledgeSaved.label || 'Loading...'} 
+                value={memoryStats?.knowledgeSaved?.label || 'Loading...'} 
               />
               <MemoryStat 
                 icon={<Sparkles className="text-emerald-400" />} 
                 label="System Confidence" 
-                value={memoryStats ? `${memoryStats.systemConfidence.percentage}%` : 'Loading...'} 
+                value={memoryStats?.systemConfidence ? `${memoryStats.systemConfidence.percentage}%` : 'Loading...'} 
               />
             </>
           )}

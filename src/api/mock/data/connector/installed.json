@@ -1,0 +1,135 @@
+[
+    {
+        "id": "conn-1",
+        "projectId": "proj-1",
+        "definitionId": "github",
+        "name": "Acme GitHub",
+        "config": {
+            "organizations": [
+                "acme-corp"
+            ],
+            "repositories": [],
+            "includeForks": false,
+            "includeArchived": false
+        },
+        "auth": {
+            "type": "token",
+            "credentialId": "cred-1",
+            "connectedAccount": "acme-corp"
+        },
+        "status": "installed",
+        "syncConfig": {
+            "enabled": true,
+            "intervalMinutes": 15,
+            "realtimeEnabled": true,
+            "webhookConfigured": true,
+            "entityTypes": [
+                "Repository",
+                "PullRequest",
+                "Issue"
+            ]
+        },
+        "stats": {
+            "entitiesTotal": 247,
+            "entitiesByType": {
+                "Repository": 12,
+                "PullRequest": 89,
+                "Issue": 146
+            },
+            "relationshipsTotal": 892,
+            "syncAttempts": 342,
+            "syncFailures": 3,
+            "lastSyncDuration": 45000,
+            "avgSyncDuration": 42000
+        },
+        "installedAt": "2024-01-20T10:00:00Z",
+        "installedBy": "user-1",
+        "updatedAt": "2024-06-15T08:30:00Z",
+        "lastSyncedAt": "2024-06-15T08:30:00Z"
+    },
+    {
+        "id": "conn-2",
+        "projectId": "proj-1",
+        "definitionId": "jira",
+        "name": "Acme Jira",
+        "config": {
+            "projects": [
+                "PAY",
+                "WEB"
+            ],
+            "issueTypes": [
+                "Story",
+                "Bug",
+                "Task",
+                "Epic"
+            ]
+        },
+        "auth": {
+            "type": "basic",
+            "credentialId": "cred-2",
+            "connectedAccount": "john.doe@acme-corp.com"
+        },
+        "status": "installed",
+        "syncConfig": {
+            "enabled": true,
+            "intervalMinutes": 30,
+            "realtimeEnabled": false,
+            "webhookConfigured": true,
+            "entityTypes": [
+                "Ticket",
+                "Epic",
+                "Sprint"
+            ]
+        },
+        "stats": {
+            "entitiesTotal": 523,
+            "entitiesByType": {
+                "Ticket": 412,
+                "Epic": 23,
+                "Sprint": 88
+            },
+            "relationshipsTotal": 289,
+            "syncAttempts": 156,
+            "syncFailures": 0,
+            "lastSyncDuration": 23000,
+            "avgSyncDuration": 25000
+        },
+        "installedAt": "2024-01-25T14:00:00Z",
+        "installedBy": "user-1",
+        "updatedAt": "2024-06-14T16:00:00Z",
+        "lastSyncedAt": "2024-06-14T16:00:00Z"
+    },
+    {
+        "id": "conn-3",
+        "projectId": "proj-1",
+        "definitionId": "sonarqube",
+        "name": "Acme SonarQube",
+        "config": {
+            "projects": [
+                "payment-platform",
+                "customer-portal"
+            ],
+            "minSeverity": "MAJOR"
+        },
+        "auth": {
+            "type": "token",
+            "credentialId": "cred-3"
+        },
+        "status": "error",
+        "statusMessage": "Connection timeout - unable to reach SonarQube server",
+        "syncConfig": {
+            "enabled": true,
+            "intervalMinutes": 60,
+            "realtimeEnabled": false,
+            "webhookConfigured": false,
+            "entityTypes": [
+                "CodeQuality",
+                "Vulnerability"
+            ]
+        },
+        "installedAt": "2024-02-01T09:00:00Z",
+        "installedBy": "user-1",
+        "updatedAt": "2024-06-10T10:00:00Z",
+        "lastSyncedAt": "2024-06-10T10:00:00Z"
+    }
+]

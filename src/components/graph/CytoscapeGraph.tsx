@@ -43,22 +43,31 @@ export const CytoscapeGraph: React.FC<CytoscapeGraphProps> = ({
         {
           selector: 'node',
           style: {
-            'shape': 'ellipse',
+            // Shape and sizing - matching qualityawareui Node aesthetic
+            'shape': 'roundrectangle',
+            'width': 'label',
+            'height': 'label',
+            'padding': '12px',
+            
+            // Colors - semi-transparent background with colored border
             'background-color': 'data(color)',
-            'label': 'data(label)',
-            'width': graphConfig.nodeSize * 3,
-            'height': graphConfig.nodeSize * 3,
-            'font-size': '11px',
-            'font-weight': 'bold',
-            'color': '#cbd5e1',
-            'text-background-color': '#0f172a',
-            'text-background-opacity': 0.7,
-            'text-background-padding': '3px',
-            'text-background-shape': 'roundrectangle',
+            'background-opacity': 0.1,
             'border-width': 2,
             'border-color': 'data(color)',
-            'border-opacity': 0.6,
-            'background-opacity': 0.25,
+            'border-opacity': 0.8,
+            
+            // Label styling - matching qualityawareui Node aesthetic
+            'label': 'data(label)',
+            'font-size': '10px',
+            'font-weight': 'bold',
+            'font-family': 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+            'text-transform': 'uppercase',
+            'color': 'data(color)',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'text-wrap': 'wrap',
+            'text-max-width': '100px',
+            'text-background-opacity': 0,
           },
         },
         {
@@ -70,6 +79,7 @@ export const CytoscapeGraph: React.FC<CytoscapeGraphProps> = ({
             'target-arrow-shape': 'triangle',
             'curve-style': 'bezier',
             'line-opacity': 0.6,
+            'arrow-scale': 1.2,
           },
         },
         {
@@ -78,7 +88,16 @@ export const CytoscapeGraph: React.FC<CytoscapeGraphProps> = ({
             'border-width': 3,
             'border-color': '#ffffff',
             'border-opacity': 0.9,
-            'background-opacity': 0.5,
+            'background-opacity': 0.25,
+          },
+        },
+        {
+          selector: '.degraded',
+          style: {
+            'background-opacity': 0.05,
+            'border-opacity': 0.3,
+            'color': '#64748b',
+            'border-color': '#475569',
           },
         },
       ],
