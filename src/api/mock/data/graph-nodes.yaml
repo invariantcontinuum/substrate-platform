@@ -1,0 +1,359 @@
+# =============================================================================
+# Graph Nodes Mock Data
+# Structural Integrity Platform - Knowledge Graph Entities
+# =============================================================================
+
+nodes:
+  # Core Services
+  - id: core_api
+    label: CORE_API
+    type: Service
+    position:
+      x: 50.0
+      y: 50.0
+    colors:
+      reality: blue
+      intent: blue
+      drift: blue
+    icon: Cpu
+    metadata:
+      description: Core API Gateway - Entry point for all service requests
+      owner: platform-team
+      team: Platform
+      repository: github.com/org/core-api
+      language: TypeScript
+      linesOfCode: 15420
+    metrics:
+      coupling:
+        afferent: 12
+        efferent: 8
+        instability: 0.4
+      cohesion: 0.85
+      complexity: 42
+
+  - id: auth_svc
+    label: AUTH_SVC
+    type: Service
+    position:
+      x: 25.0
+      y: 60.0
+    colors:
+      reality: blue
+      intent: purple
+      drift: blue
+    icon: ShieldCheck
+    metadata:
+      description: Authentication Service - OAuth2 & SAML provider
+      owner: security-team
+      team: Security
+      repository: github.com/org/auth-service
+      language: Go
+      linesOfCode: 8930
+    metrics:
+      coupling:
+        afferent: 8
+        efferent: 3
+        instability: 0.27
+      cohesion: 0.92
+      complexity: 28
+
+  - id: payment_gw
+    label: PAYMENT_GW
+    type: Service
+    position:
+      x: 75.0
+      y: 55.0
+    colors:
+      reality: blue
+      intent: purple
+      drift: blue
+    icon: Box
+    metadata:
+      description: Payment Gateway - Stripe & PayPal integration
+      owner: payments-team
+      team: Payments
+      repository: github.com/org/payment-gateway
+      language: Python
+      linesOfCode: 12340
+    metrics:
+      coupling:
+        afferent: 5
+        efferent: 6
+        instability: 0.55
+      cohesion: 0.78
+      complexity: 56
+
+  - id: notification_svc
+    label: NOTIFY_SVC
+    type: Service
+    position:
+      x: 40.0
+      y: 25.0
+    colors:
+      reality: blue
+      intent: blue
+      drift: blue
+    icon: Cpu
+    metadata:
+      description: Notification Service - Email, SMS, Push notifications
+      owner: platform-team
+      team: Platform
+      repository: github.com/org/notifications
+      language: Node.js
+      linesOfCode: 6780
+    metrics:
+      coupling:
+        afferent: 6
+        efferent: 4
+        instability: 0.4
+      cohesion: 0.88
+      complexity: 31
+
+  # Databases
+  - id: db_orders
+    label: DB_ORDERS
+    type: Database
+    position:
+      x: 70.0
+      y: 35.0
+    colors:
+      reality: blue
+      intent: slate
+      drift: blue
+    icon: Database
+    metadata:
+      description: Orders Database - PostgreSQL primary
+      owner: data-team
+      team: Data
+      engine: PostgreSQL
+      region: us-east-1
+    metrics:
+      coupling:
+        afferent: 4
+        efferent: 0
+        instability: 0.0
+      cohesion: 1.0
+
+  - id: db_users
+    label: DB_USERS
+    type: Database
+    position:
+      x: 20.0
+      y: 80.0
+    colors:
+      reality: blue
+      intent: slate
+      drift: blue
+    icon: Database
+    metadata:
+      description: Users Database - Contains PII data
+      owner: data-team
+      team: Data
+      engine: PostgreSQL
+      region: eu-west-1
+      classification: PII
+    metrics:
+      coupling:
+        afferent: 3
+        efferent: 0
+        instability: 0.0
+      cohesion: 1.0
+
+  - id: redis_cache
+    label: REDIS_CACHE
+    type: Cache
+    position:
+      x: 85.0
+      y: 30.0
+    colors:
+      reality: blue
+      intent: blue
+      drift: blue
+    icon: Database
+    metadata:
+      description: Redis Cluster - Session & query caching
+      owner: platform-team
+      team: Platform
+      engine: Redis
+      clusterSize: 3
+    metrics:
+      coupling:
+        afferent: 6
+        efferent: 0
+        instability: 0.0
+
+  # Components with Drift Issues
+  - id: shadow_tracker
+    label: SHADOW_TRACKER
+    type: Component
+    position:
+      x: 30.0
+      y: 40.0
+    colors:
+      reality: slate
+      intent: slate
+      drift: red
+    icon: GitBranch
+    altIcon: AlertTriangle
+    metadata:
+      description: User Tracking Component - Undocumented data collection
+      owner: analytics-team
+      team: Analytics
+      repository: github.com/org/analytics
+      language: TypeScript
+      linesOfCode: 2340
+      issue: Undocumented dependency to DB_ORDERS
+    metrics:
+      coupling:
+        afferent: 2
+        efferent: 3
+        instability: 0.6
+      cohesion: 0.45
+
+  # Policies as Intent Nodes
+  - id: policy_gdpr
+    label: POLICY_GDPR
+    type: Interface
+    position:
+      x: 65.0
+      y: 25.0
+    colors:
+      reality: slate
+      intent: purple
+      drift: purple
+    icon: ShieldCheck
+    metadata:
+      description: GDPR Compliance Policy - Data residency requirements
+      owner: compliance-team
+      team: Compliance
+      policyId: pol-gdpr-data
+      severity: Critical
+
+  - id: policy_api
+    label: POLICY_API
+    type: Interface
+    position:
+      x: 35.0
+      y: 75.0
+    colors:
+      reality: slate
+      intent: purple
+      drift: purple
+    icon: ShieldCheck
+    metadata:
+      description: API Gateway Enforcement Policy - mTLS requirements
+      owner: security-team
+      team: Security
+      policyId: pol-api-gateway
+      severity: Critical
+
+  # Additional Services
+  - id: inventory_svc
+    label: INVENTORY_SVC
+    type: Service
+    position:
+      x: 55.0
+      y: 70.0
+    colors:
+      reality: blue
+      intent: blue
+      drift: blue
+    icon: Box
+    metadata:
+      description: Inventory Management Service
+      owner: logistics-team
+      team: Logistics
+      repository: github.com/org/inventory
+      language: Java
+      linesOfCode: 18760
+    metrics:
+      coupling:
+        afferent: 4
+        efferent: 5
+        instability: 0.56
+      cohesion: 0.72
+
+  - id: shipping_svc
+    label: SHIPPING_SVC
+    type: Service
+    position:
+      x: 80.0
+      y: 75.0
+    colors:
+      reality: blue
+      intent: blue
+      drift: yellow
+    icon: Truck
+    metadata:
+      description: Shipping Integration Service - FedEx, UPS, DHL
+      owner: logistics-team
+      team: Logistics
+      repository: github.com/org/shipping
+      language: Python
+      linesOfCode: 9870
+      issue: Using deprecated API version
+    metrics:
+      coupling:
+        afferent: 3
+        efferent: 4
+        instability: 0.57
+      cohesion: 0.68
+
+  # Queues
+  - id: event_queue
+    label: EVENT_QUEUE
+    type: Queue
+    position:
+      x: 60.0
+      y: 15.0
+    colors:
+      reality: blue
+      intent: blue
+      drift: blue
+    icon: Layers
+    metadata:
+      description: Event Queue - Kafka for async processing
+      owner: platform-team
+      team: Platform
+      engine: Kafka
+      topicCount: 12
+    metrics:
+      coupling:
+        afferent: 8
+        efferent: 6
+        instability: 0.43
+
+  # External APIs
+  - id: stripe_api
+    label: STRIPE_API
+    type: Endpoint
+    position:
+      x: 90.0
+      y: 50.0
+    colors:
+      reality: blue
+      intent: blue
+      drift: blue
+    icon: ExternalLink
+    metadata:
+      description: Stripe Payment API
+      owner: payments-team
+      external: true
+      provider: Stripe
+
+  - id: sendgrid_api
+    label: SENDGRID_API
+    type: Endpoint
+    position:
+      x: 15.0
+      y: 20.0
+    colors:
+      reality: blue
+      intent: blue
+      drift: blue
+    icon: ExternalLink
+    metadata:
+      description: SendGrid Email API
+      owner: platform-team
+      external: true
+      provider: SendGrid

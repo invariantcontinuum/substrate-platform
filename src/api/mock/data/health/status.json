@@ -1,0 +1,164 @@
+{
+  "healthStatus": {
+    "status": "healthy",
+    "version": "1.0.0",
+    "uptime": 86400,
+    "checks": [
+      {
+        "name": "PostgreSQL",
+        "status": "pass",
+        "responseTime": 12
+      },
+      {
+        "name": "Neo4j",
+        "status": "pass",
+        "responseTime": 45
+      },
+      {
+        "name": "Qdrant",
+        "status": "pass",
+        "responseTime": 23
+      },
+      {
+        "name": "OPA",
+        "status": "pass",
+        "responseTime": 5
+      },
+      {
+        "name": "GraphRAG Pipeline",
+        "status": "warn",
+        "responseTime": 2500,
+        "message": "Indexing queue backlog (23 jobs)"
+      },
+      {
+        "name": "GitHub Connector",
+        "status": "pass",
+        "responseTime": 180,
+        "message": "Rate limit: 4500/5000"
+      }
+    ]
+  },
+  "dashboardMetrics": {
+    "systemHealth": {
+      "status": "healthy",
+      "version": "1.0.0",
+      "uptime": 86400,
+      "checks": [
+        {
+          "name": "PostgreSQL",
+          "status": "pass",
+          "responseTime": 12
+        },
+        {
+          "name": "Neo4j",
+          "status": "pass",
+          "responseTime": 45
+        },
+        {
+          "name": "Qdrant",
+          "status": "pass",
+          "responseTime": 23
+        },
+        {
+          "name": "OPA",
+          "status": "pass",
+          "responseTime": 5
+        },
+        {
+          "name": "GraphRAG Pipeline",
+          "status": "warn",
+          "responseTime": 2500,
+          "message": "Indexing queue backlog (23 jobs)"
+        },
+        {
+          "name": "GitHub Connector",
+          "status": "pass",
+          "responseTime": 180,
+          "message": "Rate limit: 4500/5000"
+        }
+      ]
+    },
+    "graphMetrics": {
+      "totalNodes": 8,
+      "totalEdges": 12,
+      "communities": 3,
+      "avgClustering": 0.34,
+      "conformanceScore": 0.78,
+      "couplingMetrics": {
+        "avgAfferent": 5.2,
+        "avgEfferent": 3.8,
+        "avgInstability": 0.42
+      },
+      "healthScore": {
+        "overall": 0.82,
+        "architectural": 0.78,
+        "documentation": 0.85,
+        "codeQuality": 0.84
+      }
+    },
+    "driftSummary": {
+      "totalViolations": 7,
+      "bySeverity": {
+        "Critical": 2,
+        "High": 2,
+        "Medium": 2,
+        "Low": 1
+      },
+      "byType": {
+        "dependency": 2,
+        "doc": 1,
+        "pr": 1,
+        "owner": 1,
+        "jira": 1,
+        "policy": 1
+      },
+      "trend": "stable"
+    },
+    "policyStats": {
+      "total": 7,
+      "enforced": 5,
+      "violations": 6
+    },
+    "recentActivity": [
+      {
+        "id": "act-001",
+        "type": "sync",
+        "title": "Reality sync completed",
+        "timestamp": "2024-09-22T10:30:00Z",
+        "metadata": {
+          "entitiesProcessed": 142,
+          "duration": 12500
+        }
+      },
+      {
+        "id": "act-002",
+        "type": "violation",
+        "title": "New drift detected - Layer violation",
+        "timestamp": "2024-09-22T09:15:00Z",
+        "metadata": {
+          "severity": "Medium",
+          "component": "inventory_svc"
+        }
+      },
+      {
+        "id": "act-003",
+        "type": "policy",
+        "title": "Policy evaluation completed",
+        "timestamp": "2024-09-22T08:00:00Z",
+        "metadata": {
+          "policiesChecked": 7,
+          "violationsFound": 2
+        }
+      },
+      {
+        "id": "act-004",
+        "type": "sync",
+        "title": "Intent sync started",
+        "timestamp": "2024-09-22T07:30:00Z",
+        "metadata": {
+          "sources": ["github", "jira", "confluence"]
+        }
+      }
+    ]
+  }
+}

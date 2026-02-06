@@ -1,0 +1,50 @@
+{
+  "jobs": [
+    {
+      "id": "sync-001",
+      "type": "reality",
+      "status": "completed",
+      "progress": 100,
+      "startedAt": "2024-09-22T10:00:00Z",
+      "completedAt": "2024-09-22T10:12:30Z",
+      "stats": {
+        "entitiesProcessed": 142,
+        "entitiesCreated": 3,
+        "entitiesUpdated": 12
+      }
+    },
+    {
+      "id": "sync-002",
+      "type": "intent",
+      "status": "running",
+      "progress": 65,
+      "startedAt": "2024-09-22T09:00:00Z",
+      "stats": {
+        "entitiesProcessed": 89,
+        "entitiesCreated": 1,
+        "entitiesUpdated": 5
+      }
+    },
+    {
+      "id": "sync-003",
+      "type": "full",
+      "status": "pending",
+      "progress": 0,
+      "startedAt": "2024-09-22T11:00:00Z"
+    },
+    {
+      "id": "sync-004",
+      "type": "reality",
+      "status": "failed",
+      "progress": 45,
+      "startedAt": "2024-09-21T14:00:00Z",
+      "completedAt": "2024-09-21T14:05:22Z",
+      "error": "Connection timeout to Neo4j database",
+      "stats": {
+        "entitiesProcessed": 45,
+        "entitiesCreated": 0,
+        "entitiesUpdated": 2
+      }
+    }
+  ]
+}

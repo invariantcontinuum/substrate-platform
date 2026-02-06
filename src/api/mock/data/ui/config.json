@@ -1,0 +1,139 @@
+{
+  "lensConfig": {
+    "reality": {
+      "label": "Reality",
+      "color": "border-blue-500 text-blue-400",
+      "bgColor": "bg-blue-500",
+      "accentColor": "blue",
+      "description": "Runtime Implementation Analysis",
+      "summary": "Analysis of runtime entities including API endpoints, database tables, and service dependencies.",
+      "metrics": {
+        "entities": 142,
+        "score": "0.88",
+        "scoreLabel": "Depth Score",
+        "subCount": 23,
+        "subLabel": "APIs"
+      }
+    },
+    "intent": {
+      "label": "Intent",
+      "color": "border-purple-500 text-purple-400",
+      "bgColor": "bg-purple-500",
+      "accentColor": "purple",
+      "description": "Architectural Intent Coverage",
+      "summary": "Coverage analysis of architectural requirements across documented intents.",
+      "metrics": {
+        "entities": 89,
+        "score": "94%",
+        "scoreLabel": "Coverage",
+        "subCount": 12,
+        "subLabel": "ADRs"
+      }
+    },
+    "drift": {
+      "label": "Drift",
+      "color": "border-red-500 text-red-400",
+      "bgColor": "bg-red-500",
+      "accentColor": "red",
+      "description": "Invariant Violation Detected",
+      "summary": "Found undocumented dependencies that violate architectural policies.",
+      "violation": {
+        "policy": "ADR-022",
+        "between": ["DB_ORDERS", "SHADOW_TRACKER"],
+        "description": "Undocumented dependency detected. This violates architectural policy ADR-022 which mandates all data flow dependencies must be explicitly declared in the Intent layer."
+      }
+    }
+  },
+  "legendItems": [
+    {
+      "id": "reality",
+      "color": "bg-blue-500",
+      "label": "Documented Implementation",
+      "lenses": ["reality", "drift"]
+    },
+    {
+      "id": "intent",
+      "color": "bg-purple-500",
+      "label": "Architectural Requirement",
+      "lenses": ["intent", "drift"]
+    },
+    {
+      "id": "drift",
+      "color": "bg-red-500",
+      "label": "Invariant Violation",
+      "dashed": true,
+      "lenses": ["drift"]
+    }
+  ],
+  "analysisActions": {
+    "reality": [
+      {
+        "id": "dependency_scan",
+        "icon": "Layers",
+        "label": "Deep Dependency Scan",
+        "description": "Trace all transitive dependencies in selected subgraph",
+        "color": "blue"
+      },
+      {
+        "id": "entity_report",
+        "icon": "Box",
+        "label": "Generate Entity Report",
+        "description": "Export detailed entity documentation as Markdown",
+        "color": "emerald"
+      },
+      {
+        "id": "api_contracts",
+        "icon": "Code",
+        "label": "Extract API Contracts",
+        "description": "Generate OpenAPI specs from runtime traces",
+        "color": "amber"
+      }
+    ],
+    "intent": [
+      {
+        "id": "dependency_scan",
+        "icon": "Layers",
+        "label": "Deep Dependency Scan",
+        "description": "Trace all transitive dependencies in selected subgraph",
+        "color": "blue"
+      },
+      {
+        "id": "entity_report",
+        "icon": "Box",
+        "label": "Generate Entity Report",
+        "description": "Export detailed entity documentation as Markdown",
+        "color": "emerald"
+      },
+      {
+        "id": "validate_adrs",
+        "icon": "Workflow",
+        "label": "Validate Against ADRs",
+        "description": "Check intent compliance with recorded decisions",
+        "color": "purple"
+      }
+    ]
+  },
+  "driftActions": [
+    {
+      "id": "update_intent",
+      "icon": "FileText",
+      "label": "Update Intent Documentation",
+      "description": "Create ADR amendment to legitimize this dependency",
+      "color": "blue"
+    },
+    {
+      "id": "refactor_reality",
+      "icon": "GitCompare",
+      "label": "Refactor Reality",
+      "description": "Eliminate the shadow dependency in codebase",
+      "color": "purple"
+    },
+    {
+      "id": "false_positive",
+      "icon": "CheckCircle",
+      "label": "Mark as False Positive",
+      "description": "Provide reasoning and suppress this warning",
+      "color": "emerald"
+    }
+  ]
+}

@@ -1,0 +1,262 @@
+{
+  "violations": [
+    {
+      "id": "drift-001",
+      "type": "dependency",
+      "title": "Undocumented Database Dependency",
+      "description": "SHADOW_TRACKER has undocumented read access to DB_ORDERS",
+      "severity": "High",
+      "status": "open",
+      "highlight": true,
+      "between": ["DB_ORDERS", "SHADOW_TRACKER"],
+      "policy": "ADR-022",
+      "details": {
+        "issue": "Shadow service accessing production database directly",
+        "impact": "Potential data inconsistency and security risk",
+        "detectedAt": "2024-09-20T14:30:00Z",
+        "detectedBy": "graph-analyzer",
+        "location": {
+          "file": "src/services/shadow_tracker.py",
+          "line": 45,
+          "function": "get_order_data"
+        }
+      },
+      "suggestedActions": [
+        {
+          "id": "update_intent",
+          "label": "Update Intent Documentation",
+          "icon": "FileText",
+          "description": "Create ADR amendment to authorize this dependency"
+        },
+        {
+          "id": "refactor_reality",
+          "label": "Refactor Reality",
+          "icon": "GitCompare",
+          "description": "Remove direct DB access, use API instead"
+        },
+        {
+          "id": "false_positive",
+          "label": "Mark as False Positive",
+          "icon": "CheckCircle",
+          "description": "Provide reasoning and suppress this warning"
+        }
+      ],
+      "createdAt": "2024-09-20T14:30:00Z"
+    },
+    {
+      "id": "drift-002",
+      "type": "doc",
+      "title": "Outdated Architecture Decision Record",
+      "description": "ADR-004 specifies deprecated repository pattern",
+      "severity": "Medium",
+      "status": "open",
+      "highlight": true,
+      "policy": "ADR-004",
+      "details": {
+        "issue": "Documentation does not match current implementation",
+        "impact": "New developers may follow outdated patterns",
+        "detectedAt": "2024-09-18T09:15:00Z",
+        "detectedBy": "doc-analyzer"
+      },
+      "suggestedActions": [
+        {
+          "id": "update_adr",
+          "label": "Update ADR-004",
+          "icon": "FileText",
+          "description": "Document the new interface-based approach"
+        },
+        {
+          "id": "refactor_old",
+          "label": "Refactor 7 Files",
+          "icon": "ExternalLink",
+          "description": "Migrate remaining files to new pattern"
+        }
+      ],
+      "createdAt": "2024-09-18T09:15:00Z"
+    },
+    {
+      "id": "drift-003",
+      "type": "owner",
+      "title": "Missing Service Owner",
+      "description": "NOTIFY_SVC does not have an assigned owner in service catalog",
+      "severity": "Medium",
+      "status": "investigating",
+      "highlight": false,
+      "details": {
+        "issue": "No owner assigned in metadata",
+        "impact": "No clear responsibility for maintenance and incidents",
+        "detectedAt": "2024-09-15T11:00:00Z",
+        "detectedBy": "catalog-sync"
+      },
+      "suggestedActions": [
+        {
+          "id": "assign_owner",
+          "label": "Assign Owner",
+          "icon": "User",
+          "description": "Update service catalog with team ownership"
+        }
+      ],
+      "createdAt": "2024-09-15T11:00:00Z"
+    },
+    {
+      "id": "drift-004",
+      "type": "policy",
+      "title": "GDPR Data Residency Violation",
+      "description": "User data stored outside EU regions",
+      "severity": "Critical",
+      "status": "open",
+      "highlight": true,
+      "policy": "pol-gdpr-data",
+      "details": {
+        "issue": "DB_USERS replica in us-east-1",
+        "impact": "Compliance violation - potential legal risk",
+        "detectedAt": "2024-09-21T08:45:00Z",
+        "detectedBy": "compliance-scanner"
+      },
+      "suggestedActions": [
+        {
+          "id": "migrate_data",
+          "label": "Migrate Data to EU",
+          "icon": "Database",
+          "description": "Move replica to eu-west-1 region"
+        },
+        {
+          "id": "update_policy",
+          "label": "Update Policy Exception",
+          "icon": "Shield",
+          "description": "Document business justification"
+        }
+      ],
+      "createdAt": "2024-09-21T08:45:00Z"
+    },
+    {
+      "id": "drift-005",
+      "type": "pr",
+      "title": "Unreviewed Breaking Change",
+      "description": "Payment gateway API change without approval",
+      "severity": "High",
+      "status": "resolved",
+      "highlight": false,
+      "details": {
+        "issue": "API contract modified in PR #2342",
+        "impact": "Potential breaking change for consumers",
+        "detectedAt": "2024-09-19T16:20:00Z",
+        "detectedBy": "pr-analyzer"
+      },
+      "suggestedActions": [
+        {
+          "id": "review_pr",
+          "label": "Review Pull Request",
+          "icon": "GitPullRequest",
+          "description": "Architecture review required"
+        }
+      ],
+      "createdAt": "2024-09-19T16:20:00Z",
+      "resolvedAt": "2024-09-20T10:00:00Z"
+    },
+    {
+      "id": "drift-006",
+      "type": "jira",
+      "title": "Stale JIRA Epic",
+      "description": "Architecture epic ARCH-102 has no updates for 90 days",
+      "severity": "Low",
+      "status": "false_positive",
+      "highlight": false,
+      "details": {
+        "issue": "Epic marked in progress but no activity",
+        "impact": "Stale documentation and planning",
+        "detectedAt": "2024-09-17T12:00:00Z",
+        "detectedBy": "jira-connector"
+      },
+      "suggestedActions": [
+        {
+          "id": "update_epic",
+          "label": "Update Epic Status",
+          "icon": "RefreshCw",
+          "description": "Mark as done or add progress update"
+        }
+      ],
+      "createdAt": "2024-09-17T12:00:00Z",
+      "resolvedAt": "2024-09-22T14:00:00Z"
+    },
+    {
+      "id": "drift-007",
+      "type": "dependency",
+      "title": "Circular Dependency Detected",
+      "description": "AUTH_SVC and CORE_API have mutual dependencies",
+      "severity": "Critical",
+      "status": "open",
+      "highlight": true,
+      "policy": "pol-circular-dep",
+      "details": {
+        "issue": "Circular import between services",
+        "impact": "Deployment ordering issues and tight coupling",
+        "detectedAt": "2024-09-22T07:30:00Z",
+        "detectedBy": "dependency-analyzer",
+        "location": {
+          "file": "src/auth/client.py",
+          "line": 12
+        }
+      },
+      "suggestedActions": [
+        {
+          "id": "extract_shared",
+          "label": "Extract Shared Module",
+          "icon": "Layers",
+          "description": "Move common code to shared library"
+        },
+        {
+          "id": "refactor_api",
+          "label": "Refactor API Client",
+          "icon": "GitCompare",
+          "description": "Remove direct auth dependency from core"
+        }
+      ],
+      "createdAt": "2024-09-22T07:30:00Z"
+    }
+  ],
+  "summary": {
+    "totalViolations": 7,
+    "bySeverity": {
+      "Critical": 2,
+      "High": 2,
+      "Medium": 2,
+      "Low": 1
+    },
+    "byType": {
+      "dependency": 2,
+      "doc": 1,
+      "pr": 1,
+      "owner": 1,
+      "jira": 1,
+      "policy": 1
+    },
+    "trend": "stable"
+  },
+  "timeline": [
+    {
+      "date": "2024-09-01",
+      "newViolations": 2,
+      "resolvedViolations": 1,
+      "totalOpen": 6
+    },
+    {
+      "date": "2024-09-08",
+      "newViolations": 1,
+      "resolvedViolations": 0,
+      "totalOpen": 7
+    },
+    {
+      "date": "2024-09-15",
+      "newViolations": 1,
+      "resolvedViolations": 1,
+      "totalOpen": 7
+    },
+    {
+      "date": "2024-09-22",
+      "newViolations": 2,
+      "resolvedViolations": 1,
+      "totalOpen": 8
+    }
+  ]
+}

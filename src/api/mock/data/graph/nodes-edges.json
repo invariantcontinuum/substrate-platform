@@ -1,0 +1,246 @@
+{
+    "nodes": [
+        {
+            "id": "core_api",
+            "label": "CORE_API",
+            "type": "Service",
+            "icon": "Cpu",
+            "position": {
+                "x": 0.5,
+                "y": 0.5
+            },
+            "colors": {
+                "reality": "blue",
+                "intent": "blue",
+                "drift": "blue"
+            }
+        },
+        {
+            "id": "db_orders",
+            "label": "DB_ORDERS",
+            "type": "Database",
+            "icon": "Database",
+            "position": {
+                "x": 0.7,
+                "y": 0.35
+            },
+            "colors": {
+                "reality": "blue",
+                "intent": "slate",
+                "drift": "blue"
+            }
+        },
+        {
+            "id": "policy_gdpr",
+            "label": "POLICY_GDPR",
+            "type": "Component",
+            "icon": "ShieldCheck",
+            "position": {
+                "x": 0.65,
+                "y": 0.25
+            },
+            "colors": {
+                "reality": "slate",
+                "intent": "purple",
+                "drift": "purple"
+            }
+        },
+        {
+            "id": "shadow_tracker",
+            "label": "SHADOW_TRACKER",
+            "type": "Service",
+            "icon": "GitBranch",
+            "altIcon": "AlertTriangle",
+            "position": {
+                "x": 0.3,
+                "y": 0.4
+            },
+            "colors": {
+                "reality": "slate",
+                "intent": "slate",
+                "drift": "red"
+            }
+        },
+        {
+            "id": "auth_svc",
+            "label": "AUTH_SVC",
+            "type": "Service",
+            "icon": "ShieldCheck",
+            "position": {
+                "x": 0.25,
+                "y": 0.6
+            },
+            "colors": {
+                "reality": "blue",
+                "intent": "purple",
+                "drift": "blue"
+            }
+        },
+        {
+            "id": "payment_gw",
+            "label": "PAYMENT_GW",
+            "type": "Service",
+            "icon": "Box",
+            "position": {
+                "x": 0.75,
+                "y": 0.55
+            },
+            "colors": {
+                "reality": "blue",
+                "intent": "purple",
+                "drift": "blue"
+            }
+        },
+        {
+            "id": "notification_svc",
+            "label": "NOTIFY_SVC",
+            "type": "Service",
+            "icon": "Cpu",
+            "position": {
+                "x": 0.4,
+                "y": 0.25
+            },
+            "colors": {
+                "reality": "blue",
+                "intent": "blue",
+                "drift": "blue"
+            }
+        },
+        {
+            "id": "db_users",
+            "label": "DB_USERS",
+            "type": "Database",
+            "icon": "Database",
+            "position": {
+                "x": 0.2,
+                "y": 0.8
+            },
+            "colors": {
+                "reality": "blue",
+                "intent": "slate",
+                "drift": "blue"
+            }
+        }
+    ],
+    "edges": [
+        {
+            "from": "core_api",
+            "to": "shadow_tracker",
+            "color": "#1e293b",
+            "width": 2,
+            "always": true
+        },
+        {
+            "from": "core_api",
+            "to": "db_orders",
+            "color": "#1e293b",
+            "width": 2,
+            "always": true
+        },
+        {
+            "from": "core_api",
+            "to": "db_orders",
+            "color": "#3b82f6",
+            "width": 2,
+            "lens": [
+                "reality",
+                "drift"
+            ],
+            "id": "reality_core_db"
+        },
+        {
+            "from": "db_orders",
+            "to": "shadow_tracker",
+            "color": "#3b82f6",
+            "width": 2,
+            "lens": [
+                "reality"
+            ],
+            "opacityInDrift": 0.3
+        },
+        {
+            "from": "core_api",
+            "to": "policy_gdpr",
+            "color": "#a855f7",
+            "width": 2,
+            "lens": [
+                "intent",
+                "drift"
+            ],
+            "dashed": "6,3"
+        },
+        {
+            "from": "shadow_tracker",
+            "to": "policy_gdpr",
+            "color": "#a855f7",
+            "width": 2,
+            "lens": [
+                "intent"
+            ],
+            "dashed": "6,3"
+        },
+        {
+            "from": "db_orders",
+            "to": "shadow_tracker",
+            "color": "#ef4444",
+            "width": 3,
+            "lens": [
+                "drift"
+            ],
+            "dashed": "10,5",
+            "animate": true,
+            "isViolation": true
+        },
+        {
+            "from": "core_api",
+            "to": "auth_svc",
+            "color": "#3b82f6",
+            "width": 2,
+            "lens": [
+                "reality",
+                "intent",
+                "drift"
+            ]
+        },
+        {
+            "from": "auth_svc",
+            "to": "db_users",
+            "color": "#3b82f6",
+            "width": 2,
+            "lens": [
+                "reality",
+                "drift"
+            ]
+        },
+        {
+            "from": "core_api",
+            "to": "payment_gw",
+            "color": "#3b82f6",
+            "width": 2,
+            "lens": [
+                "reality",
+                "intent"
+            ]
+        },
+        {
+            "from": "core_api",
+            "to": "notification_svc",
+            "color": "#3b82f6",
+            "width": 2,
+            "lens": [
+                "reality",
+                "intent"
+            ]
+        },
+        {
+            "from": "payment_gw",
+            "to": "policy_gdpr",
+            "color": "#a855f7",
+            "width": 2,
+            "lens": [
+                "intent"
+            ],
+            "dashed": "6,3"
+        }
+    ]
+}

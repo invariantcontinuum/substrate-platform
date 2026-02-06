@@ -1,0 +1,155 @@
+{
+    "auditItems": [
+        {
+            "id": "jira-882",
+            "type": "jira",
+            "title": "Misleading Jira",
+            "desc": "TASK-882: Context Mismatch",
+            "highlight": false,
+            "details": {
+                "issue": "TASK-882",
+                "summary": "Implement user authentication flow",
+                "problem": "The Jira ticket describes a simple OAuth flow, but the PR implementation includes additional SAML integration that was not documented or approved.",
+                "impact": "Security review flagged unexpected scope expansion.",
+                "suggestedActions": [
+                    {
+                        "id": "update_jira",
+                        "label": "Update Jira Description",
+                        "icon": "FileText",
+                        "description": "Expand ticket to reflect actual implementation scope"
+                    },
+                    {
+                        "id": "split_ticket",
+                        "label": "Split into Separate Tasks",
+                        "icon": "ExternalLink",
+                        "description": "Create TASK-882-1 for OAuth, TASK-882-2 for SAML"
+                    },
+                    {
+                        "id": "revert_scope",
+                        "label": "Revert to Documented Scope",
+                        "icon": "History",
+                        "description": "Remove SAML integration, implement only OAuth"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "adr-004",
+            "type": "doc",
+            "title": "Outdated Doc",
+            "desc": "ADR-004: Repo Pattern Drift",
+            "highlight": true,
+            "details": {
+                "document": "ADR-004",
+                "title": "Repository Pattern Implementation",
+                "lastUpdated": "2024-03-15",
+                "problem": "The documented repository pattern specifies abstract base classes, but the codebase now uses interfaces with DI injection. 7 files still follow the old pattern.",
+                "driftMetrics": {
+                    "filesCompliant": 23,
+                    "filesDrifted": 7,
+                    "complianceRate": "76.7%"
+                },
+                "suggestedActions": [
+                    {
+                        "id": "update_adr",
+                        "label": "Update ADR-004",
+                        "icon": "FileText",
+                        "description": "Document the new interface-based approach"
+                    },
+                    {
+                        "id": "refactor_old",
+                        "label": "Refactor 7 Files",
+                        "icon": "ExternalLink",
+                        "description": "Migrate remaining files to new pattern"
+                    },
+                    {
+                        "id": "deprecate",
+                        "label": "Mark as Deprecated",
+                        "icon": "History",
+                        "description": "Create ADR-019 to supersede ADR-004"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "pr-112",
+            "type": "pr",
+            "title": "PR Conflict",
+            "desc": "#112: Intent Deviation",
+            "highlight": false,
+            "details": {
+                "pr": "#112",
+                "title": "Add caching layer to OrderService",
+                "author": "@developer-jane",
+                "problem": "The PR introduces Redis caching but deviates from ADR-011 (Caching Strategy) by using a custom TTL calculation instead of the standardized cache policies.",
+                "conflicts": [
+                    {
+                        "policy": "ADR-011",
+                        "section": "TTL Calculation",
+                        "prApproach": "Custom formula based on load",
+                        "standardApproach": "Fixed tiers (60s, 300s, 3600s)"
+                    }
+                ],
+                "suggestedActions": [
+                    {
+                        "id": "request_changes",
+                        "label": "Request Changes",
+                        "icon": "XCircle",
+                        "description": "Ask author to align with ADR-011"
+                    },
+                    {
+                        "id": "amend_adr",
+                        "label": "Propose ADR Amendment",
+                        "icon": "FileText",
+                        "description": "If custom TTL is justified, update ADR-011"
+                    },
+                    {
+                        "id": "override",
+                        "label": "Override with Justification",
+                        "icon": "CheckCircle",
+                        "description": "Approve with documented exception"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "owner-checkout",
+            "type": "owner",
+            "title": "Stale Owner",
+            "desc": "Checkout_API: Lead Departed",
+            "highlight": false,
+            "details": {
+                "component": "Checkout_API",
+                "previousOwner": "Alex Chen ( departed 2024-08-15 )",
+                "domain": "Payment Processing",
+                "riskLevel": "High",
+                "problem": "No domain expert assigned to Checkout_API. 3 critical bugs pending review. Team lacks context on edge cases around tax calculation.",
+                "pendingItems": {
+                    "criticalBugs": 3,
+                    "openPRs": 2,
+                    "untriagedIssues": 8
+                },
+                "suggestedActions": [
+                    {
+                        "id": "assign_owner",
+                        "label": "Assign New Owner",
+                        "icon": "UserX",
+                        "description": "Schedule knowledge transfer sessions"
+                    },
+                    {
+                        "id": "document_gaps",
+                        "label": "Document Knowledge Gaps",
+                        "icon": "FileText",
+                        "description": "Create tickets for missing context"
+                    },
+                    {
+                        "id": "escalate",
+                        "label": "Escalate to Engineering Manager",
+                        "icon": "AlertCircle",
+                        "description": "Urgent: Risk of payment failures"
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -1,0 +1,69 @@
+site_name: Structural Integrity Platform
+site_description: Governance layer over modern software delivery
+site_url: https://example.com/substrate-platform/
+repo_url: https://github.com/yourusername/substrate-platform
+repo_name: substrate-platform
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: false
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Technical Spec: architecture/technical-spec.md
+  - Product:
+      - Requirements: product/requirements.md
+      - Strategy: product/strategy.md
+      - Gap Analysis: product/gap-analysis.md
+      - FAQ: product/faq.md
+  - Development:
+      - Frontend Guide: development/frontend.md
+      - Contributing: development/contributing.md
+      - Roadmap: development/roadmap.md
+      - Refactor History: development/refactor-history.md
+  - Deployment:
+      - Docker: deployment/docker.md
+      - Kubernetes: deployment/kubernetes.md
+      - Cheatsheet: deployment/docker-cheatsheet.md

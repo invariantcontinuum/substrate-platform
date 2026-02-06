@@ -1,0 +1,152 @@
+# =============================================================================
+# LLM Configuration Mock Data
+# Structural Integrity Platform - AI/LLM Settings and Providers
+# =============================================================================
+
+providers:
+  - id: openai
+    name: OpenAI
+    description: OpenAI GPT models via API
+    enabled: true
+    baseUrl: https://api.openai.com/v1
+    models:
+      - id: gpt-4o
+        name: GPT-4o
+        contextWindow: 128000
+        maxOutput: 4096
+        supportsFunctions: true
+        supportsVision: true
+      - id: gpt-4o-mini
+        name: GPT-4o Mini
+        contextWindow: 128000
+        maxOutput: 4096
+        supportsFunctions: true
+        supportsVision: true
+      - id: text-embedding-3-small
+        name: Text Embedding 3 Small
+        dimensions: 1536
+        maxInput: 8191
+
+  - id: anthropic
+    name: Anthropic
+    description: Claude models via Anthropic API
+    enabled: true
+    baseUrl: https://api.anthropic.com/v1
+    models:
+      - id: claude-3-5-sonnet-20241022
+        name: Claude 3.5 Sonnet
+        contextWindow: 200000
+        maxOutput: 8192
+        supportsFunctions: true
+        supportsVision: true
+      - id: claude-3-haiku-20240307
+        name: Claude 3 Haiku
+        contextWindow: 200000
+        maxOutput: 4096
+        supportsFunctions: true
+        supportsVision: true
+
+  - id: azure
+    name: Azure OpenAI
+    description: OpenAI models via Azure
+    enabled: false
+    baseUrl: ""
+    models:
+      - id: gpt-4
+        name: GPT-4
+        contextWindow: 8192
+        maxOutput: 4096
+        supportsFunctions: true
+        supportsVision: false
+
+  - id: ollama
+    name: Ollama (Local)
+    description: Self-hosted models via Ollama
+    enabled: true
+    baseUrl: http://localhost:11434
+    models:
+      - id: codellama:13b
+        name: CodeLlama 13B
+        contextWindow: 16384
+        maxOutput: 4096
+        supportsFunctions: false
+        supportsVision: false
+      - id: llama3.1:8b
+        name: Llama 3.1 8B
+        contextWindow: 128000
+        maxOutput: 4096
+        supportsFunctions: true
+        supportsVision: false
+      - id: mistral:7b
+        name: Mistral 7B
+        contextWindow: 32768
+        maxOutput: 4096
+        supportsFunctions: false
+        supportsVision: false
+
+  - id: custom
+    name: Custom Endpoint
+    description: Custom OpenAI-compatible endpoint
+    enabled: false
+    baseUrl: ""
+    models: []
+
+defaultSettings:
+  provider: ollama
+  model: codellama:13b
+  temperature: 0.3
+  maxTokens: 2048
+  topP: 0.9
+  frequencyPenalty: 0
+  presencePenalty: 0
+
+useCases:
+  graphRAG:
+    name: GraphRAG Indexing
+    description: Entity extraction and relationship identification
+    defaultProvider: openai
+    defaultModel: gpt-4o-mini
+    temperature: 0.1
+    maxTokens: 4096
+  
+  search:
+    name: Semantic Search
+    description: Query understanding and result ranking
+    defaultProvider: openai
+    defaultModel: text-embedding-3-small
+    temperature: 0.0
+  
+  reasoning:
+    name: Reasoning & Analysis
+    description: Multi-hop reasoning over evidence
+    defaultProvider: anthropic
+    defaultModel: claude-3-5-sonnet-20241022
+    temperature: 0.2
+    maxTokens: 4096
+  
+  chat:
+    name: Interactive Chat
+    description: General conversation and Q&A
+    defaultProvider: ollama
+    defaultModel: llama3.1:8b
+    temperature: 0.7
+    maxTokens: 2048
+
+searchModes:
+  local:
+    name: Local Search
+    description: Find entities related to query via vector similarity
+    useCase: Targeted questions about specific components
+    example: "What depends on the auth service?"
+  
+  global:
+    name: Global Search
+    description: Map-reduce across all community reports
+    useCase: Holistic questions about system patterns
+    example: "What are the systemic risks in our architecture?"
+  
+  drift:
+    name: DRIFT Search
+    description: Dynamic Reasoning with Flexible Traversal
+    useCase: Questions requiring both breadth and depth
+    example: "How does payment service reliability compare to overall patterns?"

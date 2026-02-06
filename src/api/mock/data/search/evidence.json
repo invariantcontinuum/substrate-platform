@@ -1,0 +1,124 @@
+{
+    "evidenceItems": [
+        {
+            "id": "ev-001",
+            "type": "adr",
+            "label": "ADR-022",
+            "title": "ADR-022: Data Classification Standard",
+            "description": "Architecture Decision Record defining PII handling requirements",
+            "content": "Title: Data Classification and Handling Standard\nStatus: Active\nDate: 2024-03-15\n\n## Context\nAll user data must be classified and handled according to sensitivity levels.\n\n## Decision\nPII fields (email, SSN, phone, address) require:\n1. Encryption at rest (AES-256)\n2. Encryption in transit (TLS 1.3)\n3. Access logging\n4. @Private decorator in code\n\n## Consequences\nNon-compliance triggers GDPR Policy-082 enforcement.",
+            "source": "docs/architecture/adr-022.md",
+            "confidence": 0.98
+        },
+        {
+            "id": "ev-002",
+            "type": "source",
+            "label": "src/auth/tracker.ts:142",
+            "title": "UserTracking Module - Line 142",
+            "description": "Code location where unclassified PII handling was detected",
+            "content": "138: export class UserTracker {\n139:   constructor(private analytics: AnalyticsV2) {}\n140: \n141:   track(user: User) {\n142:     this.analytics.record(user.email, user.behavior);\n143:     // ^^^^^ Missing @Private decorator\n144:   }\n145: }",
+            "language": "typescript",
+            "source": "src/auth/tracker.ts",
+            "line": 142,
+            "confidence": 1.0
+        },
+        {
+            "id": "ev-003",
+            "type": "policy",
+            "label": "Policy-082",
+            "title": "Policy-082: GDPR Data Protection",
+            "description": "Active governance policy enforcing PII protection",
+            "content": "package substrate.gdpr\n\nimport future.keywords.if\nimport future.keywords.in\n\npii_fields := {\"email\", \"ssn\", \"phone\", \"address\"}\n\ndeny contains msg if {\n    some field in input.schema.fields\n    field.name in pii_fields\n    not field.has_decorator(\"@Private\")\n    msg := sprintf(\"PII field %s lacks @Private decorator\", [field.name])\n}",
+            "language": "rego",
+            "source": "policies/gdpr/pii-protection.rego",
+            "confidence": 0.95
+        },
+        {
+            "id": "ev-004",
+            "type": "graph",
+            "label": "Leiden Community",
+            "title": "Community Detection Analysis",
+            "description": "Graph clustering showing module relationships",
+            "content": "Community ID: C-42\nNodes: 15\nEdges: 23\nDensity: 0.34\n\nDetected Modules:\n- Checkout Service (hub)\n- Payment Gateway\n- User Tracking\n- Analytics V2\n- Data Pipeline\n\nAnomaly: UserTracking → AnalyticsV2 edge lacks \nPII classification metadata (expected: HIGH, found: UNCLASSIFIED)",
+            "source": "graph-analysis/community-42.json",
+            "confidence": 0.87
+        },
+        {
+            "id": "ev-005",
+            "type": "pr",
+            "label": "PR #421",
+            "title": "Pull Request #421: Analytics Integration",
+            "description": "Recent change introducing the violation",
+            "content": "Author: @developer-jane\nDate: 2024-09-01\nStatus: Merged\n\nChanges:\n+ Added AnalyticsV2 integration\n+ User behavior tracking\n- Missing: @Private decorators\n- Missing: PII classification tags\n\nReview Comments:\n> Security: Please add @Private to user.email access\n> (No response)",
+            "source": "https://github.com/org/repo/pull/421",
+            "confidence": 0.92
+        }
+    ],
+    "reasoningResults": [
+        {
+            "id": "res-001",
+            "query": "Which services handle PII but are not mentioned in our GDPR compliance doc?",
+            "summary": "Structural inconsistency detected in UserTracking module",
+            "analysis": "Analyzing Checkout Service and Data Pipeline...\n\nBased on the Leiden Community Detection of your monorepo, I found a structural inconsistency.\n\nThe UserTracking module imports AnalyticsV2, which lacks the @Private decorator required by Policy-082 for PII handling.",
+            "services": [
+                "Checkout Service",
+                "Data Pipeline",
+                "UserTracking",
+                "AnalyticsV2"
+            ],
+            "severity": "high",
+            "evidenceIds": [
+                "ev-001",
+                "ev-002",
+                "ev-003",
+                "ev-004",
+                "ev-005"
+            ]
+        },
+        {
+            "id": "res-002",
+            "query": "Find circular dependencies in the payment module",
+            "summary": "2 circular dependency chains detected",
+            "analysis": "Analyzing Payment Gateway dependencies...\n\nFound 2 circular dependency chains violating ADR-004:\n\n1. PaymentService → OrderService → PaymentService\n2. InvoiceGenerator → TaxCalculator → InvoiceGenerator\n\nThese patterns increase coupling and complicate testing.",
+            "services": [
+                "PaymentService",
+                "OrderService",
+                "InvoiceGenerator",
+                "TaxCalculator"
+            ],
+            "severity": "medium",
+            "evidenceIds": [
+                "ev-adr-004",
+                "ev-dep-graph",
+                "ev-pr-389"
+            ]
+        }
+    ],
+    "evidenceTypes": {
+        "adr": {
+            "label": "ADR",
+            "color": "blue",
+            "icon": "FileText"
+        },
+        "source": {
+            "label": "Source Code",
+            "color": "amber",
+            "icon": "Code"
+        },
+        "policy": {
+            "label": "Policy",
+            "color": "purple",
+            "icon": "ShieldCheck"
+        },
+        "graph": {
+            "label": "Graph Analysis",
+            "color": "emerald",
+            "icon": "GitBranch"
+        },
+        "pr": {
+            "label": "Pull Request",
+            "color": "slate",
+            "icon": "GitPullRequest"
+        }
+    }
+}

@@ -1,0 +1,29 @@
+# Nginx metrics server
+server {
+    listen ${METRICS_PORT};
+    server_name _;
+
+    access_log off;
+
+    # Stub status for Prometheus nginx-exporter
+    location /metrics {
+        stub_status on;
+    }
+
+    # Basic stats endpoint (JSON format)
+    location /stats {
+        default_type application/json;
+        return 200 '{"status":"ok","timestamp":"$date_gmt"}';
+    }
+
+    # Extended metrics endpoint
+    location /nginx_status {
+        stub_status;
+        access_log off;
+        allow 127.0.0.1;
+        allow 10.0.0.0/8;
+        allow 172.16.0.0/12;
+        allow 192.168.0.0/16;
+        deny all;
+    }
+}

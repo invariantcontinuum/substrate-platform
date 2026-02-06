@@ -1,0 +1,56 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build artifacts
+dist/
+build/
+.cache/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+__tests__/
+coverage/
+
+# Config files not needed in container
+.eslintrc*
+.prettierrc*
+# tsconfig*.json
+vite.config.ts
+tailwind.config.ts
+postcss.config.js
+eslint.config.js
+
+# Docker files (avoid recursive copies)
+Dockerfile*
+.dockerignore
+docker-compose*.yml

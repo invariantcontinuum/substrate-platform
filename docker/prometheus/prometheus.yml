@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Nginx metrics
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx-exporter:9114']
+        labels:
+          service: 'substrate-platform'
+
+  # Nginx stub_status metrics
+  - job_name: 'nginx-stub'
+    static_configs:
+      - targets: ['substrate-platform-http:9113']
+        labels:
+          service: 'substrate-platform-stub'
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

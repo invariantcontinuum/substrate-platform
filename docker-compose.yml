@@ -1,0 +1,144 @@
+services:
+  # Substrate Platform - HTTP mode
+  substrate-platform-http:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: substrate-platform-http
+    ports:
+      - "8080:80"
+      - "9113:9113"
+    environment:
+      # HTTP mode configuration
+      - ENABLE_HTTPS=false
+      - ENABLE_LOGGING=true
+      - ENABLE_METRICS=true
+      - ENABLE_ACCESS_LOG=true
+      - ENABLE_ERROR_LOG=true
+      - LOG_LEVEL=info
+      - SERVER_NAME=localhost
+      - HTTP_PORT=80
+      - METRICS_PORT=9113
+    volumes:
+      - ./logs:/var/log/nginx
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    profiles:
+      - http
+
+  # Substrate Platform - HTTPS mode
+  substrate-platform-https:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: substrate-platform-https
+    ports:
+      - "80:80"
+      - "443:443"
+      - "9113:9113"
+    environment:
+      # HTTPS mode configuration
+      - ENABLE_HTTPS=true
+      - ENABLE_LOGGING=true
+      - ENABLE_METRICS=true
+      - ENABLE_ACCESS_LOG=true
+      - ENABLE_ERROR_LOG=true
+      - LOG_LEVEL=warn
+      - SERVER_NAME=localhost
+      - HTTP_PORT=80
+      - HTTPS_PORT=443
+      - METRICS_PORT=9113
+      - SSL_CERTIFICATE_PATH=/etc/nginx/ssl/cert.pem
+      - SSL_CERTIFICATE_KEY_PATH=/etc/nginx/ssl/key.pem
+    volumes:
+      - ./logs:/var/log/nginx
+      - ./ssl:/etc/nginx/ssl:ro  # Mount your SSL certificates here
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    profiles:
+      - https
+
+  # Substrate Platform - Minimal (No logging, no metrics)
+  substrate-platform-minimal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: substrate-platform-minimal
+    ports:
+      - "8080:80"
+    environment:
+      - ENABLE_HTTPS=false
+      - ENABLE_LOGGING=false
+      - ENABLE_METRICS=false
+      - SERVER_NAME=localhost
+      - HTTP_PORT=80
+    restart: unless-stopped
+    profiles:
+      - minimal
+
+  # Prometheus (for metrics collection)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Nginx Prometheus Exporter
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx-exporter
+    ports:
+      - "9114:9114"
+    command:
+      - '-nginx.scrape-uri=http://substrate-platform-http:9113/metrics'
+    depends_on:
+      - substrate-platform-http
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Grafana (for visualization)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+volumes:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  default:
+    name: substrate-network

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: substrate-platform
+  labels:
+    app: substrate-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: substrate-platform
+  template:
+    metadata:
+      labels:
+        app: substrate-platform
+    spec:
+      containers:
+        - name: substrate-platform
+          image: substrate-platform:latest
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: substrate-config
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5

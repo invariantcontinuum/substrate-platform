@@ -1,0 +1,212 @@
+# =============================================================================
+# Health & Metrics Mock Data
+# Structural Integrity Platform - System Health and Dashboard Metrics
+# =============================================================================
+
+healthStatus:
+  status: healthy
+  version: 1.0.0
+  uptime: 86400
+  checks:
+    - name: PostgreSQL
+      status: pass
+      responseTime: 12
+      message: Connection pool healthy
+    - name: Neo4j
+      status: pass
+      responseTime: 45
+      message: Graph database responsive
+    - name: Qdrant
+      status: pass
+      responseTime: 23
+      message: Vector store operational
+    - name: OPA
+      status: pass
+      responseTime: 5
+      message: Policy engine ready
+    - name: GraphRAG Pipeline
+      status: warn
+      responseTime: 2500
+      message: Indexing queue backlog (23 jobs)
+    - name: GitHub Connector
+      status: pass
+      responseTime: 180
+      message: Rate limit: 4500/5000
+
+dashboardMetrics:
+  systemHealth:
+    status: healthy
+    version: 1.0.0
+    uptime: 86400
+    checks:
+      - name: PostgreSQL
+        status: pass
+        responseTime: 12
+      - name: Neo4j
+        status: pass
+        responseTime: 45
+      - name: Qdrant
+        status: pass
+        responseTime: 23
+      - name: OPA
+        status: pass
+        responseTime: 5
+
+  graphMetrics:
+    totalNodes: 142
+    totalEdges: 287
+    communities: 8
+    avgClustering: 0.34
+    conformanceScore: 0.78
+    couplingMetrics:
+      avgAfferent: 5.2
+      avgEfferent: 3.8
+      avgInstability: 0.42
+    healthScore:
+      overall: 0.82
+      architectural: 0.78
+      documentation: 0.85
+      codeQuality: 0.84
+
+  driftSummary:
+    totalViolations: 7
+    bySeverity:
+      Critical: 2
+      High: 1
+      Medium: 3
+      Low: 1
+    byType:
+      dependency: 2
+      doc: 1
+      pr: 1
+      owner: 1
+      jira: 1
+      policy: 1
+    trend: stable
+
+  policyStats:
+    total: 7
+    enforced: 5
+    warning: 2
+    violations: 6
+
+  recentActivity:
+    - id: act-001
+      type: sync
+      title: Reality sync completed
+      timestamp: "2024-09-22T10:30:00Z"
+      metadata:
+        entitiesProcessed: 142
+        duration: 12500
+    - id: act-002
+      type: violation
+      title: New drift detected - Layer violation
+      timestamp: "2024-09-22T09:15:00Z"
+      metadata:
+        severity: Medium
+        component: inventory_svc
+    - id: act-003
+      type: policy
+      title: Policy evaluation completed
+      timestamp: "2024-09-22T08:00:00Z"
+      metadata:
+        policiesChecked: 7
+        violationsFound: 2
+    - id: act-004
+      type: search
+      title: GraphRAG query executed
+      timestamp: "2024-09-22T07:30:00Z"
+      metadata:
+        query: "PII handling services"
+        results: 5
+    - id: act-005
+      type: sync
+      title: Intent sync started
+      timestamp: "2024-09-22T06:00:00Z"
+      metadata:
+        sources: [jira, confluence]
+
+graphHealthMetrics:
+  - date: "2024-09-01"
+    nodes: 138
+    edges: 275
+    conformance: 0.82
+    violations: 5
+  - date: "2024-09-08"
+    nodes: 140
+    edges: 280
+    conformance: 0.80
+    violations: 6
+  - date: "2024-09-15"
+    nodes: 141
+    edges: 285
+    conformance: 0.79
+    violations: 7
+  - date: "2024-09-22"
+    nodes: 142
+    edges: 287
+    conformance: 0.78
+    violations: 7
+
+connectorStatus:
+  github:
+    enabled: true
+    status: connected
+    lastSync: "2024-09-22T10:00:00Z"
+    rateLimit:
+      remaining: 4500
+      total: 5000
+      resetAt: "2024-09-22T11:00:00Z"
+    repos:
+      - org/core-api
+      - org/auth-service
+      - org/payment-gateway
+  
+  jira:
+    enabled: true
+    status: connected
+    lastSync: "2024-09-22T09:30:00Z"
+    projects:
+      - PLATFORM
+      - SEC
+      - DATA
+  
+  confluence:
+    enabled: true
+    status: connected
+    lastSync: "2024-09-22T09:00:00Z"
+    spaces:
+      - ARCH
+      - ENG
+      - OPS
+  
+  slack:
+    enabled: false
+    status: disconnected
+    reason: Not configured
+
+systemResources:
+  cpu:
+    usage: 45
+    cores: 8
+  memory:
+    used: 12.4
+    total: 32
+    unit: GB
+  storage:
+    used: 256
+    total: 512
+    unit: GB
+  
+queueStats:
+  graphRAG:
+    pending: 23
+    processing: 3
+    completed: 1456
+    failed: 12
+  
+  policyEval:
+    pending: 0
+    processing: 1
+    completed: 8934
+    failed: 2
