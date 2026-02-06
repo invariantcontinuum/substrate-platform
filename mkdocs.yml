@@ -69,8 +69,8 @@ nav:
       - Cheatsheet: deployment/docker-cheatsheet.md
   - Platform:
       - Core Services: platform/services/index.md
-          - Ingestion: platform/services/ingestion/index.md
-          - GraphRAG: platform/services/graphrag/index.md
-          - Governance: platform/services/governance/index.md
-          - Maintainence: platform/services/maintainence/index.md
+      - Ingestion: platform/services/ingestion/index.md
+      - GraphRAG: platform/services/graphrag/index.md
+      - Governance: platform/services/governance/index.md
+      - Maintainence: platform/services/maintainence/index.md
 
