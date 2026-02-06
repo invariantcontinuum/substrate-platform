@@ -1,0 +1,1862 @@
+openapi: 3.1.0
+info:
+  title: Substrate API
+  description: |
+    Substrate is an architectural governance platform that continuously monitors
+    the alignment between documented intent and actual implementation.
+  version: 1.0.0
+  contact:
+    name: Substrate Platform Team
+    email: platform@substrate.io
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development
+  - url: https://api.substrate.io/v1
+    description: Production
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+tags:
+  - name: Knowledge Fabric
+    description: Entity and relationship management
+  - name: GraphRAG
+    description: Semantic querying and knowledge retrieval
+  - name: Governance
+    description: Policy management and evaluation
+  - name: Quality Metrics
+    description: Architectural health and drift metrics
+  - name: Connectors
+    description: Data source connector management
+  - name: Maintenance
+    description: Staleness detection and review queue
+  - name: Settings
+    description: Configuration and preferences
+  - name: Auth
+    description: Authentication and authorization
+
+paths:
+  # ===== Knowledge Fabric =====
+  /entities:
+    get:
+      tags: [Knowledge Fabric]
+      summary: List entities
+      operationId: listEntities
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: type
+          in: query
+          schema:
+            $ref: '#/components/schemas/EntityType'
+        - name: source
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated list of entities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityListResponse'
+    post:
+      tags: [Knowledge Fabric]
+      summary: Create entity
+      operationId: createEntity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEntityRequest'
+      responses:
+        '201':
+          description: Entity created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+
+  /entities/{entityId}:
+    get:
+      tags: [Knowledge Fabric]
+      summary: Get entity by ID
+      operationId: getEntity
+      parameters:
+        - $ref: '#/components/parameters/EntityIdParam'
+      responses:
+        '200':
+          description: Entity details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Knowledge Fabric]
+      summary: Update entity
+      operationId: updateEntity
+      parameters:
+        - $ref: '#/components/parameters/EntityIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEntityRequest'
+      responses:
+        '200':
+          description: Entity updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+    delete:
+      tags: [Knowledge Fabric]
+      summary: Delete entity
+      operationId: deleteEntity
+      parameters:
+        - $ref: '#/components/parameters/EntityIdParam'
+      responses:
+        '204':
+          description: Entity deleted
+
+  /entities/{entityId}/relationships:
+    get:
+      tags: [Knowledge Fabric]
+      summary: Get entity relationships
+      operationId: getEntityRelationships
+      parameters:
+        - $ref: '#/components/parameters/EntityIdParam'
+        - name: direction
+          in: query
+          schema:
+            type: string
+            enum: [inbound, outbound, both]
+            default: both
+        - name: type
+          in: query
+          schema:
+            $ref: '#/components/schemas/RelationshipType'
+        - name: maxHops
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+            default: 1
+      responses:
+        '200':
+          description: Entity relationships
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationshipGraphResponse'
+
+  /entities/{entityId}/context:
+    get:
+      tags: [Knowledge Fabric]
+      summary: Get entity context (subgraph)
+      operationId: getEntityContext
+      parameters:
+        - $ref: '#/components/parameters/EntityIdParam'
+        - name: maxHops
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 3
+            default: 2
+      responses:
+        '200':
+          description: Entity context subgraph
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContextGraphResponse'
+
+  /relationships:
+    post:
+      tags: [Knowledge Fabric]
+      summary: Create relationship
+      operationId: createRelationship
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRelationshipRequest'
+      responses:
+        '201':
+          description: Relationship created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Relationship'
+
+  /graph:
+    get:
+      tags: [Knowledge Fabric]
+      summary: Get full knowledge graph
+      operationId: getGraph
+      parameters:
+        - name: entityTypes
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/EntityType'
+        - name: relationshipTypes
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/RelationshipType'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 500
+            maximum: 2000
+      responses:
+        '200':
+          description: Graph data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphResponse'
+
+  # ===== GraphRAG =====
+  /graphrag/query:
+    post:
+      tags: [GraphRAG]
+      summary: Execute GraphRAG query
+      operationId: queryGraphRAG
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphRAGQueryRequest'
+      responses:
+        '200':
+          description: Query result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphRAGQueryResponse'
+
+  /graphrag/index:
+    post:
+      tags: [GraphRAG]
+      summary: Start indexing pipeline
+      operationId: startIndexing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndexRequest'
+      responses:
+        '202':
+          description: Indexing started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexTaskResponse'
+
+  /graphrag/index/{taskId}:
+    get:
+      tags: [GraphRAG]
+      summary: Get indexing task status
+      operationId: getIndexStatus
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexTaskStatus'
+
+  /graphrag/communities:
+    get:
+      tags: [GraphRAG]
+      summary: List communities
+      operationId: listCommunities
+      parameters:
+        - name: level
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 3
+            default: 0
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Community list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityListResponse'
+
+  # ===== Governance =====
+  /policies:
+    get:
+      tags: [Governance]
+      summary: List policies
+      operationId: listPolicies
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [architecture, security, compliance, ownership]
+        - name: enabled
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Policy list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyListResponse'
+    post:
+      tags: [Governance]
+      summary: Create policy
+      operationId: createPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePolicyRequest'
+      responses:
+        '201':
+          description: Policy created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+
+  /policies/{policyId}:
+    get:
+      tags: [Governance]
+      summary: Get policy
+      operationId: getPolicy
+      parameters:
+        - name: policyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Policy details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+    patch:
+      tags: [Governance]
+      summary: Update policy
+      operationId: updatePolicy
+      parameters:
+        - name: policyId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePolicyRequest'
+      responses:
+        '200':
+          description: Policy updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+
+  /governance/evaluate:
+    post:
+      tags: [Governance]
+      summary: Evaluate policies
+      operationId: evaluatePolicies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateRequest'
+      responses:
+        '200':
+          description: Evaluation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluateResponse'
+
+  /violations:
+    get:
+      tags: [Governance]
+      summary: List violations
+      operationId: listViolations
+      parameters:
+        - name: severity
+          in: query
+          schema:
+            $ref: '#/components/schemas/Severity'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, acknowledged, resolved]
+        - name: policyId
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Violation list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViolationListResponse'
+
+  /violations/{violationId}/acknowledge:
+    post:
+      tags: [Governance]
+      summary: Acknowledge violation
+      operationId: acknowledgeViolation
+      parameters:
+        - name: violationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                expiresAt:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Violation acknowledged
+
+  # ===== Quality Metrics =====
+  /metrics/health:
+    get:
+      tags: [Quality Metrics]
+      summary: Get overall health score
+      operationId: getHealthScore
+      responses:
+        '200':
+          description: Health score
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthScoreResponse'
+
+  /metrics/drift:
+    get:
+      tags: [Quality Metrics]
+      summary: Get drift metrics
+      operationId: getDriftMetrics
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [7d, 30d, 90d]
+            default: 30d
+      responses:
+        '200':
+          description: Drift metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriftMetricsResponse'
+
+  /metrics/compliance:
+    get:
+      tags: [Quality Metrics]
+      summary: Get compliance metrics
+      operationId: getComplianceMetrics
+      responses:
+        '200':
+          description: Compliance metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplianceMetricsResponse'
+
+  /metrics/documentation:
+    get:
+      tags: [Quality Metrics]
+      summary: Get documentation health metrics
+      operationId: getDocumentationMetrics
+      responses:
+        '200':
+          description: Documentation metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentationMetricsResponse'
+
+  /metrics/dora:
+    get:
+      tags: [Quality Metrics]
+      summary: Get DORA metrics
+      operationId: getDoraMetrics
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [7d, 30d, 90d]
+            default: 30d
+      responses:
+        '200':
+          description: DORA metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DoraMetricsResponse'
+
+  # ===== Connectors =====
+  /connectors:
+    get:
+      tags: [Connectors]
+      summary: List available connectors
+      operationId: listConnectors
+      responses:
+        '200':
+          description: Connector list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorListResponse'
+
+  /connectors/{connectorId}:
+    get:
+      tags: [Connectors]
+      summary: Get connector details
+      operationId: getConnector
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Connector details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connector'
+
+  /connections:
+    get:
+      tags: [Connectors]
+      summary: List configured connections
+      operationId: listConnections
+      responses:
+        '200':
+          description: Connection list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionListResponse'
+    post:
+      tags: [Connectors]
+      summary: Create connection
+      operationId: createConnection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConnectionRequest'
+      responses:
+        '201':
+          description: Connection created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connection'
+
+  /connections/{connectionId}:
+    get:
+      tags: [Connectors]
+      summary: Get connection
+      operationId: getConnection
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Connection details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connection'
+    patch:
+      tags: [Connectors]
+      summary: Update connection
+      operationId: updateConnection
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateConnectionRequest'
+      responses:
+        '200':
+          description: Connection updated
+    delete:
+      tags: [Connectors]
+      summary: Delete connection
+      operationId: deleteConnection
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Connection deleted
+
+  /connections/{connectionId}/test:
+    post:
+      tags: [Connectors]
+      summary: Test connection
+      operationId: testConnection
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Connection test result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionTestResult'
+
+  /connections/{connectionId}/sync:
+    post:
+      tags: [Connectors]
+      summary: Trigger sync
+      operationId: triggerSync
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullSync:
+                  type: boolean
+                  default: false
+      responses:
+        '202':
+          description: Sync started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncTaskResponse'
+
+  # ===== Maintenance =====
+  /documents/{documentId}/staleness:
+    get:
+      tags: [Maintenance]
+      summary: Get document staleness report
+      operationId: getDocumentStaleness
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Staleness report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StalenessReport'
+
+  /maintenance/duplicates:
+    get:
+      tags: [Maintenance]
+      summary: Get duplicate detection results
+      operationId: getDuplicates
+      parameters:
+        - name: corpusId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Duplicate report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicateReport'
+
+  /reviews:
+    get:
+      tags: [Maintenance]
+      summary: Get pending reviews
+      operationId: getPendingReviews
+      parameters:
+        - name: assigneeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: itemType
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Pending reviews
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewListResponse'
+
+  /reviews/{reviewId}/decide:
+    post:
+      tags: [Maintenance]
+      summary: Submit review decision
+      operationId: submitReviewDecision
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewDecisionRequest'
+      responses:
+        '200':
+          description: Decision recorded
+
+  # ===== Settings =====
+  /settings/llm:
+    get:
+      tags: [Settings]
+      summary: Get LLM configuration
+      operationId: getLlmSettings
+      responses:
+        '200':
+          description: LLM settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LlmSettings'
+    put:
+      tags: [Settings]
+      summary: Update LLM configuration
+      operationId: updateLlmSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLlmSettingsRequest'
+      responses:
+        '200':
+          description: Settings updated
+
+  /settings/llm/test:
+    post:
+      tags: [Settings]
+      summary: Test LLM connection
+      operationId: testLlmConnection
+      responses:
+        '200':
+          description: Test result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LlmTestResult'
+
+  /settings/notifications:
+    get:
+      tags: [Settings]
+      summary: Get notification settings
+      operationId: getNotificationSettings
+      responses:
+        '200':
+          description: Notification settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSettings'
+    put:
+      tags: [Settings]
+      summary: Update notification settings
+      operationId: updateNotificationSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationSettings'
+      responses:
+        '200':
+          description: Settings updated
+
+  # ===== Auth =====
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh token
+      operationId: refreshToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    EntityIdParam:
+      name: entityId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    # ===== Common =====
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+    # ===== Entities =====
+    EntityType:
+      type: string
+      enum:
+        - repository
+        - module
+        - class
+        - function
+        - interface
+        - endpoint
+        - service
+        - database
+        - queue
+        - cache
+        - document
+        - adr
+        - epic
+        - story
+        - task
+        - team
+        - user
+
+    Entity:
+      type: object
+      required: [id, name, type, source]
+      properties:
+        id:
+          type: string
+          format: uuid
+        externalId:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/EntityType'
+        source:
+          type: string
+        description:
+          type: string
+        properties:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateEntityRequest:
+      type: object
+      required: [name, type, source]
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/EntityType'
+        source:
+          type: string
+        externalId:
+          type: string
+        description:
+          type: string
+        properties:
+          type: object
+
+    UpdateEntityRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        properties:
+          type: object
+
+    EntityListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entity'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # ===== Relationships =====
+    RelationshipType:
+      type: string
+      enum:
+        - depends_on
+        - imports
+        - calls
+        - implements
+        - extends
+        - owns
+        - maintains
+        - documents
+        - references
+        - reads_from
+        - writes_to
+        - deploys_to
+        - violates
+
+    Relationship:
+      type: object
+      required: [id, sourceId, targetId, type]
+      properties:
+        id:
+          type: string
+          format: uuid
+        sourceId:
+          type: string
+          format: uuid
+        targetId:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/RelationshipType'
+        properties:
+          type: object
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateRelationshipRequest:
+      type: object
+      required: [sourceId, targetId, type]
+      properties:
+        sourceId:
+          type: string
+          format: uuid
+        targetId:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/RelationshipType'
+        properties:
+          type: object
+
+    RelationshipGraphResponse:
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/Entity'
+        relationships:
+          type: array
+          items:
+            type: object
+            properties:
+              relationship:
+                $ref: '#/components/schemas/Relationship'
+              relatedEntity:
+                $ref: '#/components/schemas/Entity'
+
+    ContextGraphResponse:
+      type: object
+      properties:
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entity'
+        relationships:
+          type: array
+          items:
+            $ref: '#/components/schemas/Relationship'
+
+    GraphResponse:
+      type: object
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entity'
+        edges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Relationship'
+
+    # ===== GraphRAG =====
+    GraphRAGQueryRequest:
+      type: object
+      required: [query]
+      properties:
+        query:
+          type: string
+        searchType:
+          type: string
+          enum: [local, global, drift]
+          default: drift
+        maxHops:
+          type: integer
+          minimum: 1
+          maximum: 5
+          default: 2
+        communityLevel:
+          type: integer
+          minimum: 0
+          maximum: 3
+          default: 1
+
+    GraphRAGQueryResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entity'
+        relationships:
+          type: array
+          items:
+            $ref: '#/components/schemas/Relationship'
+        sources:
+          type: array
+          items:
+            type: object
+            properties:
+              documentId:
+                type: string
+              text:
+                type: string
+              relevance:
+                type: number
+        searchType:
+          type: string
+        confidence:
+          type: number
+
+    IndexRequest:
+      type: object
+      required: [corpusId]
+      properties:
+        corpusId:
+          type: string
+        forceReindex:
+          type: boolean
+          default: false
+
+    IndexTaskResponse:
+      type: object
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [started, running, completed, failed]
+
+    IndexTaskStatus:
+      type: object
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        status:
+          type: string
+        progress:
+          type: number
+        phase:
+          type: string
+        error:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    CommunityListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              level:
+                type: integer
+              title:
+                type: string
+              summary:
+                type: string
+              entityCount:
+                type: integer
+              keyEntities:
+                type: array
+                items:
+                  type: string
+
+    # ===== Governance =====
+    Policy:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum: [architecture, security, compliance, ownership]
+        severity:
+          $ref: '#/components/schemas/Severity'
+        rego:
+          type: string
+        enabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreatePolicyRequest:
+      type: object
+      required: [name, rego]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        severity:
+          $ref: '#/components/schemas/Severity'
+        rego:
+          type: string
+        enabled:
+          type: boolean
+          default: true
+
+    UpdatePolicyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        rego:
+          type: string
+        enabled:
+          type: boolean
+
+    PolicyListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy'
+
+    Severity:
+      type: string
+      enum: [critical, high, medium, low]
+
+    EvaluateRequest:
+      type: object
+      required: [input]
+      properties:
+        input:
+          type: object
+        policyIds:
+          type: array
+          items:
+            type: string
+
+    EvaluateResponse:
+      type: object
+      properties:
+        allow:
+          type: boolean
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Violation'
+        warnings:
+          type: array
+          items:
+            type: string
+
+    Violation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        policyId:
+          type: string
+        severity:
+          $ref: '#/components/schemas/Severity'
+        source:
+          type: string
+        target:
+          type: string
+        message:
+          type: string
+        detectedAt:
+          type: string
+          format: date-time
+        resolvedAt:
+          type: string
+          format: date-time
+        acknowledgedBy:
+          type: string
+
+    ViolationListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Violation'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # ===== Metrics =====
+    HealthScoreResponse:
+      type: object
+      properties:
+        overallScore:
+          type: number
+        grade:
+          type: string
+          enum: [A, B, C, D, F]
+        dimensions:
+          type: object
+          properties:
+            architecturalConformance:
+              type: number
+            documentationHealth:
+              type: number
+            intentRealityAlignment:
+              type: number
+            deliveryPerformance:
+              type: number
+            technicalDebt:
+              type: number
+            knowledgeGraphQuality:
+              type: number
+        trend:
+          type: string
+          enum: [improving, stable, declining]
+        calculatedAt:
+          type: string
+          format: date-time
+
+    DriftMetricsResponse:
+      type: object
+      properties:
+        currentDriftScore:
+          type: number
+        driftTrend:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              score:
+                type: number
+        topDriftingComponents:
+          type: array
+          items:
+            type: object
+            properties:
+              entityId:
+                type: string
+              name:
+                type: string
+              driftScore:
+                type: number
+
+    ComplianceMetricsResponse:
+      type: object
+      properties:
+        overallCompliance:
+          type: number
+        byCategory:
+          type: object
+          additionalProperties:
+            type: number
+        activeViolations:
+          type: integer
+        resolvedThisPeriod:
+          type: integer
+
+    DocumentationMetricsResponse:
+      type: object
+      properties:
+        totalDocuments:
+          type: integer
+        healthyDocuments:
+          type: integer
+        staleDocuments:
+          type: integer
+        averageFreshness:
+          type: number
+        documentsNeedingReview:
+          type: integer
+
+    DoraMetricsResponse:
+      type: object
+      properties:
+        deploymentFrequency:
+          type: object
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+            rating:
+              type: string
+        leadTimeForChanges:
+          type: object
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+            rating:
+              type: string
+        changeFailureRate:
+          type: object
+          properties:
+            value:
+              type: number
+            rating:
+              type: string
+        meanTimeToRecovery:
+          type: object
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+            rating:
+              type: string
+
+    # ===== Connectors =====
+    Connector:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [github, jira, confluence, slack, custom]
+        icon:
+          type: string
+        configSchema:
+          type: object
+        version:
+          type: string
+
+    ConnectorListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Connector'
+
+    Connection:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        connectorId:
+          type: string
+        name:
+          type: string
+        config:
+          type: object
+        status:
+          type: string
+          enum: [connected, disconnected, error, syncing]
+        lastSyncAt:
+          type: string
+          format: date-time
+        nextSyncAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    ConnectionListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Connection'
+
+    CreateConnectionRequest:
+      type: object
+      required: [connectorId, name, config]
+      properties:
+        connectorId:
+          type: string
+        name:
+          type: string
+        config:
+          type: object
+        syncSchedule:
+          type: string
+
+    UpdateConnectionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        config:
+          type: object
+        syncSchedule:
+          type: string
+        enabled:
+          type: boolean
+
+    ConnectionTestResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        latencyMs:
+          type: integer
+
+    SyncTaskResponse:
+      type: object
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        status:
+          type: string
+
+    # ===== Maintenance =====
+    StalenessReport:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+        compositeScore:
+          type: number
+        components:
+          type: object
+          properties:
+            timeDecay:
+              type: number
+            codeDrift:
+              type: number
+            linkRot:
+              type: number
+            referenceValidity:
+              type: number
+            viewFrequency:
+              type: number
+        recommendedAction:
+          type: string
+        calculatedAt:
+          type: string
+          format: date-time
+
+    DuplicateReport:
+      type: object
+      properties:
+        corpusId:
+          type: string
+        clusters:
+          type: array
+          items:
+            type: object
+            properties:
+              clusterId:
+                type: integer
+              documents:
+                type: array
+                items:
+                  type: object
+              avgSimilarity:
+                type: number
+              recommendedAction:
+                type: string
+        pairs:
+          type: array
+          items:
+            type: object
+        totalDocuments:
+          type: integer
+        potentialDuplicates:
+          type: integer
+
+    ReviewListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              itemType:
+                type: string
+              itemId:
+                type: string
+              reason:
+                type: string
+              confidence:
+                type: number
+              suggestedAction:
+                type: string
+              assigneeId:
+                type: string
+              createdAt:
+                type: string
+                format: date-time
+
+    ReviewDecisionRequest:
+      type: object
+      required: [decision]
+      properties:
+        decision:
+          type: string
+          enum: [approve, reject, modify]
+        modifications:
+          type: object
+
+    # ===== Settings =====
+    LlmSettings:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [openai, anthropic, azure, ollama, vllm, custom]
+        model:
+          type: string
+        apiKeyConfigured:
+          type: boolean
+        baseUrl:
+          type: string
+        temperature:
+          type: number
+        maxTokens:
+          type: integer
+
+    UpdateLlmSettingsRequest:
+      type: object
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        apiKey:
+          type: string
+        baseUrl:
+          type: string
+        temperature:
+          type: number
+        maxTokens:
+          type: integer
+
+    LlmTestResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        latencyMs:
+          type: integer
+        model:
+          type: string
+
+    NotificationSettings:
+      type: object
+      properties:
+        emailEnabled:
+          type: boolean
+        slackEnabled:
+          type: boolean
+        slackWebhook:
+          type: string
+        digestFrequency:
+          type: string
+          enum: [realtime, daily, weekly]
+        alertThresholds:
+          type: object
+          properties:
+            staleness:
+              type: number
+            violations:
+              type: string
+
+    # ===== Auth =====
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [viewer, developer, team_lead, architect, admin]
+        teamId:
+          type: string
+        avatarUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time

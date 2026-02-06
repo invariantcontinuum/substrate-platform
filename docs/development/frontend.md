@@ -28,96 +28,44 @@ The frontend serves as the visualization and interaction layer for the Structura
 
 ```
 src/
-├── routes/                      # TanStack Router pages
-│   ├── index.tsx               # Dashboard home
-│   ├── graph/                  # Graph visualization routes
-│   │   ├── explorer.tsx        # WebGL exploration view
-│   │   └── architecture.tsx    # Architecture diagram view
-│   ├── governance/             # Policy & drift management
-│   │   ├── policies.tsx        # Policy builder
-│   │   ├── violations.tsx      # Drift detection alerts
-│   │   └── enforcement.tsx     # Graduated enforcement settings
-│   ├── knowledge/              # GraphRAG knowledge interface
-│   │   ├── search.tsx          # Semantic search
-│   │   ├── communities.tsx     # Community summaries
-│   │   └── documents.tsx       # Documentation browser
-│   └── settings/               # Configuration
-│       ├── llm.tsx             # LLM provider settings
-│       ├── connectors.tsx      # Data source configuration
-│       └── profile.tsx         # User preferences
+├── pages/                       # State-driven page components
+│   ├── ProjectDashboard.tsx    # Executive/Architect summary
+│   ├── KnowledgeFabric.tsx     # Graph visualization hub
+│   ├── MemoryInterface.tsx     # Institutional memory/ADR tracking
+│   ├── RAGInterface.tsx        # GraphRAG Studio search
+│   ├── PolicyView.tsx          # Governance & policy management
+│   ├── TerminalLogs.tsx        # System logs & audit trail
+│   └── Settings.tsx            # App & API configuration
 │
 ├── components/                  # Feature-based organization
 │   ├── graph/                  # Graph visualization components
 │   │   ├── SigmaGraph.tsx      # WebGL exploration (Sigma.js)
-│   │   ├── ArchitectureDiagram.tsx  # Cytoscape architecture view
-│   │   ├── GraphControls.tsx   # Zoom, pan, layout controls
-│   │   ├── NodeDetails.tsx     # Entity information panel
-│   │   └── DiffVisualization.tsx    # Graph diff view
+│   │   ├── CytoscapeGraph.tsx  # Architecture diagram view
+│   │   ├── GraphToolbar.tsx    # Zoom, pan, layout controls
+│   │   └── GraphLegend.tsx     # Visual key for graph elements
 │   │
 │   ├── dashboard/              # Dashboard widgets
-│   │   ├── HealthScoreCard.tsx    # Composite health score (A-F)
-│   │   ├── DriftAlertsCard.tsx    # Active drift violations
-│   │   ├── MetricsTrendChart.tsx  # Time-series trends (Recharts)
-│   │   ├── DependencyHeatmap.tsx  # Risk matrix (Nivo)
-│   │   └── ServiceCatalog.tsx     # Backstage-inspired entity catalog
-│   │
-│   ├── governance/             # Policy management components
-│   │   ├── PolicyBuilder.tsx       # Visual Rego policy editor
-│   │   ├── ViolationCard.tsx       # Drift violation display
-│   │   ├── EnforcementToggle.tsx   # Observe/Advise/Enforce selector
-│   │   └── PolicyEffectiveness.tsx # False positive tracking
-│   │
-│   ├── knowledge/              # GraphRAG interfaces
-│   │   ├── SemanticSearch.tsx      # Natural language query
-│   │   ├── CommunityCard.tsx       # Leiden community summaries
-│   │   ├── DocumentTimeline.tsx    # Staleness indicators
-│   │   └── EntityResolution.tsx    # Cross-source identity matching
-│   │
-│   ├── settings/               # Configuration interfaces
-│   │   ├── LLMConfiguration.tsx    # Provider/model selection
-│   │   ├── ConnectorList.tsx       # Data source management
-│   │   ├── OAuth Popup.tsx          # OAuth 2.0 flows
-│   │   └── TestConnection.tsx      # Connection validation
-│   │
-│   └── layout/                 # Application shell
-│       ├── Header.tsx          # Top navigation
-│       ├── Sidebar.tsx         # Main navigation
-│       ├── ThemeToggle.tsx     # Dark/light mode
-│       └── Breadcrumbs.tsx     # Route navigation
-│
-├── hooks/
-│   ├── queries/                # TanStack Query data fetching
-│   │   ├── useGraphData.ts
-│   │   ├── useViolations.ts
-│   │   ├── usePolicies.ts
-│   │   ├── useCommunities.ts
-│   │   └── useMetrics.ts
-│   │
-│   ├── mutations/              # TanStack Query mutations
-│   │   ├── usePolicyUpdate.ts
-│   │   ├── useConnectorSync.ts
-│   │   └── useViolationAck.ts
-│   │
-│   └── useWebWorker.ts         # ForceAtlas2 layout offload
+│   ├── ui/                     # Reusable Shadcn/Radix components
+│   ├── layout/                 # Application shell (Header, Sidebar, Footer)
+│   └── modals/                 # Contextual dialogs and editors
 │
 ├── stores/                     # Zustand state management
-│   ├── authStore.ts            # Authentication state
-│   ├── themeStore.ts           # Dark mode persistence
-│   ├── graphStore.ts           # Graph filter/layout state
-│   └── settingsStore.ts        # User preferences
+│   ├── appStore.ts             # Global UI state (tabs, logs)
+│   ├── projectStore.ts         # Multi-tenant context (Org, Project, User)
+│   └── graphStore.ts           # Visualization settings
 │
-├── lib/                        # Utilities and helpers
-│   ├── api/                    # API client configuration
-│   ├── formatters/             # Data formatting utilities
-│   ├── validators/             # Zod schemas
-│   └── constants.ts            # Application constants
+├── api/                        # API & Mock Data layer
+│   ├── mock/                   # Rich JSON/YAML datasets
+│   ├── hooks/                  # TanStack Query hooks
+│   ├── services/               # API abstraction layer
+│   └── client.ts               # Axios/Fetch configuration
 │
-└── types/                      # TypeScript definitions
-    ├── graph.ts                # Graph entities/edges
-    ├── policy.ts               # Governance types
-    ├── metrics.ts              # Quality metrics
-    └── api.ts                  # API response types
-```
+├── lib/                        # Utilities, constants, and icon maps
+├── types/                      # TypeScript definitions
+└── hooks/                      # Custom React hooks (sync, auth, etc.)
+
+
+
 
 ---
 

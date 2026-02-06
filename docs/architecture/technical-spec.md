@@ -1,6 +1,9 @@
 # Structural Integrity Platform: comprehensive implementation blueprint
 
-**The Structural Integrity Platform can be built as a polyglot, event-driven system using Rust for code ingestion, Python for GraphRAG/ML pipelines, Go for real-time governance, and React for visualization—unified by a multi-modal knowledge base spanning PostgreSQL, Neo4j, and Qdrant.** This report synthesizes deep technical research across all seven architecture domains into concrete implementation guidance: data models, library selections with version numbers, Rego policy examples, pipeline architectures, and frontend component recommendations. The platform's core innovation is treating software architecture as a living knowledge graph, then enforcing architectural intent through policy-as-code evaluated against that graph in real time.
+**The Structural Integrity Platform can be built as a polyglot, event-driven system using Rust for code ingestion, Python for GraphRAG/ML pipelines, Go for real-time governance, and React for visualization—unified by a multi-modal knowledge base spanning PostgreSQL, Neo4j, and Qdrant.** This report synthesizes deep technical research across all seven architecture domains into concrete implementation guidance.
+
+> **Note on Implementation Status**: This specification outlines the target architecture for the production platform. The current codebase represents a high-fidelity frontend prototype that implements the visualization and interaction models described here, powered by comprehensive mock datasets.
+
 
 ---
 

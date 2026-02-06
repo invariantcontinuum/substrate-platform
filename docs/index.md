@@ -4,32 +4,25 @@
 
 AI has massively accelerated code creation but often at the cost of architectural consistency, security guarantees, and shared understanding. This platform restores control, visibility, and confidence by governing AI-generated code and preserving architectural intent.
 
-## 📚 Documentation
+## ✨ Core Features
 
-The documentation is organized as follows:
+- **🌐 Knowledge Fabric**: Interactive exploration of your codebase's architectural relationships using WebGL-powered graphs.
+- **🛡️ Governance Hub**: Define and enforce architectural policies like layer boundaries and circular dependency detection.
+- **🔍 GraphRAG Studio**: AI-powered semantic search across code and documentation with reasoning steps and evidence.
+- **🧠 Institutional Memory**: Track decisions, ADRs, and context to prevent architectural drift over time.
+- **📊 Quality Dashboard**: Composite health scores (A-F) based on coupling, documentation freshness, and policy compliance.
+- **🏢 Multi-Tenant & RBAC**: Scoped views for Executives, Architects, Security, and Engineers.
 
-### 🏗️ Architecture
-- **[Architecture Overview](architecture/overview.md)**: High-level system design and components.
-- **[Technical Implementation Spec](architecture/technical-spec.md)**: Deep dive into the GraphRAG pipeline, Rust ingestion, and tech stack choices.
+## 🎛️ Technology Stack
 
-### 🚀 Product
-- **[Product Requirements](product/requirements.md)**: Detailed feature requirements, user flows, and personas.
-- **[Strategy & Market](product/strategy.md)**: Deployment models, pricing, and go-to-market strategy.
-- **[Gap Analysis](product/gap-analysis.md)**: Current implementation status vs. vision.
-- **[FAQ](product/faq.md)**: Frequently asked questions.
-
-### 💻 Development
-- **[Frontend Guide](development/frontend.md)**: Frontend architecture, component library, and state management.
-- **[Contributing](development/contributing.md)**: Guidelines for contributors.
-- **[Roadmap](development/roadmap.md)**: Future development plans.
-- **[Refactor History](development/refactor-history.md)**: Summary of past refactoring efforts.
-
-### ⚙️ Deployment
-- **[Docker Setup](deployment/docker.md)**: Full Docker deployment guide.
-- **[Kubernetes Guide](deployment/kubernetes.md)**: Deployment manifests and specificaitons.
-- **[Docker Cheatsheet](deployment/docker-cheatsheet.md)**: Quick reference commands.
+- **Frontend**: React 19, Vite 6, Tailwind CSS 4, Zustand 5, Lucide Icons.
+- **Visualization**: Sigma.js (WebGL), Cytoscape.js.
+- **Infrastructure**: Docker, Nginx (with metrics/HTTPS support), GitHub Actions CI/CD.
+- **Architecture**: SOLID, API-first design (currently utilizing rich mock datasets for prototype).
 
 ## 🚀 Quick Start
+
+### Local Development
 
 1.  **Clone the repository**
     ```bash
@@ -47,17 +40,43 @@ The documentation is organized as follows:
     npm run dev
     ```
 
-### 🐳 Quick Start with Docker
+### 🐳 Run with Docker
 
-1.  **Start in HTTP mode**
-    ```bash
-    docker compose --profile http up -d
-    ```
+The easiest way to see the platform in action with its full monitoring stack:
 
-2.  **Access the application**
-    Open [http://localhost:8080](http://localhost:8080)
+```bash
+# Start in HTTP mode (Default)
+docker compose --profile http up -d
 
-For detailed setup instructions, see the [Contributing Guide](development/contributing.md).
+# Access the application
+# App: http://localhost:8080
+# Grafana: http://localhost:3000 (admin/admin)
+```
+
+For more deployment options (HTTPS, Minimal, K8s), see the **[Deployment Guide](deployment/docker.md)**.
+
+## 📚 Documentation
+
+The documentation is organized as follows:
+
+### 🏗️ Architecture
+- **[Architecture Overview](architecture/overview.md)**: High-level system design and components.
+- **[Technical Implementation Spec](architecture/technical-spec.md)**: Deep dive into the GraphRAG pipeline and tech stack choices.
+
+### 🚀 Product
+- **[Product Requirements](product/requirements.md)**: Detailed feature requirements and user flows.
+- **[Gap Analysis](product/gap-analysis.md)**: Current implementation status vs. vision.
+- **[FAQ](product/faq.md)**: Frequently asked questions.
+
+### 💻 Development
+- **[Frontend Guide](development/frontend.md)**: Component library, state management, and visualization details.
+- **[Contributing](development/contributing.md)**: Guidelines for contributors.
+- **[Roadmap](development/roadmap.md)**: Future development plans.
+
+### ⚙️ Deployment
+- **[Docker Setup](deployment/docker.md)**: Full Docker deployment guide.
+- **[Kubernetes Guide](deployment/kubernetes.md)**: K8s manifests and specifications.
 
 ## 📄 License
-See [LICENSE](../LICENSE) file.
+
+This project is licensed under the terms of the [LICENSE](../LICENSE) file.

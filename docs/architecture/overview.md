@@ -4,6 +4,15 @@
 
 The Structural Integrity Platform is a polyglot, event-driven system that treats software architecture as a living knowledge graph, enforcing architectural intent through policy-as-code evaluated against that graph in real time.
 
+## 📊 Current Implementation Status
+
+While the long-term vision involves a polyglot backend (Rust, Python, Go), the current implementation is a **highly sophisticated React 19 frontend prototype**.
+
+- **Implemented**: Advanced UI/UX, multi-tenant state management, Sigma.js/Cytoscape.js visualizations, modular API layer with React Query, and complete Docker/K8s deployment manifests.
+- **Mocked**: The backend services (Ingestion, GraphRAG, Governance) are currently represented by rich, state-congruent mock datasets to demonstrate platform capabilities.
+- **Next Steps**: Transitioning from mock API fallbacks to real services and integrating actual persistence layers.
+
+
 ## High-Level Architecture
 
 ```
