@@ -72,5 +72,5 @@ nav:
       - Ingestion: platform/services/ingestion/index.md
       - GraphRAG: platform/services/graphrag/index.md
       - Governance: platform/services/governance/index.md
-      - Maintainence: platform/services/maintainence/index.md
+      - Maintenance: platform/services/maintenance/index.md
 
