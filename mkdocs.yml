@@ -1,7 +1,7 @@
 site_name: Structural Integrity Platform
 site_description: Governance layer over modern software delivery
 site_url: https://example.com/substrate-platform/
-repo_url: https://github.com/yourusername/substrate-platform
+repo_url: https://github.com/invariantcontinuum/substrate-platform
 repo_name: substrate-platform
 
 theme:
@@ -67,3 +67,9 @@ nav:
       - Docker: deployment/docker.md
       - Kubernetes: deployment/kubernetes.md
       - Cheatsheet: deployment/docker-cheatsheet.md
+  - Platform:
+      - Ingestion: platform/ingestion/index.md
+      - GraphRAG: platform/graphrag/index.md
+      - Institutional Memory: platform/memory/index.md
+      - Maintainence: platform/maintainence/index.md
+
