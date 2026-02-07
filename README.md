@@ -1,157 +1,55 @@
-take some time to read the 
-docs
-  entirely, this app is the frontend for the substrate, the core services are not implemented and for now out
- of scope, the aim is to develop till production ready the frontend with a complete openapi spec yaml supported by the mock data to accelerate the development of core services later. for now focus is only th
-e frontend in its current shape. while developing must use SOLID, DRY, KISS and Api First approach, with no hardcoded data, everywhere it must be coming from the api with fallback to the mock data
-
-We at Invariant Continuum are introducing The Structural Integrity Platform with its substrate frontend and the substrate core backend services with the unified multimodal knowledge base consisting of database like postgresql, qdrant and neo4j, these all should inherently be generic.  Similarly it must be possible to wrap the substrate easily into any name and branding to target different markets and industries b2b project teams which use AI Agents or Robots  or have high velocity of incidents where its crucial to keep a check on drift between intent and operations/reality. the  substrate frontend gives data insights to right person at the right time, monitoring drift occuring in the data ingested from various sources/dataconnectors via the platforms marketplace. the  substrate frontend enables users to connect their daily work tools, configure policies, create the project wait for the first large scan to pass  and then can see the knowledge fabric, examine Substrate Verification Queue in 
-MemoryInterface.tsx
-  log their daily work related stuff to nourish institutional Memory, 
-KnowledgeFabric.tsx
-  is currently displaying the graph which only has service api and db entitiy types it should be  entity_types: [Service, API, Module, Database, Component, Team, 
-               Repository, Package, Function, Class, Interface, 
-               Endpoint, Queue, Cache]
-Custom Relationship Types:
-
-
-depends_on, calls, imports, owns, maintains, reads_from, 
-writes_to, deploys_to, implements, exposes
-and enhance these lists so that the bare minium knowledge base for a software development team would be created, ingesting from data connectors like jira and github is a minium, optional data connectors for generic git repo, gitlab, confluence, slack, ms teams, whatsapp, google workspace, telegram, discord, and other relevant tools for agile safe agile scrum project teams. similarly research what basic policies must be made default and they must be present in the project once its created to see the value of the system at bare minimum, and after the project is created and data is ingested automatically new policies are suggested to the users depending upon the completeness,quality, monitoring and research report made by some llm in the substrate platfrom similarly thereis a need to mock llm responses for now so update the api and mock data accordingly and the user need to enter two models always, a chat model and an embedding model
-the substrate-platform will be assisted with GenAI agents that are used to:
-embed text blobs into vector databases (semantic search)
-construct or preserve the relations between those text blobs (knowledge graph)
-reconcile the reality-intent gap (drift detection)
-enforce architectural invariants (policy-as-code)
-generate actionable insights (graph reasoning)
-provide explainable governance (evidence linking)
-adapt to existing tools (integration layer)
-learn and evolve (organizational memory)
-
-aim is to move toward realisation of this substrate-frontend aliging with the vision and goals, therefore i need you to provide me an updated version of the docs from 
-docs
- and some markdown files where phase by phase the  implementation instructions  for substrate-frontend are written for later implementation. 
-
- The following report compares 
-openapi.yaml
- (legacy), 
-new_openapi.yaml
- (service-level refactor), and 
-latest_openapi.yaml
- (comprehensive v2.0) within the context of the substrate-platform/docs architectural goals.
-
-📊 Executive Summary
-Metric	openapi.yaml (Legacy)	new_openapi.yaml (Refactor)	latest_openapi.yaml (Target)
-Version	1.0.0	1.0.0	2.0.0
-Scope	Monolith (Core + Management)	Core Services Only	Full Platform (Core + Mgmt + Auth)
-Multi-Tenancy	Basic	❌ Removed	✅ Advanced (Subdomains, RBAC)
-Doc Alignment	Partial	Low (Missing key features)	High (Matches Architecture Spec)
-Status	Deprecated	Incomplete/Service-Specific	Production Ready
-🔍 Detailed Comparison
-1. Management & Multi-Tenancy (Critical)
-The documentation explicitly highlights "Multi-Tenant & RBAC" as a core feature for "Executives, Architects, Security, and Engineers" (docs/index.md).
-
-openapi.yaml: Contains basic CRUD endpoints for /organizations, /teams, and /projects.
-new_openapi.yaml: CRITICAL REGRESSION. These endpoints have been completely removed. This file appears to be a "Core Service" contract (Knowledge Fabric + Governance) stripped of the management layer. It strictly fails to support the documented multi-tenancy requirement if used as the primary entry point.
-latest_openapi.yaml: Restores and enhances these endpoints. It introduces a tenant server variable (https://{tenant}.api.substrate.io/v1), aligning perfectly with the SaaS architecture described in the docs.
-2. Authentication & Security
-openapi.yaml / new_openapi.yaml: Minimal definition (BearerAuth, ApiKeyAuth).
-latest_openapi.yaml: Adds comprehensive identity management:
-SSO Strings: /auth/login/sso, /auth/callback (Okta, Azure AD, Google).
-MFA: /auth/mfa/setup, /auth/mfa/verify.
-User Profiles: /auth/me with role parameters.
-3. Core Functional Parity
-All three files maintain consistency on the core "Structural Integrity" features described in docs/architecture/overview.md:
-
-Knowledge Fabric: /entities, /relationships (Graph traversal).
-GraphRAG: /graphrag/query, /graphrag/index (Semantic search).
-Governance: /policies, /violations (OPA enforcement).
-Metrics: /metrics/drift, /metrics/dora (Health scoring).
-new_openapi.yaml is effectively just this core layer, whereas latest_openapi.yaml wraps this core layer in the necessary enterprise management shell.
-
-🏛️ Contextual Analysis (Docs vs. Spec)
-Architecture Alignment
-The docs/architecture/overview.md describes a system with "Multi-tenant state management" and "RBAC".
-
-latest_openapi.yaml is the only spec that fully implements the RBAC (Role-Based Access Control) defined in the docs, with explicit schemas for OrgRole (admin, view, etc.) and TeamRole.
-new_openapi.yaml lacks the context of who is performing actions, making it unsuitable for the described "Multi-Tenant" architecture.
-Deployment Model
-The deployment guide (docs/deployment/docker.md referenced in index) assumes a Nginx gateway.
-
-latest_openapi.yaml aligns with a Gateway pattern where the API handles routing to specific tenant contexts.
-new_openapi.yaml resembles the internal gRPC/HTTP contract for the backend services behind that gateway.
-📝 Recommendations
-Adopt latest_openapi.yaml: This file is the true implementation of the vision outlined in docs/. It consolidates the Core Logic (from new_openapi.yaml) with the Management Layer (from openapi.yaml) and adds necessary Security features (SSO/MFA).
-Retain new_openapi.yaml as Internal Schema: You may keep new_openapi.yaml if you need a strict definition of the internal service API (excluding auth/management), but it should not be exposed to frontend clients.
-Archive openapi.yaml: It is obsolete. Its functionality has been fully superseded by latest_openapi.yaml.
-
 # Structural Integrity Platform (Substrate)
-Here is the comparison report between the current 
-openapi.yaml
- and the 
-new_openapi.yaml
-.
 
-Comparison Report: API Specification Analysis
-1. Overview
-
-Current Spec (
-openapi.yaml
-): Built on OpenAPI 3.0.3. It contains a mix of legacy endpoints and recent additions. While functional, the structure has become cluttered over time, with scattered domain logic.
-New Spec (
-new_openapi.yaml
-): Built on OpenAPI 3.1.0. It features a modern, modular architecture organized by clear functional domains (Knowledge Fabric, GraphRAG, Governance, etc.). The schema definitions are more precise and comprehensive.
-2. Key Differences & Improvements
-
-Feature Area	
-openapi.yaml
- (Current)	
-new_openapi.yaml
- (New)	Verdict
-OpenAPI Version	3.0.3	3.1.0 (Supports newer schema features)	New is better
-Organization	Flat structure, mixed tags	Cleanly grouped by domain (Knowledge Fabric, GraphRAG, etc.)	New is better
-GraphRAG	Basic endpoints added recently	Comprehensive: Full indexing pipeline, community detection, local/global search types	New is better
-Governance	Basic evaluation endpoints	Complete: Policy CRUD, extended violation tracking, severity levels	New is better
-Connectors	Minimal listing	Full CRUD: Config schemas, connection testing, sync triggering, status checks	New is better
-Metrics	Basic health check	Advanced: DORA metrics, architectural drift, compliance scores, documentation health	New is better
-Maintenance	Basic checks	Workflow: Staleness reports, duplicate detection, human-in-the-loop review queue	New is better
-Settings	UI preferences only	System: LLM provider config (OpenAI/Anthropic), notification channels	New is better
-Management	Has Orgs, Teams, Projects	MISSING Organization, Team, and Project management endpoints	Current has gap
-3. Detailed Analysis of 
-new_openapi.yaml
-
-Knowledge Fabric: Introduces typed relationships (RelationshipType enum is exhaustive: depends_on, imports, calls, etc.) and graph traversal endpoints (/entities/{id}/context).
-Quality Metrics: explicit schemas for 
-HealthScore
-, DriftMetrics, ComplianceMetrics, and DoraMetrics provide a standardized way to consume platform health data.
-Connectors: The configSchema field in the Connector object allows for dynamic UI generation for different integration types (Jira vs GitHub).
-Settings: dedicated endpoints for configuring the LLM provider (/settings/llm) allow the platform to be runtime-configurable.
-4. Recommendation
-
-The 
-new_openapi.yaml
- represents a significant leap forward in maturity and capability definition. However, it lacks the multi-tenancy management features present in the current file.
-
-Proposed Action Plan:
-
-Adopt 
-new_openapi.yaml
- as the new source of truth (
-src/api/openapi.yaml
-).
-Migrate Management Endpoints: Port the Organization, Team, and 
-Project
- CRUD operations from the old 
-openapi.yaml
- into the new file under a Management tag to ensure multi-tenancy support is preserved.
-Delete Legacy File: Once merged, archive/delete the old 
-openapi.yaml
-.
-This approach gives you the best of both worlds: a modern, feature-rich API specification with the necessary tenant management capabilities preserved.
 **Substrate Platform** is a governance layer over modern software delivery — powered by a live knowledge graph and an internal integration marketplace.
 
 AI has massively accelerated code creation but often at the cost of architectural consistency, security guarantees, and shared understanding. This platform restores control, visibility, and confidence by governing AI-generated code and preserving architectural intent.
 
 [![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=invariantcontinuum_substrate-platform) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=invariantcontinuum_substrate-platform)](https://sonarcloud.io/summary/new_code?id=invariantcontinuum_substrate-platform)
+
+## 📊 API Specification Status (v2.0 Transition)
+
+The following report compares the legacy (`openapi.yaml`), refactored (`new_openapi.yaml`), and target (`latest_openapi.yaml`) specifications.
+
+### Executive Summary
+
+| Metric | `openapi.yaml` (Legacy) | `new_openapi.yaml` (Refactor) | `latest_openapi.yaml` (Target) |
+| :--- | :--- | :--- | :--- |
+| **Version** | `1.0.0` | `1.0.0` | `2.0.0` |
+| **Scope** | Monolith (Core + Management) | Core Services Only | **Full Platform** (Core + Mgmt + Auth) |
+| **Multi-Tenancy** | Basic | **❌ Removed** | **✅ Advanced** (Subdomains, RBAC) |
+| **Doc Alignment** | Partial | Low (Missing key features) | **High** (Matches Architecture Spec) |
+| **Status** | Deprecated | Incomplete/Service-Specific | **Production Ready** |
+
+### Detailed Comparison
+
+#### 1. Management & Multi-Tenancy (Critical)
+The documentation explicitly highlights "**Multi-Tenant & RBAC**" as a core feature for "Executives, Architects, Security, and Engineers" (`docs/index.md`).
+
+*   **`openapi.yaml`**: Contains basic CRUD endpoints for `/organizations`, `/teams`, and `/projects`.
+*   **`new_openapi.yaml`**: **CRITICAL REGRESSION.** These endpoints have been completely removed. This file appears to be a "Core Service" contract (Knowledge Fabric + Governance) stripped of the management layer. It strictly fails to support the documented multi-tenancy requirement if used as the primary entry point.
+*   **`latest_openapi.yaml`**: Restores and enhances these endpoints. It introduces a `tenant` server variable (`https://{tenant}.api.substrate.io/v1`), aligning perfectly with the SaaS architecture described in the docs.
+
+#### 2. Authentication & Security
+*   **`openapi.yaml` / `new_openapi.yaml`**: Minimal definition (`BearerAuth`, `ApiKeyAuth`).
+*   **`latest_openapi.yaml`**: Adds comprehensive identity management:
+    *   **SSO Strings**: `/auth/login/sso`, `/auth/callback` (Okta, Azure AD, Google).
+    *   **MFA**: `/auth/mfa/setup`, `/auth/mfa/verify`.
+    *   **User Profiles**: `/auth/me` with role parameters.
+
+#### 3. Core Functional Parity
+All three files maintain consistency on the core "Structural Integrity" features described in `docs/architecture/overview.md`:
+*   **Knowledge Fabric**: `/entities`, `/relationships` (Graph traversal).
+*   **GraphRAG**: `/graphrag/query`, `/graphrag/index` (Semantic search).
+*   **Governance**: `/policies`, `/violations` (OPA enforcement).
+*   **Metrics**: `/metrics/drift`, `/metrics/dora` (Health scoring).
+
+`new_openapi.yaml` is effectively just this core layer, whereas `latest_openapi.yaml` wraps this core layer in the necessary enterprise management shell.
+
+### Recommendations
+
+1.  **Adopt `latest_openapi.yaml`**: This file is the true implementation of the vision outlined in `docs/`. It consolidates the Core Logic (from `new_openapi.yaml`) with the Management Layer (from `openapi.yaml`) and adds necessary Security features (SSO/MFA).
+2.  **Retain `new_openapi.yaml` as Internal Schema**: You may keep `new_openapi.yaml` if you need a strict definition of the *internal* service API (excluding auth/management), but it should not be exposed to frontend clients.
+3.  **Archive `openapi.yaml`**: It is obsolete. Its functionality has been fully superseded by `latest_openapi.yaml`.
 
 ## ✨ Core Features
 
