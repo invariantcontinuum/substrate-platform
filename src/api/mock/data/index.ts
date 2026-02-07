@@ -25,6 +25,7 @@ import type {
   User,
   UserPreferences,
   NotificationPreferences,
+  NavigationConfig,
 } from '@/types';
 
 // Domain-specific data imports
@@ -108,6 +109,7 @@ interface UIData {
   legendItems: LegendItemConfig[];
   analysisActions: Record<string, AnalysisAction[]>;
   driftActions: AnalysisAction[];
+  navigation: NavigationConfig;
 }
 
 interface MemoryData {
@@ -212,7 +214,7 @@ export async function mockProvider(endpoint: string, method: string, body?: unkn
       return handlePoliciesRequest(segments.slice(1), id);
 
     case 'drift':
-      return handleDriftRequest(segments.slice(1), id);
+      return handleDriftRequest(segments.slice(1));
 
     case 'health':
       return handleHealthRequest(segments.slice(1));
@@ -227,7 +229,7 @@ export async function mockProvider(endpoint: string, method: string, body?: unkn
       return handleUIConfigRequest(segments.slice(1));
 
     case 'memory':
-      return handleMemoryRequest(segments.slice(1), id);
+      return handleMemoryRequest(segments.slice(1));
 
     case 'search':
       return handleSearchRequest(segments.slice(1));
@@ -272,7 +274,7 @@ function handleAuthRequest(segments: string[], method: string, body?: unknown): 
     case 'register': {
       if (method !== 'POST') throw new Error('Method not allowed');
       const { email, password, name, organizationName } = body as { email: string; password: string; name: string; organizationName?: string };
-      
+
       // Check if email exists
       if (users.find(u => u.email === email)) {
         throw new Error('Email already exists');
@@ -341,7 +343,7 @@ function handleAuthRequest(segments: string[], method: string, body?: unknown): 
     case 'login': {
       if (method !== 'POST') throw new Error('Method not allowed');
       const { email, password } = body as { email: string; password: string };
-      
+
       // Simple mock authentication - accept any password for demo users
       const user = users.find(u => u.email === email);
       if (!user) {
@@ -372,7 +374,7 @@ function handleAuthRequest(segments: string[], method: string, body?: unknown): 
     case 'refresh': {
       if (method !== 'POST') throw new Error('Method not allowed');
       const { refreshToken } = body as { refreshToken: string };
-      
+
       if (!refreshToken.includes('mock-refresh-token')) {
         throw new Error('Invalid refresh token');
       }
@@ -439,14 +441,14 @@ function handleUsersRequest(segments: string[], method: string, body?: unknown):
         if (method === 'PUT') {
           if (!currentUser) throw new Error('Unauthorized');
           const prefsUpdate = body as Partial<UserPreferences>;
-          currentUser.preferences = { 
-            ...currentUser.preferences, 
+          currentUser.preferences = {
+            ...currentUser.preferences,
             ...prefsUpdate,
             theme: prefsUpdate.theme || currentUser.preferences?.theme || 'dark',
             defaultView: prefsUpdate.defaultView || currentUser.preferences?.defaultView || 'engineer',
-            notifications: { 
+            notifications: {
               ...currentUser.preferences?.notifications,
-              ...prefsUpdate.notifications 
+              ...prefsUpdate.notifications
             } as NotificationPreferences
           };
           return currentUser.preferences;
@@ -565,17 +567,19 @@ function handlePoliciesRequest(segments: string[], id?: string): unknown {
   }
 }
 
-function handleDriftRequest(segments: string[], id?: string): unknown {
+function handleDriftRequest(segments: string[]): unknown {
   const subResource = segments[0];
 
   switch (subResource) {
-    case 'violations':
-      if (id) {
-        const violation = mockData.drift.violations.find(v => v.id === id);
-        if (!violation) throw new Error(`Violation not found: ${id}`);
+    case 'violations': {
+      const violationId = segments[1];
+      if (violationId) {
+        const violation = mockData.drift.violations.find(v => v.id === violationId);
+        if (!violation) throw new Error(`Violation not found: ${violationId}`);
         return violation;
       }
       return mockData.drift.violations;
+    }
 
     case 'summary':
       return mockData.drift.summary;
@@ -687,6 +691,9 @@ function handleUIConfigRequest(segments: string[]): unknown {
 
     case 'dashboard-views':
       return { data: getDashboardViewConfigs() };
+
+    case 'navigation':
+      return mockData.ui.navigation;
 
     default:
       return mockData.ui;
@@ -973,27 +980,26 @@ function getLandingContent() {
   };
 }
 
-function handleMemoryRequest(segments: string[], id?: string): unknown {
+function handleMemoryRequest(segments: string[]): unknown {
   const subResource = segments[0];
 
   if (subResource === 'audit') {
-    if (id) {
-      const item = mockData.memory.auditItems.find(a => a.id === id);
-      if (!item) throw new Error(`Audit item not found: ${id}`);
-      return { data: item };
+    const auditItemId = segments[1];
+    if (auditItemId) {
+      const item = mockData.memory.auditItems.find(a => a.id === auditItemId);
+      if (!item) throw new Error(`Audit item not found: ${auditItemId}`);
+      return item;
     }
-    return { data: mockData.memory.auditItems };
+    return mockData.memory.auditItems;
   }
 
   if (subResource === 'stats') {
-    return { data: mockData.memory.stats };
+    return mockData.memory.stats;
   }
 
   return {
-    data: {
-      stats: mockData.memory.stats,
-      auditItems: mockData.memory.auditItems,
-    },
+    stats: mockData.memory.stats,
+    auditItems: mockData.memory.auditItems,
   };
 }
 
@@ -1088,7 +1094,7 @@ function handleOrganizationRequest(segments: string[], id?: string, method?: str
     // Handle /organizations/{id}/members
     if (subResource === 'members') {
       const memberId = segments[2];
-      
+
       if (memberId) {
         // Update or delete member
         if (method === 'PATCH') {
@@ -1098,7 +1104,7 @@ function handleOrganizationRequest(segments: string[], id?: string, method?: str
           return null; // Mock success
         }
       }
-      
+
       // List members or invite
       if (method === 'POST') {
         return null; // Mock invite success
@@ -1109,13 +1115,13 @@ function handleOrganizationRequest(segments: string[], id?: string, method?: str
     // Handle /organizations/{id}/teams
     if (subResource === 'teams') {
       const teamId = segments[2];
-      
+
       if (teamId) {
         const teamIndex = teams.findIndex(t => t.id === teamId && t.organizationId === id);
         if (teamIndex === -1) throw new Error(`Team not found: ${teamId}`);
-        
+
         const teamSubResource = segments[3];
-        
+
         // Handle team members
         if (teamSubResource === 'members') {
           const teamMemberId = segments[4];
@@ -1128,7 +1134,7 @@ function handleOrganizationRequest(segments: string[], id?: string, method?: str
           // Return mock team members
           return [];
         }
-        
+
         // GET, PATCH, DELETE team
         if (method === 'GET') {
           const team = teams[teamIndex]!;
@@ -1148,7 +1154,7 @@ function handleOrganizationRequest(segments: string[], id?: string, method?: str
           return null;
         }
       }
-      
+
       // List teams or create
       if (method === 'POST') {
         const createReq = body as { name: string; description?: string; color?: string; leadUserId?: string };
@@ -1166,7 +1172,7 @@ function handleOrganizationRequest(segments: string[], id?: string, method?: str
         teams.push(newTeam);
         return newTeam;
       }
-      
+
       // Return teams for this organization
       return teams
         .filter(t => t.organizationId === id)
@@ -1230,22 +1236,14 @@ function handleOrganizationRequest(segments: string[], id?: string, method?: str
   }
 
   // List organizations
-  return {
-    data: organizations.map(org => ({
-      ...org,
-      stats: {
-        totalProjects: projects.filter(p => p.organizationId === org.id).length,
-        totalMembers: mockOrganizationMembers.filter(m => m.organizationId === org.id).length,
-        totalTeams: teams.filter(t => t.organizationId === org.id).length,
-      },
-    })),
-    meta: {
-      page: 1,
-      perPage: organizations.length,
-      total: organizations.length,
-      totalPages: 1,
+  return organizations.map(org => ({
+    ...org,
+    stats: {
+      totalProjects: projects.filter(p => p.organizationId === org.id).length,
+      totalMembers: mockOrganizationMembers.filter(m => m.organizationId === org.id).length,
+      totalTeams: teams.filter(t => t.organizationId === org.id).length,
     },
-  };
+  }));
 }
 
 function handleProjectRequest(segments: string[], id?: string, method?: string, body?: unknown): unknown {
@@ -1364,7 +1362,7 @@ function handleProjectRequest(segments: string[], id?: string, method?: string, 
   const params = new URLSearchParams(segments[0]?.includes('?') ? segments[0].split('?')[1] : '');
   const orgId = params.get('organizationId');
   const status = params.get('status');
-  
+
   let filteredProjects = projects;
   if (orgId) {
     filteredProjects = filteredProjects.filter(p => p.organizationId === orgId);
@@ -1373,15 +1371,7 @@ function handleProjectRequest(segments: string[], id?: string, method?: string, 
     filteredProjects = filteredProjects.filter(p => p.status === status);
   }
 
-  return {
-    data: filteredProjects,
-    meta: {
-      page: 1,
-      perPage: filteredProjects.length,
-      total: filteredProjects.length,
-      totalPages: 1,
-    },
-  };
+  return filteredProjects;
 }
 
 function handleDashboardRequest(segments: string[]): unknown {

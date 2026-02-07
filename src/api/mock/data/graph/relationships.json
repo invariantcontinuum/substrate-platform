@@ -1,0 +1,44 @@
+[
+    {
+        "id": "rel-1",
+        "source": "svc-auth",
+        "target": "db-users",
+        "type": "writes_to",
+        "label": "Persists User Data"
+    },
+    {
+        "id": "rel-2",
+        "source": "svc-payment",
+        "target": "svc-auth",
+        "type": "calls",
+        "label": "Validates Token"
+    },
+    {
+        "id": "rel-3",
+        "source": "api-checkout",
+        "target": "svc-payment",
+        "type": "depends_on",
+        "label": "Process Transaction"
+    },
+    {
+        "id": "rel-4",
+        "source": "team-platform",
+        "target": "svc-auth",
+        "type": "owns",
+        "label": "Maintains"
+    },
+    {
+        "id": "rel-5",
+        "source": "svc-auth",
+        "target": "lib-utils",
+        "type": "imports",
+        "label": "Uses Crypto Lib"
+    },
+    {
+        "id": "rel-6",
+        "source": "svc-payment",
+        "target": "q-notifications",
+        "type": "writes_to",
+        "label": "Payment Events"
+    }
+]

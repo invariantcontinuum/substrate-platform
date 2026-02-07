@@ -39,7 +39,10 @@
       "summary": "Found undocumented dependencies that violate architectural policies.",
       "violation": {
         "policy": "ADR-022",
-        "between": ["DB_ORDERS", "SHADOW_TRACKER"],
+        "between": [
+          "DB_ORDERS",
+          "SHADOW_TRACKER"
+        ],
         "description": "Undocumented dependency detected. This violates architectural policy ADR-022 which mandates all data flow dependencies must be explicitly declared in the Intent layer."
       }
     }
@@ -49,20 +52,28 @@
       "id": "reality",
       "color": "bg-blue-500",
       "label": "Documented Implementation",
-      "lenses": ["reality", "drift"]
+      "lenses": [
+        "reality",
+        "drift"
+      ]
     },
     {
       "id": "intent",
       "color": "bg-purple-500",
       "label": "Architectural Requirement",
-      "lenses": ["intent", "drift"]
+      "lenses": [
+        "intent",
+        "drift"
+      ]
     },
     {
       "id": "drift",
       "color": "bg-red-500",
       "label": "Invariant Violation",
       "dashed": true,
-      "lenses": ["drift"]
+      "lenses": [
+        "drift"
+      ]
     }
   ],
   "analysisActions": {
@@ -135,5 +146,51 @@
       "description": "Provide reasoning and suppress this warning",
       "color": "emerald"
     }
-  ]
+  ],
+  "navigation": {
+    "main": [
+      {
+        "id": "dashboard",
+        "icon": "LayoutDashboard",
+        "label": "Project Dashboard"
+      },
+      {
+        "id": "graph",
+        "icon": "Database",
+        "label": "Knowledge Fabric"
+      },
+      {
+        "id": "memory",
+        "icon": "MessageSquare",
+        "label": "Institutional Memory"
+      },
+      {
+        "id": "rag",
+        "icon": "Search",
+        "label": "GraphRAG Studio"
+      },
+      {
+        "id": "policy",
+        "icon": "ShieldCheck",
+        "label": "Active Governance"
+      }
+    ],
+    "bottom": [
+      {
+        "id": "terminal",
+        "icon": "Terminal",
+        "label": "System Logs"
+      },
+      {
+        "id": "teams",
+        "icon": "Users",
+        "label": "Teams"
+      },
+      {
+        "id": "settings",
+        "icon": "Settings",
+        "label": "Settings"
+      }
+    ]
+  }
 }

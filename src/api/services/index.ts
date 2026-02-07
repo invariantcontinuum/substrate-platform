@@ -33,6 +33,7 @@ import type {
   LegendItemConfig,
   AnalysisAction,
   AuditItem,
+  NavigationConfig,
 } from '@/types';
 
 // Re-export base class
@@ -308,6 +309,10 @@ class UIConfigService extends BaseService {
       }>;
     }>('/dashboard-views', projectId ? { projectId } : undefined);
   }
+
+  getNavigation() {
+    return this.get<NavigationConfig>('/navigation');
+  }
 }
 
 /**
@@ -432,7 +437,7 @@ class MemoryService extends BaseService {
   getAuditItemById(id: string) {
     return this.get<AuditItem>(`/audit/${id}`);
   }
-  
+
   getStats() {
     return this.get<MemoryStats>('/stats');
   }
@@ -494,7 +499,7 @@ export const api: Api = {
   organizations: organizationsService,
   projects: projectsService,
   teams: teamsService,
-  
+
   // Legacy services
   graph: graphService,
   policies: policiesService,
@@ -507,7 +512,7 @@ export const api: Api = {
   memory: memoryService,
   settings: settingsService,
   cms: cmsService,
-  
+
   // Legacy tenant services
   organization: organizationService,
   project: projectService,

@@ -4,22 +4,12 @@
  */
 
 import React from 'react';
-import { 
-  LayoutDashboard,
-  Database, 
-  MessageSquare, 
-  Search, 
-  ShieldCheck, 
-  Terminal, 
-  Target,
-  PanelLeftClose,
-  PanelLeft,
-  Settings,
-  Users,
-} from 'lucide-react';
+import { PanelLeft, PanelLeftClose, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useNavigation } from '@/api/hooks';
 import { useAppStore, useIsSyncing } from '@/stores';
 import { NavButton } from '@/components/ui/NavButton';
+import { DynamicIcon } from '@/components/ui/DynamicIcon';
 
 interface SidebarProps {
   activeTab: string;
@@ -27,27 +17,17 @@ interface SidebarProps {
   isOpen?: boolean;
 }
 
-const navItems = [
-  { id: 'dashboard', icon: LayoutDashboard, label: 'Project Dashboard' },
-  { id: 'graph', icon: Database, label: 'Knowledge Fabric' },
-  { id: 'memory', icon: MessageSquare, label: 'Institutional Memory' },
-  { id: 'rag', icon: Search, label: 'GraphRAG Studio' },
-  { id: 'policy', icon: ShieldCheck, label: 'Active Governance' },
-];
-
-const bottomItems = [
-  { id: 'terminal', icon: Terminal, label: 'System Logs' },
-  { id: 'teams', icon: Users, label: 'Teams' },
-  { id: 'settings', icon: Settings, label: 'Settings' },
-];
-
-export const Sidebar: React.FC<SidebarProps> = ({ 
-  activeTab, 
+export const Sidebar: React.FC<SidebarProps> = ({
+  activeTab,
   onTabChange,
   isOpen = true,
 }) => {
   const isSyncing = useIsSyncing();
   const toggleSidebar = useAppStore((state) => state.toggleSidebar);
+  const { data: navigation } = useNavigation();
+
+  const navItems = navigation?.main || [];
+  const bottomItems = navigation?.bottom || [];
 
   if (!isOpen) {
     return (
@@ -72,7 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
               title={item.label}
             >
-              <item.icon size={18} />
+              <DynamicIcon name={item.icon} size={18} />
             </button>
           ))}
         </nav>
@@ -89,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
               title={item.label}
             >
-              <item.icon size={18} />
+              <DynamicIcon name={item.icon} size={18} />
             </button>
           ))}
         </nav>
@@ -115,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             key={item.id}
             active={activeTab === item.id}
             onClick={() => onTabChange(item.id)}
-            icon={<item.icon size={18} />}
+            icon={<DynamicIcon name={item.icon} size={18} />}
             label={item.label}
             isLoading={item.id === 'graph' && isSyncing}
           />
@@ -128,11 +108,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             key={item.id}
             active={activeTab === item.id}
             onClick={() => onTabChange(item.id)}
-            icon={<item.icon size={18} />}
+            icon={<DynamicIcon name={item.icon} size={18} />}
             label={item.label}
           />
         ))}
       </nav>
+
 
       <div className="p-4 border-t border-slate-800/50">
         <div className="p-4 bg-blue-600/5 rounded-xl border border-blue-500/20">
@@ -143,12 +124,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex gap-1">
               {[1, 1, 1, 0, 0, 0, 0].map((v, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className={cn(
                     "w-3 h-3 rounded-sm",
                     v ? 'bg-blue-500' : 'bg-slate-700'
-                  )} 
+                  )}
                 />
               ))}
             </div>

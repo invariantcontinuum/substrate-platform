@@ -47,8 +47,6 @@ import {
   useProjectStore,
   useHasPermission,
   useEffectiveDashboardView,
-  useIsAdmin,
-  useIsOwner,
 } from '@/stores';
 import {
   useProjectDashboard,
@@ -58,9 +56,9 @@ import {
   useProjectActivity,
   useInstalledConnectors,
 } from '@/hooks';
-import { useDashboardViews, type DashboardViewConfig } from '@/api/hooks';
+import { useDashboardViews } from '@/api/hooks';
 import { ROLE_DEFINITIONS } from '@/types';
-import type { DashboardView, Permission, ProjectActivity, UserRole } from '@/types';
+import type { DashboardView, Permission, ProjectActivity } from '@/types';
 
 // ============================================================================
 // Icon Mapping (API returns icon name as string - map to Lucide icons)
@@ -106,7 +104,6 @@ interface ViewSelectorProps {
 }
 
 const ViewSelector: React.FC<ViewSelectorProps> = ({ projectId }) => {
-  const effectiveView = useEffectiveDashboardView();
   const currentView = useDashboardView();
   const setDashboardView = useProjectStore((state) => state.setDashboardView);
   const currentMember = useCurrentMember();
@@ -119,11 +116,11 @@ const ViewSelector: React.FC<ViewSelectorProps> = ({ projectId }) => {
   const availableViews = useMemo(() => {
     if (!dashboardViews) return [];
     if (!currentMember) return dashboardViews;
-    
-    const memberPerms = currentMember.permissions?.length > 0 
-      ? currentMember.permissions 
+
+    const memberPerms = currentMember.permissions?.length > 0
+      ? currentMember.permissions
       : ROLE_DEFINITIONS[currentMember.role].permissions;
-    
+
     return dashboardViews.filter((view) => {
       if (!view.requiredPermission) return true;
       return memberPerms.includes(view.requiredPermission as Permission);
@@ -189,8 +186,8 @@ const ViewSelector: React.FC<ViewSelectorProps> = ({ projectId }) => {
                     }}
                     className={cn(
                       "w-full flex items-start gap-3 p-3 rounded-lg text-left transition-colors",
-                      isActive 
-                        ? "bg-blue-500/10 border border-blue-500/20" 
+                      isActive
+                        ? "bg-blue-500/10 border border-blue-500/20"
                         : "hover:bg-slate-800"
                     )}
                   >
@@ -312,8 +309,8 @@ const StatsGrid: React.FC<{ stats: StatItem[] }> = ({ stats }) => {
               {stat.change !== undefined && (
                 <span className={cn(
                   "text-xs font-medium",
-                  stat.trend === 'up' ? 'text-emerald-400' : 
-                  stat.trend === 'down' ? 'text-red-400' : 'text-slate-400'
+                  stat.trend === 'up' ? 'text-emerald-400' :
+                    stat.trend === 'down' ? 'text-red-400' : 'text-slate-400'
                 )}>
                   {stat.trend === 'up' ? '+' : ''}{stat.change}%
                 </span>
@@ -471,9 +468,9 @@ const ConnectorsOverview: React.FC<{ projectId: string }> = ({ projectId }) => {
               <div className={cn(
                 "w-2 h-2 rounded-full",
                 connector.status === 'installed' ? 'bg-emerald-500' :
-                connector.status === 'error' ? 'bg-red-500' :
-                connector.status === 'configuring' ? 'bg-amber-500' :
-                'bg-slate-500'
+                  connector.status === 'error' ? 'bg-red-500' :
+                    connector.status === 'configuring' ? 'bg-amber-500' :
+                      'bg-slate-500'
               )} />
               <div>
                 <p className="text-sm text-slate-200">{connector.name}</p>
@@ -518,8 +515,8 @@ const ViolationsAlert: React.FC<{ count: number; criticalCount: number }> = ({ c
   return (
     <div className={cn(
       "flex items-center gap-3 p-4 rounded-xl border",
-      criticalCount > 0 
-        ? "bg-red-500/5 border-red-500/20" 
+      criticalCount > 0
+        ? "bg-red-500/5 border-red-500/20"
         : "bg-amber-500/5 border-amber-500/20"
     )}>
       <div className={cn(
@@ -596,9 +593,9 @@ const ExecutiveView: React.FC<{ projectId: string }> = ({ projectId }) => {
   return (
     <div className="space-y-6">
       {(summary.criticalIssues?.length ?? 0) > 0 && (
-        <ViolationsAlert 
-          count={summary.criticalIssues?.length ?? 0} 
-          criticalCount={summary.criticalIssues?.filter(i => i.severity === 'critical').length ?? 0} 
+        <ViolationsAlert
+          count={summary.criticalIssues?.length ?? 0}
+          criticalCount={summary.criticalIssues?.filter(i => i.severity === 'critical').length ?? 0}
         />
       )}
 
@@ -652,7 +649,7 @@ const ExecutiveView: React.FC<{ projectId: string }> = ({ projectId }) => {
 
 const ArchitectView: React.FC<{ projectId: string }> = ({ projectId }) => {
   const { data: summary, isLoading } = useArchitectSummary(projectId);
-  const { data: graphMetrics } = useProjectDashboard(projectId);
+
 
   if (isLoading || !summary) {
     return (
@@ -722,7 +719,7 @@ const ArchitectView: React.FC<{ projectId: string }> = ({ projectId }) => {
                     <AlertTriangle size={16} className={cn(
                       "mt-0.5",
                       violation.severity === 'Critical' ? 'text-red-400' :
-                      violation.severity === 'High' ? 'text-amber-400' : 'text-blue-400'
+                        violation.severity === 'High' ? 'text-amber-400' : 'text-blue-400'
                     )} />
                     <div className="flex-1">
                       <p className="text-sm text-slate-200">{violation.policy}</p>
@@ -937,9 +934,7 @@ const EngineerView: React.FC<{ projectId: string }> = ({ projectId }) => {
 export const ProjectDashboard: React.FC = () => {
   const project = useCurrentProject();
   const organization = useCurrentOrganization();
-  const member = useCurrentMember();
   const effectiveView = useEffectiveDashboardView();
-  const isAdmin = useIsAdmin();
   const canManageProject = useHasPermission('project:write');
 
   // Set page title
@@ -999,7 +994,7 @@ export const ProjectDashboard: React.FC = () => {
 
         <div className="flex items-center gap-3">
           <ViewSelector projectId={project.id} />
-          
+
           {canManageProject && (
             <button className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium text-white transition-colors">
               <Settings size={14} />
@@ -1012,7 +1007,7 @@ export const ProjectDashboard: React.FC = () => {
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {project.status === 'setup' ? (
-          <ProjectSetup 
+          <ProjectSetup
             projectId={project.id}
             projectName={project.name}
             onSetupComplete={() => {

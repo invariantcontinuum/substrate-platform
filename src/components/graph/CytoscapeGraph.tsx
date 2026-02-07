@@ -3,7 +3,7 @@
  * For architecture diagrams with rich layout algorithms
  */
 
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 import { LensType, GraphNode, GraphEdge } from '@/types';
@@ -48,14 +48,14 @@ export const CytoscapeGraph: React.FC<CytoscapeGraphProps> = ({
             'width': 'label',
             'height': 'label',
             'padding': '12px',
-            
+
             // Colors - semi-transparent background with colored border
             'background-color': 'data(color)',
             'background-opacity': 0.1,
             'border-width': 2,
             'border-color': 'data(color)',
             'border-opacity': 0.8,
-            
+
             // Label styling - matching qualityawareui Node aesthetic
             'label': 'data(label)',
             'font-size': '10px',
@@ -138,8 +138,20 @@ export const CytoscapeGraph: React.FC<CytoscapeGraphProps> = ({
     const elements: cytoscape.ElementDefinition[] = [
       // Nodes
       ...nodes.map((node) => {
-        const color = getLensColor(node.colors[activeLens] as LensType);
-        
+        // Map Entity Type to Color
+        let color: string;
+        const type = node.type?.toLowerCase();
+
+        switch (type) {
+          case 'service': color = '#3b82f6'; break; // blue
+          case 'api': color = '#a855f7'; break; // purple
+          case 'database': color = '#ef4444'; break; // red (or slate/database color)
+          case 'team': color = '#f97316'; break; // orange
+          case 'package': color = '#10b981'; break; // emerald
+          case 'queue': color = '#eab308'; break; // yellow
+          default: color = getLensColor(node.colors?.[activeLens] as LensType || 'reality');
+        }
+
         return {
           data: {
             id: node.id,
@@ -154,7 +166,7 @@ export const CytoscapeGraph: React.FC<CytoscapeGraphProps> = ({
           },
         };
       }),
-      
+
       // Edges
       ...edges
         .filter((edge) => {
@@ -204,8 +216,8 @@ export const CytoscapeGraph: React.FC<CytoscapeGraphProps> = ({
   }, [nodes, edges, activeLens, layout]);
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className="w-full h-full"
       style={{ touchAction: 'none' }}
     />

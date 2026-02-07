@@ -1,0 +1,18 @@
+[
+    {
+        "id": "verify-1",
+        "title": "New Dependency Detected",
+        "desc": "Service 'Auth' is now calling 'User DB' directly. Is this intentional?",
+        "highlight": true,
+        "confidence": 0.85,
+        "entityId": "rel-1"
+    },
+    {
+        "id": "verify-2",
+        "title": "Policy Violation",
+        "desc": "Circular dependency detected between Service A and Service B.",
+        "highlight": false,
+        "confidence": 0.95,
+        "entityId": "pol-1"
+    }
+]

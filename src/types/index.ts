@@ -4,7 +4,7 @@
  * Centralized type definitions following DRY principle
  */
 
-import { LucideIcon } from 'lucide-react';
+
 
 // ============================================================================
 // Base Types
@@ -409,6 +409,19 @@ export interface AnalysisAction {
   label: string;
   description: string;
   color: string;
+}
+
+export interface NavigationItem {
+  id: string;
+  label: string;
+  icon: string;
+  path?: string;
+  children?: NavigationItem[];
+}
+
+export interface NavigationConfig {
+  main: NavigationItem[];
+  bottom: NavigationItem[];
 }
 
 // ============================================================================

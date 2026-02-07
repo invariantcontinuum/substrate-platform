@@ -1,0 +1,82 @@
+[
+    {
+        "id": "svc-auth",
+        "label": "Auth Service",
+        "type": "Service",
+        "metadata": {
+            "language": "Go",
+            "owner": "team-platform"
+        },
+        "data": {
+            "version": "1.2.0"
+        }
+    },
+    {
+        "id": "svc-payment",
+        "label": "Payment Service",
+        "type": "Service",
+        "metadata": {
+            "language": "Rust",
+            "owner": "team-finance"
+        },
+        "data": {
+            "version": "2.0.1"
+        }
+    },
+    {
+        "id": "db-users",
+        "label": "User Database",
+        "type": "Database",
+        "metadata": {
+            "engine": "PostgreSQL",
+            "version": "16"
+        },
+        "data": {
+            "size": "150GB"
+        }
+    },
+    {
+        "id": "api-checkout",
+        "label": "Checkout API",
+        "type": "API",
+        "metadata": {
+            "spec": "OpenAPI 3.1"
+        },
+        "data": {
+            "endpoints": 15
+        }
+    },
+    {
+        "id": "team-platform",
+        "label": "Platform Team",
+        "type": "Team",
+        "metadata": {
+            "email": "platform@example.com"
+        },
+        "data": {
+            "members": 8
+        }
+    },
+    {
+        "id": "lib-utils",
+        "label": "Shared Utils",
+        "type": "Package",
+        "metadata": {
+            "manager": "npm"
+        },
+        "data": {
+            "downloads": 5000
+        }
+    },
+    {
+        "id": "q-notifications",
+        "label": "Notification Queue",
+        "type": "Queue",
+        "metadata": {
+            "provider": "RabbitMQ"
+        },
+        "data": {
+            "throughput": "10k/s"
+        }
+    }
+]

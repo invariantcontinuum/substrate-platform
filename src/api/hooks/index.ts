@@ -41,6 +41,7 @@ import type {
   LegendItemConfig,
   AnalysisAction,
   AuditItem,
+  NavigationConfig,
 } from '@/types';
 
 // ============================================================================
@@ -99,6 +100,7 @@ export const queryKeys = {
     legend: () => ['ui', 'legend'] as const,
     actions: () => ['ui', 'actions'] as const,
     driftActions: () => ['ui', 'driftActions'] as const,
+    navigation: () => ['ui', 'navigation'] as const,
   },
   // Memory
   memory: {
@@ -445,6 +447,18 @@ export function useDriftActions(options?: UseQueryOptions<AnalysisAction[]>) {
   });
 }
 
+export function useNavigation(options?: UseQueryOptions<NavigationConfig>) {
+  return useQuery<NavigationConfig>({
+    queryKey: queryKeys.ui.navigation(),
+    queryFn: async () => {
+      const response = await api.ui.getNavigation();
+      return response.data;
+    },
+    staleTime: 60 * 60 * 1000, // 1 hour
+    ...options,
+  });
+}
+
 // ============================================================================
 // UI Config Hooks (New)
 // ============================================================================
@@ -535,7 +549,7 @@ export function useDriftAnalysis(options?: UseQueryOptions<DriftAnalysis>) {
       const response = await api.drift.getViolations({ status: 'open' });
       const violations = response.data;
       const openViolation = violations.find(v => v.highlight);
-      
+
       if (openViolation) {
         return {
           hasViolation: true,
@@ -545,7 +559,7 @@ export function useDriftAnalysis(options?: UseQueryOptions<DriftAnalysis>) {
           description: openViolation.description,
         };
       }
-      
+
       return { hasViolation: false };
     },
     staleTime: 30 * 1000,
@@ -603,7 +617,7 @@ export function useMemoryStats(options?: UseQueryOptions<MemoryStats>) {
 
 export function useResolveViolation() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ id, resolution }: { id: string; resolution: ViolationResolution }) => {
       const response = await api.drift.resolveViolation(id, resolution);
@@ -617,7 +631,7 @@ export function useResolveViolation() {
 
 export function useTriggerSync() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (request: SyncRequest) => {
       const response = await api.sync.trigger(request);
@@ -631,7 +645,7 @@ export function useTriggerSync() {
 
 export function useCreatePolicy() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (policy: PolicyCreate) => {
       const response = await api.policies.create(policy);
@@ -645,7 +659,7 @@ export function useCreatePolicy() {
 
 export function useUpdatePolicy() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ id, policy }: { id: string; policy: Partial<PolicyCreate> }) => {
       const response = await api.policies.update(id, policy);
@@ -660,7 +674,7 @@ export function useUpdatePolicy() {
 
 export function useUpdatePolicyStatus() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ id, status }: { id: string; status: PolicyStatus }) => {
       const response = await api.policies.updateStatus(id, status);
@@ -675,7 +689,7 @@ export function useUpdatePolicyStatus() {
 
 export function useUpdateEnforcementMode() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ id, mode }: { id: string; mode: EnforcementMode }) => {
       const response = await api.policies.updateEnforcementMode(id, mode);

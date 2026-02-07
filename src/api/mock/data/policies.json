@@ -1,0 +1,20 @@
+[
+    {
+        "id": "pol-1",
+        "name": "No Circular Dependencies",
+        "description": "Services must not have circular calls.",
+        "status": "active"
+    },
+    {
+        "id": "pol-2",
+        "name": "Service Ownership",
+        "description": "All services must have an assigned team owner.",
+        "status": "active"
+    },
+    {
+        "id": "pol-3",
+        "name": "Public API Documentation",
+        "description": "All public APIs must have OpenAPI specs.",
+        "status": "monitor_only"
+    }
+]
