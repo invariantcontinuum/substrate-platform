@@ -4,7 +4,7 @@ info:
   description: |
     Substrate is an architectural governance platform that continuously monitors
     the alignment between documented intent and actual implementation.
-    
+
     ## Architecture Notes
     This API serves as the unified gateway for all Substrate operations. Backend services
     (Ingestion, GraphRAG, Governance, Maintenance) communicate internally via gRPC and NATS.
@@ -81,16 +81,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '200':
+        "200":
           description: Login successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
   /auth/login/sso:
     post:
@@ -113,7 +113,7 @@ paths:
                   type: string
                   format: uri
       responses:
-        '200':
+        "200":
           description: SSO redirect URL
           content:
             application/json:
@@ -145,12 +145,12 @@ paths:
                 state:
                   type: string
       responses:
-        '200':
+        "200":
           description: SSO login successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: "#/components/schemas/AuthResponse"
 
   /auth/refresh:
     post:
@@ -169,12 +169,12 @@ paths:
                 refreshToken:
                   type: string
       responses:
-        '200':
+        "200":
           description: Token refreshed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: "#/components/schemas/AuthResponse"
 
   /auth/logout:
     post:
@@ -182,7 +182,7 @@ paths:
       summary: Logout and invalidate tokens
       operationId: logout
       responses:
-        '204':
+        "204":
           description: Logged out successfully
 
   /auth/me:
@@ -191,12 +191,12 @@ paths:
       summary: Get current user
       operationId: getCurrentUser
       responses:
-        '200':
+        "200":
           description: Current user details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
 
   /auth/mfa/setup:
     post:
@@ -204,7 +204,7 @@ paths:
       summary: Setup MFA
       operationId: setupMFA
       responses:
-        '200':
+        "200":
           description: MFA setup details
           content:
             application/json:
@@ -237,10 +237,10 @@ paths:
                   type: string
                   pattern: '^\d{6}$'
       responses:
-        '200':
+        "200":
           description: MFA verified
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # ORGANIZATIONS
@@ -251,19 +251,19 @@ paths:
       summary: List organizations (super-admin only)
       operationId: listOrganizations
       parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
         - name: search
           in: query
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Organization list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationListResponse'
+                $ref: "#/components/schemas/OrganizationListResponse"
     post:
       tags: [Organizations]
       summary: Create organization
@@ -273,14 +273,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateOrganizationRequest'
+              $ref: "#/components/schemas/CreateOrganizationRequest"
       responses:
-        '201':
+        "201":
           description: Organization created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
 
   /organizations/{orgId}:
     get:
@@ -288,41 +288,41 @@ paths:
       summary: Get organization details
       operationId: getOrganization
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
       responses:
-        '200':
+        "200":
           description: Organization details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
     patch:
       tags: [Organizations]
       summary: Update organization
       operationId: updateOrganization
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateOrganizationRequest'
+              $ref: "#/components/schemas/UpdateOrganizationRequest"
       responses:
-        '200':
+        "200":
           description: Organization updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
     delete:
       tags: [Organizations]
       summary: Delete organization
       operationId: deleteOrganization
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
       responses:
-        '204':
+        "204":
           description: Organization deleted
 
   /organizations/{orgId}/members:
@@ -331,35 +331,35 @@ paths:
       summary: List organization members
       operationId: listOrgMembers
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/OrgIdParam"
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Member list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrgMemberListResponse'
+                $ref: "#/components/schemas/OrgMemberListResponse"
     post:
       tags: [Organizations]
       summary: Invite member to organization
       operationId: inviteOrgMember
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InviteMemberRequest'
+              $ref: "#/components/schemas/InviteMemberRequest"
       responses:
-        '201':
+        "201":
           description: Invitation sent
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrgMember'
+                $ref: "#/components/schemas/OrgMember"
 
   /organizations/{orgId}/members/{userId}:
     patch:
@@ -367,8 +367,8 @@ paths:
       summary: Update member role
       operationId: updateOrgMemberRole
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
-        - $ref: '#/components/parameters/UserIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
+        - $ref: "#/components/parameters/UserIdParam"
       requestBody:
         required: true
         content:
@@ -378,19 +378,19 @@ paths:
               required: [role]
               properties:
                 role:
-                  $ref: '#/components/schemas/OrgRole'
+                  $ref: "#/components/schemas/OrgRole"
       responses:
-        '200':
+        "200":
           description: Role updated
     delete:
       tags: [Organizations]
       summary: Remove member from organization
       operationId: removeOrgMember
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
-        - $ref: '#/components/parameters/UserIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
+        - $ref: "#/components/parameters/UserIdParam"
       responses:
-        '204':
+        "204":
           description: Member removed
 
   /organizations/{orgId}/sso:
@@ -399,28 +399,28 @@ paths:
       summary: Get SSO configuration
       operationId: getOrgSSOConfig
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
       responses:
-        '200':
+        "200":
           description: SSO configuration
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SSOConfig'
+                $ref: "#/components/schemas/SSOConfig"
     put:
       tags: [Organizations]
       summary: Update SSO configuration
       operationId: updateOrgSSOConfig
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SSOConfig'
+              $ref: "#/components/schemas/SSOConfig"
       responses:
-        '200':
+        "200":
           description: SSO configuration updated
 
   /organizations/{orgId}/billing:
@@ -429,14 +429,14 @@ paths:
       summary: Get billing information
       operationId: getOrgBilling
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
       responses:
-        '200':
+        "200":
           description: Billing information
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BillingInfo'
+                $ref: "#/components/schemas/BillingInfo"
 
   /organizations/{orgId}/usage:
     get:
@@ -444,7 +444,7 @@ paths:
       summary: Get usage statistics
       operationId: getOrgUsage
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
         - name: startDate
           in: query
           schema:
@@ -456,12 +456,12 @@ paths:
             type: string
             format: date
       responses:
-        '200':
+        "200":
           description: Usage statistics
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsageStats'
+                $ref: "#/components/schemas/UsageStats"
 
   /organizations/{orgId}/quotas:
     get:
@@ -469,14 +469,14 @@ paths:
       summary: Get organization quotas
       operationId: getOrgQuotas
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
       responses:
-        '200':
+        "200":
           description: Quota information
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QuotaInfo'
+                $ref: "#/components/schemas/QuotaInfo"
 
   /organizations/{orgId}/invitations:
     get:
@@ -484,19 +484,19 @@ paths:
       summary: List pending invitations
       operationId: listOrgInvitations
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
         - name: status
           in: query
           schema:
             type: string
             enum: [pending, accepted, expired, cancelled]
       responses:
-        '200':
+        "200":
           description: Invitations list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InvitationListResponse'
+                $ref: "#/components/schemas/InvitationListResponse"
 
   /organizations/{orgId}/invitations/{invitationId}:
     delete:
@@ -504,7 +504,7 @@ paths:
       summary: Cancel/revoke invitation
       operationId: cancelInvitation
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
         - name: invitationId
           in: path
           required: true
@@ -512,7 +512,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '204':
+        "204":
           description: Invitation cancelled
 
   /organizations/{orgId}/invitations/{invitationId}/resend:
@@ -521,7 +521,7 @@ paths:
       summary: Resend invitation email
       operationId: resendInvitation
       parameters:
-        - $ref: '#/components/parameters/OrgIdParam'
+        - $ref: "#/components/parameters/OrgIdParam"
         - name: invitationId
           in: path
           required: true
@@ -529,7 +529,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Invitation resent
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -541,19 +541,19 @@ paths:
       summary: List teams in organization
       operationId: listTeams
       parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
         - name: search
           in: query
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Team list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TeamListResponse'
+                $ref: "#/components/schemas/TeamListResponse"
     post:
       tags: [Teams]
       summary: Create team
@@ -563,14 +563,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTeamRequest'
+              $ref: "#/components/schemas/CreateTeamRequest"
       responses:
-        '201':
+        "201":
           description: Team created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Team'
+                $ref: "#/components/schemas/Team"
 
   /teams/{teamId}:
     get:
@@ -578,41 +578,41 @@ paths:
       summary: Get team details
       operationId: getTeam
       parameters:
-        - $ref: '#/components/parameters/TeamIdParam'
+        - $ref: "#/components/parameters/TeamIdParam"
       responses:
-        '200':
+        "200":
           description: Team details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Team'
+                $ref: "#/components/schemas/Team"
     patch:
       tags: [Teams]
       summary: Update team
       operationId: updateTeam
       parameters:
-        - $ref: '#/components/parameters/TeamIdParam'
+        - $ref: "#/components/parameters/TeamIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateTeamRequest'
+              $ref: "#/components/schemas/UpdateTeamRequest"
       responses:
-        '200':
+        "200":
           description: Team updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Team'
+                $ref: "#/components/schemas/Team"
     delete:
       tags: [Teams]
       summary: Delete team
       operationId: deleteTeam
       parameters:
-        - $ref: '#/components/parameters/TeamIdParam'
+        - $ref: "#/components/parameters/TeamIdParam"
       responses:
-        '204':
+        "204":
           description: Team deleted
 
   /teams/{teamId}/members:
@@ -621,20 +621,20 @@ paths:
       summary: List team members
       operationId: listTeamMembers
       parameters:
-        - $ref: '#/components/parameters/TeamIdParam'
+        - $ref: "#/components/parameters/TeamIdParam"
       responses:
-        '200':
+        "200":
           description: Member list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TeamMemberListResponse'
+                $ref: "#/components/schemas/TeamMemberListResponse"
     post:
       tags: [Teams]
       summary: Add member to team
       operationId: addTeamMember
       parameters:
-        - $ref: '#/components/parameters/TeamIdParam'
+        - $ref: "#/components/parameters/TeamIdParam"
       requestBody:
         required: true
         content:
@@ -647,9 +647,9 @@ paths:
                   type: string
                   format: uuid
                 role:
-                  $ref: '#/components/schemas/TeamRole'
+                  $ref: "#/components/schemas/TeamRole"
       responses:
-        '201':
+        "201":
           description: Member added
 
   /teams/{teamId}/members/{userId}:
@@ -658,8 +658,8 @@ paths:
       summary: Update team member role
       operationId: updateTeamMemberRole
       parameters:
-        - $ref: '#/components/parameters/TeamIdParam'
-        - $ref: '#/components/parameters/UserIdParam'
+        - $ref: "#/components/parameters/TeamIdParam"
+        - $ref: "#/components/parameters/UserIdParam"
       requestBody:
         required: true
         content:
@@ -669,19 +669,19 @@ paths:
               required: [role]
               properties:
                 role:
-                  $ref: '#/components/schemas/TeamRole'
+                  $ref: "#/components/schemas/TeamRole"
       responses:
-        '200':
+        "200":
           description: Role updated
     delete:
       tags: [Teams]
       summary: Remove member from team
       operationId: removeTeamMember
       parameters:
-        - $ref: '#/components/parameters/TeamIdParam'
-        - $ref: '#/components/parameters/UserIdParam'
+        - $ref: "#/components/parameters/TeamIdParam"
+        - $ref: "#/components/parameters/UserIdParam"
       responses:
-        '204':
+        "204":
           description: Member removed
 
   /teams/{teamId}/ownership:
@@ -690,18 +690,18 @@ paths:
       summary: Get entities owned by team
       operationId: getTeamOwnership
       parameters:
-        - $ref: '#/components/parameters/TeamIdParam'
+        - $ref: "#/components/parameters/TeamIdParam"
         - name: entityType
           in: query
           schema:
-            $ref: '#/components/schemas/EntityType'
+            $ref: "#/components/schemas/EntityType"
       responses:
-        '200':
+        "200":
           description: Owned entities
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EntityListResponse'
+                $ref: "#/components/schemas/EntityListResponse"
 
   /teams/{teamId}/metrics:
     get:
@@ -710,14 +710,14 @@ paths:
       description: Returns team-level metrics including violations, documentation coverage, and health score
       operationId: getTeamMetrics
       parameters:
-        - $ref: '#/components/parameters/TeamIdParam'
+        - $ref: "#/components/parameters/TeamIdParam"
       responses:
-        '200':
+        "200":
           description: Team metrics
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TeamMetrics'
+                $ref: "#/components/schemas/TeamMetrics"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # PROJECTS
@@ -728,8 +728,8 @@ paths:
       summary: List projects
       operationId: listProjects
       parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
         - name: teamId
           in: query
           schema:
@@ -741,12 +741,12 @@ paths:
             type: string
             enum: [active, archived, draft]
       responses:
-        '200':
+        "200":
           description: Project list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProjectListResponse'
+                $ref: "#/components/schemas/ProjectListResponse"
     post:
       tags: [Projects]
       summary: Create project
@@ -756,14 +756,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateProjectRequest'
+              $ref: "#/components/schemas/CreateProjectRequest"
       responses:
-        '201':
+        "201":
           description: Project created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Project'
+                $ref: "#/components/schemas/Project"
 
   /projects/{projectId}:
     get:
@@ -771,37 +771,37 @@ paths:
       summary: Get project details
       operationId: getProject
       parameters:
-        - $ref: '#/components/parameters/ProjectIdParam'
+        - $ref: "#/components/parameters/ProjectIdParam"
       responses:
-        '200':
+        "200":
           description: Project details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Project'
+                $ref: "#/components/schemas/Project"
     patch:
       tags: [Projects]
       summary: Update project
       operationId: updateProject
       parameters:
-        - $ref: '#/components/parameters/ProjectIdParam'
+        - $ref: "#/components/parameters/ProjectIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateProjectRequest'
+              $ref: "#/components/schemas/UpdateProjectRequest"
       responses:
-        '200':
+        "200":
           description: Project updated
     delete:
       tags: [Projects]
       summary: Delete project
       operationId: deleteProject
       parameters:
-        - $ref: '#/components/parameters/ProjectIdParam'
+        - $ref: "#/components/parameters/ProjectIdParam"
       responses:
-        '204':
+        "204":
           description: Project deleted
 
   /projects/{projectId}/archive:
@@ -810,9 +810,9 @@ paths:
       summary: Archive project
       operationId: archiveProject
       parameters:
-        - $ref: '#/components/parameters/ProjectIdParam'
+        - $ref: "#/components/parameters/ProjectIdParam"
       responses:
-        '200':
+        "200":
           description: Project archived
 
   /projects/{projectId}/unarchive:
@@ -821,9 +821,9 @@ paths:
       summary: Unarchive project
       operationId: unarchiveProject
       parameters:
-        - $ref: '#/components/parameters/ProjectIdParam'
+        - $ref: "#/components/parameters/ProjectIdParam"
       responses:
-        '200':
+        "200":
           description: Project unarchived
 
   /projects/{projectId}/entities:
@@ -832,18 +832,18 @@ paths:
       summary: Get entities in project scope
       operationId: getProjectEntities
       parameters:
-        - $ref: '#/components/parameters/ProjectIdParam'
+        - $ref: "#/components/parameters/ProjectIdParam"
         - name: entityType
           in: query
           schema:
-            $ref: '#/components/schemas/EntityType'
+            $ref: "#/components/schemas/EntityType"
       responses:
-        '200':
+        "200":
           description: Project entities
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EntityListResponse'
+                $ref: "#/components/schemas/EntityListResponse"
 
   /projects/{projectId}/connections:
     get:
@@ -851,20 +851,20 @@ paths:
       summary: Get connections associated with project
       operationId: getProjectConnections
       parameters:
-        - $ref: '#/components/parameters/ProjectIdParam'
+        - $ref: "#/components/parameters/ProjectIdParam"
       responses:
-        '200':
+        "200":
           description: Project connections
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectionListResponse'
+                $ref: "#/components/schemas/ConnectionListResponse"
     post:
       tags: [Projects]
       summary: Associate connection with project
       operationId: addProjectConnection
       parameters:
-        - $ref: '#/components/parameters/ProjectIdParam'
+        - $ref: "#/components/parameters/ProjectIdParam"
       requestBody:
         required: true
         content:
@@ -877,7 +877,7 @@ paths:
                   type: string
                   format: uuid
       responses:
-        '200':
+        "200":
           description: Connection associated
 
   /projects/{projectId}/connections/{connectionId}:
@@ -886,10 +886,10 @@ paths:
       summary: Remove connection from project
       operationId: removeProjectConnection
       parameters:
-        - $ref: '#/components/parameters/ProjectIdParam'
-        - $ref: '#/components/parameters/ConnectionIdParam'
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/ConnectionIdParam"
       responses:
-        '204':
+        "204":
           description: Connection removed
 
   /projects/{projectId}/policies:
@@ -898,14 +898,14 @@ paths:
       summary: Get policies scoped to project
       operationId: getProjectPolicies
       parameters:
-        - $ref: '#/components/parameters/ProjectIdParam'
+        - $ref: "#/components/parameters/ProjectIdParam"
       responses:
-        '200':
+        "200":
           description: Project policies
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicyListResponse'
+                $ref: "#/components/schemas/PolicyListResponse"
 
   /projects/{projectId}/health:
     get:
@@ -913,14 +913,14 @@ paths:
       summary: Get project health score
       operationId: getProjectHealth
       parameters:
-        - $ref: '#/components/parameters/ProjectIdParam'
+        - $ref: "#/components/parameters/ProjectIdParam"
       responses:
-        '200':
+        "200":
           description: Project health
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthScore'
+                $ref: "#/components/schemas/HealthScore"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # USERS
@@ -931,8 +931,8 @@ paths:
       summary: List users
       operationId: listUsers
       parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
         - name: search
           in: query
           schema:
@@ -940,19 +940,19 @@ paths:
         - name: role
           in: query
           schema:
-            $ref: '#/components/schemas/UserRole'
+            $ref: "#/components/schemas/UserRole"
         - name: teamId
           in: query
           schema:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: User list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserListResponse'
+                $ref: "#/components/schemas/UserListResponse"
     post:
       tags: [Users]
       summary: Create user
@@ -962,14 +962,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserRequest'
+              $ref: "#/components/schemas/CreateUserRequest"
       responses:
-        '201':
+        "201":
           description: User created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
 
   /users/{userId}:
     get:
@@ -977,37 +977,37 @@ paths:
       summary: Get user details
       operationId: getUser
       parameters:
-        - $ref: '#/components/parameters/UserIdParam'
+        - $ref: "#/components/parameters/UserIdParam"
       responses:
-        '200':
+        "200":
           description: User details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
     patch:
       tags: [Users]
       summary: Update user
       operationId: updateUser
       parameters:
-        - $ref: '#/components/parameters/UserIdParam'
+        - $ref: "#/components/parameters/UserIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
+              $ref: "#/components/schemas/UpdateUserRequest"
       responses:
-        '200':
+        "200":
           description: User updated
     delete:
       tags: [Users]
       summary: Deactivate user
       operationId: deactivateUser
       parameters:
-        - $ref: '#/components/parameters/UserIdParam'
+        - $ref: "#/components/parameters/UserIdParam"
       responses:
-        '204':
+        "204":
           description: User deactivated
 
   /users/{userId}/api-keys:
@@ -1016,33 +1016,33 @@ paths:
       summary: List user API keys
       operationId: listUserApiKeys
       parameters:
-        - $ref: '#/components/parameters/UserIdParam'
+        - $ref: "#/components/parameters/UserIdParam"
       responses:
-        '200':
+        "200":
           description: API key list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiKeyListResponse'
+                $ref: "#/components/schemas/ApiKeyListResponse"
     post:
       tags: [Users]
       summary: Create API key
       operationId: createApiKey
       parameters:
-        - $ref: '#/components/parameters/UserIdParam'
+        - $ref: "#/components/parameters/UserIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateApiKeyRequest'
+              $ref: "#/components/schemas/CreateApiKeyRequest"
       responses:
-        '201':
+        "201":
           description: API key created (secret shown once)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiKeyWithSecret'
+                $ref: "#/components/schemas/ApiKeyWithSecret"
 
   /users/{userId}/api-keys/{keyId}:
     delete:
@@ -1050,7 +1050,7 @@ paths:
       summary: Revoke API key
       operationId: revokeApiKey
       parameters:
-        - $ref: '#/components/parameters/UserIdParam'
+        - $ref: "#/components/parameters/UserIdParam"
         - name: keyId
           in: path
           required: true
@@ -1058,7 +1058,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '204':
+        "204":
           description: API key revoked
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -1070,12 +1070,12 @@ paths:
       summary: List entities
       operationId: listEntities
       parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
         - name: type
           in: query
           schema:
-            $ref: '#/components/schemas/EntityType'
+            $ref: "#/components/schemas/EntityType"
         - name: source
           in: query
           schema:
@@ -1098,14 +1098,14 @@ paths:
         - name: health
           in: query
           schema:
-            $ref: '#/components/schemas/HealthStatus'
+            $ref: "#/components/schemas/HealthStatus"
       responses:
-        '200':
+        "200":
           description: Paginated entity list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EntityListResponse'
+                $ref: "#/components/schemas/EntityListResponse"
     post:
       tags: [Knowledge Fabric]
       summary: Create entity manually
@@ -1115,14 +1115,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateEntityRequest'
+              $ref: "#/components/schemas/CreateEntityRequest"
       responses:
-        '201':
+        "201":
           description: Entity created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entity'
+                $ref: "#/components/schemas/Entity"
 
   /entities/{entityId}:
     get:
@@ -1130,43 +1130,43 @@ paths:
       summary: Get entity details
       operationId: getEntity
       parameters:
-        - $ref: '#/components/parameters/EntityIdParam'
+        - $ref: "#/components/parameters/EntityIdParam"
       responses:
-        '200':
+        "200":
           description: Entity details with metadata
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EntityDetail'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/EntityDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       tags: [Knowledge Fabric]
       summary: Update entity
       operationId: updateEntity
       parameters:
-        - $ref: '#/components/parameters/EntityIdParam'
+        - $ref: "#/components/parameters/EntityIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateEntityRequest'
+              $ref: "#/components/schemas/UpdateEntityRequest"
       responses:
-        '200':
+        "200":
           description: Entity updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entity'
+                $ref: "#/components/schemas/Entity"
     delete:
       tags: [Knowledge Fabric]
       summary: Delete entity
       operationId: deleteEntity
       parameters:
-        - $ref: '#/components/parameters/EntityIdParam'
+        - $ref: "#/components/parameters/EntityIdParam"
       responses:
-        '204':
+        "204":
           description: Entity deleted
 
   /entities/{entityId}/relationships:
@@ -1175,7 +1175,7 @@ paths:
       summary: Get entity relationships
       operationId: getEntityRelationships
       parameters:
-        - $ref: '#/components/parameters/EntityIdParam'
+        - $ref: "#/components/parameters/EntityIdParam"
         - name: direction
           in: query
           schema:
@@ -1185,7 +1185,7 @@ paths:
         - name: type
           in: query
           schema:
-            $ref: '#/components/schemas/RelationshipType'
+            $ref: "#/components/schemas/RelationshipType"
         - name: maxHops
           in: query
           schema:
@@ -1194,12 +1194,12 @@ paths:
             maximum: 5
             default: 1
       responses:
-        '200':
+        "200":
           description: Relationship graph
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RelationshipGraphResponse'
+                $ref: "#/components/schemas/RelationshipGraphResponse"
 
   /entities/{entityId}/context:
     get:
@@ -1207,7 +1207,7 @@ paths:
       summary: Get entity context subgraph
       operationId: getEntityContext
       parameters:
-        - $ref: '#/components/parameters/EntityIdParam'
+        - $ref: "#/components/parameters/EntityIdParam"
         - name: maxHops
           in: query
           schema:
@@ -1216,12 +1216,12 @@ paths:
             maximum: 3
             default: 2
       responses:
-        '200':
+        "200":
           description: Context subgraph for visualization
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ContextGraphResponse'
+                $ref: "#/components/schemas/ContextGraphResponse"
 
   /entities/{entityId}/history:
     get:
@@ -1229,16 +1229,16 @@ paths:
       summary: Get entity change history
       operationId: getEntityHistory
       parameters:
-        - $ref: '#/components/parameters/EntityIdParam'
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/EntityIdParam"
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Entity history
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EntityHistoryResponse'
+                $ref: "#/components/schemas/EntityHistoryResponse"
 
   /entities/{entityId}/violations:
     get:
@@ -1246,20 +1246,20 @@ paths:
       summary: Get violations for entity
       operationId: getEntityViolations
       parameters:
-        - $ref: '#/components/parameters/EntityIdParam'
+        - $ref: "#/components/parameters/EntityIdParam"
         - name: status
           in: query
           schema:
-            $ref: '#/components/schemas/ViolationStatus'
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+            $ref: "#/components/schemas/ViolationStatus"
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Entity violations
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ViolationListResponse'
+                $ref: "#/components/schemas/ViolationListResponse"
 
   /relationships:
     get:
@@ -1267,32 +1267,32 @@ paths:
       summary: List relationships
       operationId: listRelationships
       parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
         - name: type
           in: query
           schema:
-            $ref: '#/components/schemas/RelationshipType'
+            $ref: "#/components/schemas/RelationshipType"
         - name: sourceType
           in: query
           schema:
-            $ref: '#/components/schemas/EntityType'
+            $ref: "#/components/schemas/EntityType"
         - name: targetType
           in: query
           schema:
-            $ref: '#/components/schemas/EntityType'
+            $ref: "#/components/schemas/EntityType"
         - name: isIntent
           in: query
           schema:
             type: boolean
             description: Filter by intent (documented) vs reality (observed)
       responses:
-        '200':
+        "200":
           description: Relationship list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RelationshipListResponse'
+                $ref: "#/components/schemas/RelationshipListResponse"
     post:
       tags: [Knowledge Fabric]
       summary: Create relationship manually
@@ -1302,14 +1302,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateRelationshipRequest'
+              $ref: "#/components/schemas/CreateRelationshipRequest"
       responses:
-        '201':
+        "201":
           description: Relationship created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Relationship'
+                $ref: "#/components/schemas/Relationship"
 
   /relationships/{relationshipId}:
     delete:
@@ -1324,7 +1324,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '204':
+        "204":
           description: Relationship deleted
 
   /graph:
@@ -1340,7 +1340,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/EntityType'
+              $ref: "#/components/schemas/EntityType"
         - name: relationshipTypes
           in: query
           style: form
@@ -1348,7 +1348,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/RelationshipType'
+              $ref: "#/components/schemas/RelationshipType"
         - name: projectId
           in: query
           schema:
@@ -1372,12 +1372,12 @@ paths:
             default: 500
             maximum: 2000
       responses:
-        '200':
+        "200":
           description: Graph data for rendering
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GraphResponse'
+                $ref: "#/components/schemas/GraphResponse"
 
   /graph/search:
     post:
@@ -1389,14 +1389,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GraphSearchRequest'
+              $ref: "#/components/schemas/GraphSearchRequest"
       responses:
-        '200':
+        "200":
           description: Search results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GraphResponse'
+                $ref: "#/components/schemas/GraphResponse"
 
   /graph/export:
     get:
@@ -1411,7 +1411,7 @@ paths:
             type: string
             enum: [json, csv, graphml, gexf]
       responses:
-        '200':
+        "200":
           description: Exported graph
           content:
             application/json:
@@ -1437,14 +1437,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GraphRAGQueryRequest'
+              $ref: "#/components/schemas/GraphRAGQueryRequest"
       responses:
-        '200':
+        "200":
           description: Query result with evidence
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GraphRAGQueryResponse'
+                $ref: "#/components/schemas/GraphRAGQueryResponse"
 
   /graphrag/query/stream:
     post:
@@ -1456,9 +1456,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GraphRAGQueryRequest'
+              $ref: "#/components/schemas/GraphRAGQueryRequest"
       responses:
-        '200':
+        "200":
           description: Streaming response
           content:
             text/event-stream:
@@ -1475,14 +1475,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IndexRequest'
+              $ref: "#/components/schemas/IndexRequest"
       responses:
-        '202':
+        "202":
           description: Indexing started
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndexTaskResponse'
+                $ref: "#/components/schemas/IndexTaskResponse"
 
   /graphrag/index/{taskId}:
     get:
@@ -1497,12 +1497,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Task status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndexTaskStatus'
+                $ref: "#/components/schemas/IndexTaskStatus"
 
   /graphrag/index/{taskId}/cancel:
     post:
@@ -1517,7 +1517,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Task cancelled
 
   /graphrag/communities:
@@ -1533,14 +1533,14 @@ paths:
             minimum: 0
             maximum: 3
             default: 0
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Community list with summaries
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommunityListResponse'
+                $ref: "#/components/schemas/CommunityListResponse"
 
   /graphrag/communities/{communityId}:
     get:
@@ -1554,12 +1554,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Community details with members
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommunityDetail'
+                $ref: "#/components/schemas/CommunityDetail"
 
   /graphrag/history:
     get:
@@ -1567,15 +1567,15 @@ paths:
       summary: Get query history
       operationId: getQueryHistory
       parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Query history
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QueryHistoryResponse'
+                $ref: "#/components/schemas/QueryHistoryResponse"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # GOVERNANCE
@@ -1589,7 +1589,7 @@ paths:
         - name: category
           in: query
           schema:
-            $ref: '#/components/schemas/PolicyCategory'
+            $ref: "#/components/schemas/PolicyCategory"
         - name: enabled
           in: query
           schema:
@@ -1597,16 +1597,16 @@ paths:
         - name: enforcementMode
           in: query
           schema:
-            $ref: '#/components/schemas/EnforcementMode'
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+            $ref: "#/components/schemas/EnforcementMode"
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Policy list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicyListResponse'
+                $ref: "#/components/schemas/PolicyListResponse"
     post:
       tags: [Governance]
       summary: Create policy
@@ -1616,14 +1616,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePolicyRequest'
+              $ref: "#/components/schemas/CreatePolicyRequest"
       responses:
-        '201':
+        "201":
           description: Policy created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Policy'
+                $ref: "#/components/schemas/Policy"
 
   /policies/{policyId}:
     get:
@@ -1631,37 +1631,37 @@ paths:
       summary: Get policy details
       operationId: getPolicy
       parameters:
-        - $ref: '#/components/parameters/PolicyIdParam'
+        - $ref: "#/components/parameters/PolicyIdParam"
       responses:
-        '200':
+        "200":
           description: Policy details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicyDetail'
+                $ref: "#/components/schemas/PolicyDetail"
     patch:
       tags: [Governance]
       summary: Update policy
       operationId: updatePolicy
       parameters:
-        - $ref: '#/components/parameters/PolicyIdParam'
+        - $ref: "#/components/parameters/PolicyIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatePolicyRequest'
+              $ref: "#/components/schemas/UpdatePolicyRequest"
       responses:
-        '200':
+        "200":
           description: Policy updated
     delete:
       tags: [Governance]
       summary: Delete policy
       operationId: deletePolicy
       parameters:
-        - $ref: '#/components/parameters/PolicyIdParam'
+        - $ref: "#/components/parameters/PolicyIdParam"
       responses:
-        '204':
+        "204":
           description: Policy deleted
 
   /policies/{policyId}/test:
@@ -1670,20 +1670,20 @@ paths:
       summary: Test policy against data
       operationId: testPolicy
       parameters:
-        - $ref: '#/components/parameters/PolicyIdParam'
+        - $ref: "#/components/parameters/PolicyIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicyTestRequest'
+              $ref: "#/components/schemas/PolicyTestRequest"
       responses:
-        '200':
+        "200":
           description: Test results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicyTestResponse'
+                $ref: "#/components/schemas/PolicyTestResponse"
 
   /policies/{policyId}/versions:
     get:
@@ -1691,14 +1691,14 @@ paths:
       summary: Get policy version history
       operationId: getPolicyVersions
       parameters:
-        - $ref: '#/components/parameters/PolicyIdParam'
+        - $ref: "#/components/parameters/PolicyIdParam"
       responses:
-        '200':
+        "200":
           description: Version history
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicyVersionListResponse'
+                $ref: "#/components/schemas/PolicyVersionListResponse"
 
   /policies/{policyId}/versions/{version}:
     get:
@@ -1706,19 +1706,19 @@ paths:
       summary: Get specific policy version
       operationId: getPolicyVersion
       parameters:
-        - $ref: '#/components/parameters/PolicyIdParam'
+        - $ref: "#/components/parameters/PolicyIdParam"
         - name: version
           in: path
           required: true
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Policy version
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Policy'
+                $ref: "#/components/schemas/Policy"
 
   /policies/{policyId}/rollback:
     post:
@@ -1726,7 +1726,7 @@ paths:
       summary: Rollback to previous version
       operationId: rollbackPolicy
       parameters:
-        - $ref: '#/components/parameters/PolicyIdParam'
+        - $ref: "#/components/parameters/PolicyIdParam"
       requestBody:
         required: true
         content:
@@ -1738,7 +1738,7 @@ paths:
                 version:
                   type: integer
       responses:
-        '200':
+        "200":
           description: Rollback successful
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -1758,14 +1758,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicyGenerationRequest'
+              $ref: "#/components/schemas/PolicyGenerationRequest"
       responses:
-        '200':
+        "200":
           description: Generated policy with validation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicyGenerationResponse'
+                $ref: "#/components/schemas/PolicyGenerationResponse"
 
   /policies/generate/refine:
     post:
@@ -1778,14 +1778,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicyRefinementRequest'
+              $ref: "#/components/schemas/PolicyRefinementRequest"
       responses:
-        '200':
+        "200":
           description: Refined policy
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicyGenerationResponse'
+                $ref: "#/components/schemas/PolicyGenerationResponse"
 
   /policies/generate/examples:
     get:
@@ -1797,16 +1797,16 @@ paths:
         - name: category
           in: query
           schema:
-            $ref: '#/components/schemas/PolicyCategory'
+            $ref: "#/components/schemas/PolicyCategory"
       responses:
-        '200':
+        "200":
           description: Policy examples
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PolicyExample'
+                  $ref: "#/components/schemas/PolicyExample"
 
   /policies/validate:
     post:
@@ -1824,12 +1824,12 @@ paths:
                 rego:
                   type: string
       responses:
-        '200':
+        "200":
           description: Validation result
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegoValidationResponse'
+                $ref: "#/components/schemas/RegoValidationResponse"
 
   /policies/explain:
     post:
@@ -1848,7 +1848,7 @@ paths:
                 rego:
                   type: string
       responses:
-        '200':
+        "200":
           description: Policy explanation
           content:
             application/json:
@@ -1882,14 +1882,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EvaluationRequest'
+              $ref: "#/components/schemas/EvaluationRequest"
       responses:
-        '200':
+        "200":
           description: Evaluation results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EvaluationResponse'
+                $ref: "#/components/schemas/EvaluationResponse"
 
   /governance/evaluate/batch:
     post:
@@ -1914,12 +1914,12 @@ paths:
                     type: string
                     format: uuid
       responses:
-        '200':
+        "200":
           description: Batch evaluation results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BatchEvaluationResponse'
+                $ref: "#/components/schemas/BatchEvaluationResponse"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # IMPACT ANALYSIS & SIMULATION
@@ -1937,14 +1937,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ImpactAnalysisRequest'
+              $ref: "#/components/schemas/ImpactAnalysisRequest"
       responses:
-        '200':
+        "200":
           description: Impact analysis results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImpactAnalysisResponse'
+                $ref: "#/components/schemas/ImpactAnalysisResponse"
 
   /governance/simulate-change:
     post:
@@ -1959,14 +1959,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangeSimulationRequest'
+              $ref: "#/components/schemas/ChangeSimulationRequest"
       responses:
-        '200':
+        "200":
           description: Simulation results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ChangeSimulationResponse'
+                $ref: "#/components/schemas/ChangeSimulationResponse"
 
   /governance/what-if:
     post:
@@ -1979,14 +1979,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WhatIfRequest'
+              $ref: "#/components/schemas/WhatIfRequest"
       responses:
-        '200':
+        "200":
           description: Scenario analysis results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WhatIfResponse'
+                $ref: "#/components/schemas/WhatIfResponse"
 
   /governance/dependency-check:
     post:
@@ -2005,12 +2005,12 @@ paths:
                   type: string
                   format: uuid
       responses:
-        '200':
+        "200":
           description: Dependency check result
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DependencyCheckResponse'
+                $ref: "#/components/schemas/DependencyCheckResponse"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # WEBHOOK RECEIVERS
@@ -2044,13 +2044,13 @@ paths:
             schema:
               type: object
       responses:
-        '200':
+        "200":
           description: Webhook received
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookResponse'
-        '401':
+                $ref: "#/components/schemas/WebhookResponse"
+        "401":
           description: Invalid signature
 
   /webhooks/gitlab:
@@ -2078,12 +2078,12 @@ paths:
             schema:
               type: object
       responses:
-        '200':
+        "200":
           description: Webhook received
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookResponse'
+                $ref: "#/components/schemas/WebhookResponse"
 
   /webhooks/jira:
     post:
@@ -2100,12 +2100,12 @@ paths:
             schema:
               type: object
       responses:
-        '200':
+        "200":
           description: Webhook received
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookResponse'
+                $ref: "#/components/schemas/WebhookResponse"
 
   /webhooks/confluence:
     post:
@@ -2122,12 +2122,12 @@ paths:
             schema:
               type: object
       responses:
-        '200':
+        "200":
           description: Webhook received
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookResponse'
+                $ref: "#/components/schemas/WebhookResponse"
 
   /webhooks/slack:
     post:
@@ -2145,12 +2145,12 @@ paths:
             schema:
               type: object
       responses:
-        '200':
+        "200":
           description: Webhook received
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookResponse'
+                $ref: "#/components/schemas/WebhookResponse"
 
   /webhooks/custom/{webhookId}:
     post:
@@ -2172,12 +2172,12 @@ paths:
             schema:
               type: object
       responses:
-        '200':
+        "200":
           description: Webhook received
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookResponse'
+                $ref: "#/components/schemas/WebhookResponse"
 
   /webhooks:
     get:
@@ -2185,12 +2185,12 @@ paths:
       summary: List webhook configurations
       operationId: listWebhookConfigs
       responses:
-        '200':
+        "200":
           description: Webhook configurations
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookConfigListResponse'
+                $ref: "#/components/schemas/WebhookConfigListResponse"
     post:
       tags: [Webhooks]
       summary: Create custom webhook endpoint
@@ -2200,14 +2200,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateWebhookRequest'
+              $ref: "#/components/schemas/CreateWebhookRequest"
       responses:
-        '201':
+        "201":
           description: Webhook created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookConfig'
+                $ref: "#/components/schemas/WebhookConfig"
 
   /webhooks/{webhookId}:
     get:
@@ -2222,12 +2222,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Webhook configuration
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookConfig'
+                $ref: "#/components/schemas/WebhookConfig"
     patch:
       tags: [Webhooks]
       summary: Update webhook configuration
@@ -2244,9 +2244,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateWebhookRequest'
+              $ref: "#/components/schemas/UpdateWebhookRequest"
       responses:
-        '200':
+        "200":
           description: Webhook updated
     delete:
       tags: [Webhooks]
@@ -2260,7 +2260,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '204':
+        "204":
           description: Webhook deleted
 
   /webhooks/{webhookId}/secret:
@@ -2276,7 +2276,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: New secret generated
           content:
             application/json:
@@ -2303,15 +2303,15 @@ paths:
           schema:
             type: string
             enum: [success, failed, pending]
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Delivery history
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookDeliveryListResponse'
+                $ref: "#/components/schemas/WebhookDeliveryListResponse"
 
   /webhooks/{webhookId}/deliveries/{deliveryId}/redeliver:
     post:
@@ -2332,7 +2332,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '202':
+        "202":
           description: Redelivery queued
 
   /violations:
@@ -2349,11 +2349,11 @@ paths:
         - name: severity
           in: query
           schema:
-            $ref: '#/components/schemas/Severity'
+            $ref: "#/components/schemas/Severity"
         - name: status
           in: query
           schema:
-            $ref: '#/components/schemas/ViolationStatus'
+            $ref: "#/components/schemas/ViolationStatus"
         - name: entityId
           in: query
           schema:
@@ -2364,15 +2364,15 @@ paths:
           schema:
             type: string
             format: uuid
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Violation list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ViolationListResponse'
+                $ref: "#/components/schemas/ViolationListResponse"
 
   /violations/{violationId}:
     get:
@@ -2380,20 +2380,20 @@ paths:
       summary: Get violation details
       operationId: getViolation
       parameters:
-        - $ref: '#/components/parameters/ViolationIdParam'
+        - $ref: "#/components/parameters/ViolationIdParam"
       responses:
-        '200':
+        "200":
           description: Violation details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ViolationDetail'
+                $ref: "#/components/schemas/ViolationDetail"
     patch:
       tags: [Governance]
       summary: Update violation status
       operationId: updateViolationStatus
       parameters:
-        - $ref: '#/components/parameters/ViolationIdParam'
+        - $ref: "#/components/parameters/ViolationIdParam"
       requestBody:
         required: true
         content:
@@ -2403,11 +2403,11 @@ paths:
               required: [status]
               properties:
                 status:
-                  $ref: '#/components/schemas/ViolationStatus'
+                  $ref: "#/components/schemas/ViolationStatus"
                 reason:
                   type: string
       responses:
-        '200':
+        "200":
           description: Violation updated
 
   /violations/{violationId}/suppress:
@@ -2416,7 +2416,7 @@ paths:
       summary: Suppress violation
       operationId: suppressViolation
       parameters:
-        - $ref: '#/components/parameters/ViolationIdParam'
+        - $ref: "#/components/parameters/ViolationIdParam"
       requestBody:
         required: true
         content:
@@ -2431,7 +2431,7 @@ paths:
                   type: string
                   format: date-time
       responses:
-        '200':
+        "200":
           description: Violation suppressed
 
   /violations/summary:
@@ -2462,12 +2462,12 @@ paths:
             type: string
             format: date
       responses:
-        '200':
+        "200":
           description: Violations summary
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ViolationsSummary'
+                $ref: "#/components/schemas/ViolationsSummary"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # MARKETPLACE
@@ -2481,7 +2481,7 @@ paths:
         - name: category
           in: query
           schema:
-            $ref: '#/components/schemas/PluginCategory'
+            $ref: "#/components/schemas/PluginCategory"
         - name: search
           in: query
           schema:
@@ -2496,15 +2496,15 @@ paths:
           in: query
           schema:
             type: boolean
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Plugin catalog
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PluginCatalogResponse'
+                $ref: "#/components/schemas/PluginCatalogResponse"
 
   /marketplace/plugins/{pluginId}:
     get:
@@ -2512,14 +2512,14 @@ paths:
       summary: Get plugin details
       operationId: getPluginDetails
       parameters:
-        - $ref: '#/components/parameters/PluginIdParam'
+        - $ref: "#/components/parameters/PluginIdParam"
       responses:
-        '200':
+        "200":
           description: Plugin details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PluginDetail'
+                $ref: "#/components/schemas/PluginDetail"
 
   /marketplace/plugins/{pluginId}/versions:
     get:
@@ -2527,14 +2527,14 @@ paths:
       summary: List plugin versions
       operationId: listPluginVersions
       parameters:
-        - $ref: '#/components/parameters/PluginIdParam'
+        - $ref: "#/components/parameters/PluginIdParam"
       responses:
-        '200':
+        "200":
           description: Version list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PluginVersionListResponse'
+                $ref: "#/components/schemas/PluginVersionListResponse"
 
   /marketplace/plugins/{pluginId}/reviews:
     get:
@@ -2542,30 +2542,30 @@ paths:
       summary: Get plugin reviews
       operationId: getPluginReviews
       parameters:
-        - $ref: '#/components/parameters/PluginIdParam'
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PluginIdParam"
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Reviews
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PluginReviewListResponse'
+                $ref: "#/components/schemas/PluginReviewListResponse"
     post:
       tags: [Marketplace]
       summary: Submit plugin review
       operationId: submitPluginReview
       parameters:
-        - $ref: '#/components/parameters/PluginIdParam'
+        - $ref: "#/components/parameters/PluginIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePluginReviewRequest'
+              $ref: "#/components/schemas/CreatePluginReviewRequest"
       responses:
-        '201':
+        "201":
           description: Review submitted
 
   /marketplace/categories:
@@ -2574,14 +2574,14 @@ paths:
       summary: List plugin categories
       operationId: listPluginCategories
       responses:
-        '200':
+        "200":
           description: Category list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PluginCategoryInfo'
+                  $ref: "#/components/schemas/PluginCategoryInfo"
 
   /marketplace/featured:
     get:
@@ -2589,14 +2589,14 @@ paths:
       summary: Get featured plugins
       operationId: getFeaturedPlugins
       responses:
-        '200':
+        "200":
           description: Featured plugins
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Plugin'
+                  $ref: "#/components/schemas/Plugin"
 
   /marketplace/installed:
     get:
@@ -2604,12 +2604,12 @@ paths:
       summary: List installed plugins
       operationId: listInstalledPlugins
       responses:
-        '200':
+        "200":
           description: Installed plugins
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstalledPluginListResponse'
+                $ref: "#/components/schemas/InstalledPluginListResponse"
 
   /marketplace/install:
     post:
@@ -2630,12 +2630,12 @@ paths:
                   type: string
                   description: Specific version or 'latest'
       responses:
-        '202':
+        "202":
           description: Installation started
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PluginInstallationStatus'
+                $ref: "#/components/schemas/PluginInstallationStatus"
 
   /marketplace/installed/{installationId}:
     get:
@@ -2650,12 +2650,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Installation status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstalledPlugin'
+                $ref: "#/components/schemas/InstalledPlugin"
     delete:
       tags: [Marketplace]
       summary: Uninstall plugin
@@ -2668,7 +2668,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '204':
+        "204":
           description: Plugin uninstalled
 
   /marketplace/installed/{installationId}/update:
@@ -2692,7 +2692,7 @@ paths:
                 version:
                   type: string
       responses:
-        '202':
+        "202":
           description: Update started
 
   /marketplace/installed/{installationId}/enable:
@@ -2708,7 +2708,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Plugin enabled
 
   /marketplace/installed/{installationId}/disable:
@@ -2724,7 +2724,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Plugin disabled
 
   /marketplace/custom:
@@ -2749,12 +2749,12 @@ paths:
                   format: binary
                   description: Plugin package (.tar.gz)
       responses:
-        '201':
+        "201":
           description: Custom plugin uploaded
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Plugin'
+                $ref: "#/components/schemas/Plugin"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # CONNECTORS (Plugin Instances / Connections)
@@ -2772,16 +2772,16 @@ paths:
         - name: status
           in: query
           schema:
-            $ref: '#/components/schemas/ConnectionStatus'
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+            $ref: "#/components/schemas/ConnectionStatus"
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Connection list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectionListResponse'
+                $ref: "#/components/schemas/ConnectionListResponse"
     post:
       tags: [Connectors]
       summary: Create connection
@@ -2791,14 +2791,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateConnectionRequest'
+              $ref: "#/components/schemas/CreateConnectionRequest"
       responses:
-        '201':
+        "201":
           description: Connection created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Connection'
+                $ref: "#/components/schemas/Connection"
 
   /connectors/{connectionId}:
     get:
@@ -2806,37 +2806,37 @@ paths:
       summary: Get connection details
       operationId: getConnection
       parameters:
-        - $ref: '#/components/parameters/ConnectionIdParam'
+        - $ref: "#/components/parameters/ConnectionIdParam"
       responses:
-        '200':
+        "200":
           description: Connection details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectionDetail'
+                $ref: "#/components/schemas/ConnectionDetail"
     patch:
       tags: [Connectors]
       summary: Update connection
       operationId: updateConnection
       parameters:
-        - $ref: '#/components/parameters/ConnectionIdParam'
+        - $ref: "#/components/parameters/ConnectionIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateConnectionRequest'
+              $ref: "#/components/schemas/UpdateConnectionRequest"
       responses:
-        '200':
+        "200":
           description: Connection updated
     delete:
       tags: [Connectors]
       summary: Delete connection
       operationId: deleteConnection
       parameters:
-        - $ref: '#/components/parameters/ConnectionIdParam'
+        - $ref: "#/components/parameters/ConnectionIdParam"
       responses:
-        '204':
+        "204":
           description: Connection deleted
 
   /connectors/{connectionId}/test:
@@ -2845,14 +2845,14 @@ paths:
       summary: Test connection
       operationId: testConnection
       parameters:
-        - $ref: '#/components/parameters/ConnectionIdParam'
+        - $ref: "#/components/parameters/ConnectionIdParam"
       responses:
-        '200':
+        "200":
           description: Test result
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectionTestResult'
+                $ref: "#/components/schemas/ConnectionTestResult"
 
   /connectors/{connectionId}/sync:
     post:
@@ -2860,7 +2860,7 @@ paths:
       summary: Trigger manual sync
       operationId: triggerSync
       parameters:
-        - $ref: '#/components/parameters/ConnectionIdParam'
+        - $ref: "#/components/parameters/ConnectionIdParam"
       requestBody:
         content:
           application/json:
@@ -2872,12 +2872,12 @@ paths:
                   default: false
                   description: Force full re-sync vs incremental
       responses:
-        '202':
+        "202":
           description: Sync started
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SyncTask'
+                $ref: "#/components/schemas/SyncTask"
 
   /connectors/{connectionId}/sync/{taskId}:
     get:
@@ -2885,7 +2885,7 @@ paths:
       summary: Get sync task status
       operationId: getSyncStatus
       parameters:
-        - $ref: '#/components/parameters/ConnectionIdParam'
+        - $ref: "#/components/parameters/ConnectionIdParam"
         - name: taskId
           in: path
           required: true
@@ -2893,12 +2893,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Sync status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SyncTaskStatus'
+                $ref: "#/components/schemas/SyncTaskStatus"
 
   /connectors/{connectionId}/sync/{taskId}/cancel:
     post:
@@ -2906,7 +2906,7 @@ paths:
       summary: Cancel sync task
       operationId: cancelSync
       parameters:
-        - $ref: '#/components/parameters/ConnectionIdParam'
+        - $ref: "#/components/parameters/ConnectionIdParam"
         - name: taskId
           in: path
           required: true
@@ -2914,7 +2914,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Sync cancelled
 
   /connectors/{connectionId}/logs:
@@ -2923,7 +2923,7 @@ paths:
       summary: Get connection logs
       operationId: getConnectionLogs
       parameters:
-        - $ref: '#/components/parameters/ConnectionIdParam'
+        - $ref: "#/components/parameters/ConnectionIdParam"
         - name: level
           in: query
           schema:
@@ -2934,14 +2934,14 @@ paths:
           schema:
             type: string
             format: date-time
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Connection logs
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectionLogResponse'
+                $ref: "#/components/schemas/ConnectionLogResponse"
 
   /connectors/{connectionId}/oauth/authorize:
     get:
@@ -2949,9 +2949,9 @@ paths:
       summary: Get OAuth authorization URL
       operationId: getOAuthUrl
       parameters:
-        - $ref: '#/components/parameters/ConnectionIdParam'
+        - $ref: "#/components/parameters/ConnectionIdParam"
       responses:
-        '200':
+        "200":
           description: Authorization URL
           content:
             application/json:
@@ -2970,7 +2970,7 @@ paths:
       summary: Handle OAuth callback
       operationId: handleOAuthCallback
       parameters:
-        - $ref: '#/components/parameters/ConnectionIdParam'
+        - $ref: "#/components/parameters/ConnectionIdParam"
       requestBody:
         required: true
         content:
@@ -2984,12 +2984,12 @@ paths:
                 state:
                   type: string
       responses:
-        '200':
+        "200":
           description: OAuth completed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Connection'
+                $ref: "#/components/schemas/Connection"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # QUALITY METRICS
@@ -3011,12 +3011,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Health score with dimensions
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthScore'
+                $ref: "#/components/schemas/HealthScore"
 
   /metrics/health/history:
     get:
@@ -3041,12 +3041,12 @@ paths:
             enum: [daily, weekly, monthly]
             default: daily
       responses:
-        '200':
+        "200":
           description: Health history
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthHistoryResponse'
+                $ref: "#/components/schemas/HealthHistoryResponse"
 
   /metrics/drift:
     get:
@@ -3065,12 +3065,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Drift metrics
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DriftMetrics'
+                $ref: "#/components/schemas/DriftMetrics"
 
   /metrics/compliance:
     get:
@@ -3084,12 +3084,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Compliance metrics
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ComplianceMetrics'
+                $ref: "#/components/schemas/ComplianceMetrics"
 
   /metrics/dora:
     get:
@@ -3113,12 +3113,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: DORA metrics
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DORAMetrics'
+                $ref: "#/components/schemas/DORAMetrics"
 
   /metrics/knowledge-graph:
     get:
@@ -3126,12 +3126,12 @@ paths:
       summary: Get knowledge graph metrics
       operationId: getKnowledgeGraphMetrics
       responses:
-        '200':
+        "200":
           description: Knowledge graph metrics
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/KnowledgeGraphMetrics'
+                $ref: "#/components/schemas/KnowledgeGraphMetrics"
 
   /metrics/documentation:
     get:
@@ -3145,12 +3145,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Documentation metrics
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DocumentationMetrics'
+                $ref: "#/components/schemas/DocumentationMetrics"
 
   /metrics/technical-debt:
     get:
@@ -3164,12 +3164,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Technical debt metrics
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TechnicalDebtMetrics'
+                $ref: "#/components/schemas/TechnicalDebtMetrics"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # MAINTENANCE
@@ -3187,12 +3187,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Staleness report
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StalenessReport'
+                $ref: "#/components/schemas/StalenessReport"
 
   /maintenance/staleness:
     get:
@@ -3212,15 +3212,15 @@ paths:
           schema:
             type: string
             format: uuid
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Stale documents
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StaleDocumentListResponse'
+                $ref: "#/components/schemas/StaleDocumentListResponse"
     post:
       tags: [Maintenance]
       summary: Trigger staleness scan
@@ -3238,12 +3238,12 @@ paths:
                   type: boolean
                   default: false
       responses:
-        '202':
+        "202":
           description: Scan started
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaintenanceTaskResponse'
+                $ref: "#/components/schemas/MaintenanceTaskResponse"
 
   /maintenance/duplicates:
     get:
@@ -3257,12 +3257,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Duplicate report
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DuplicateReport'
+                $ref: "#/components/schemas/DuplicateReport"
     post:
       tags: [Maintenance]
       summary: Trigger duplicate detection
@@ -3280,12 +3280,12 @@ paths:
                   type: number
                   default: 0.85
       responses:
-        '202':
+        "202":
           description: Detection started
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaintenanceTaskResponse'
+                $ref: "#/components/schemas/MaintenanceTaskResponse"
 
   /maintenance/link-validation:
     get:
@@ -3299,23 +3299,23 @@ paths:
             type: string
             enum: [broken, redirected, valid]
       responses:
-        '200':
+        "200":
           description: Link validation report
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LinkValidationReport'
+                $ref: "#/components/schemas/LinkValidationReport"
     post:
       tags: [Maintenance]
       summary: Trigger link validation
       operationId: triggerLinkValidation
       responses:
-        '202':
+        "202":
           description: Validation started
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaintenanceTaskResponse'
+                $ref: "#/components/schemas/MaintenanceTaskResponse"
 
   /maintenance/reviews:
     get:
@@ -3333,15 +3333,15 @@ paths:
           schema:
             type: string
             format: uuid
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Review queue
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReviewListResponse'
+                $ref: "#/components/schemas/ReviewListResponse"
 
   /maintenance/reviews/{reviewId}:
     get:
@@ -3356,12 +3356,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Review item
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReviewItem'
+                $ref: "#/components/schemas/ReviewItem"
 
   /maintenance/reviews/{reviewId}/decide:
     post:
@@ -3380,14 +3380,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReviewDecisionRequest'
+              $ref: "#/components/schemas/ReviewDecisionRequest"
       responses:
-        '200':
+        "200":
           description: Decision recorded
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReviewItem'
+                $ref: "#/components/schemas/ReviewItem"
 
   /maintenance/reviews/{reviewId}/assign:
     post:
@@ -3413,7 +3413,7 @@ paths:
                   type: string
                   format: uuid
       responses:
-        '200':
+        "200":
           description: Item assigned
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -3429,14 +3429,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GraphExportRequest'
+              $ref: "#/components/schemas/GraphExportRequest"
       responses:
-        '202':
+        "202":
           description: Export started
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExportTaskResponse'
+                $ref: "#/components/schemas/ExportTaskResponse"
 
   /export/graph/{taskId}:
     get:
@@ -3451,12 +3451,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Export ready
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExportStatus'
+                $ref: "#/components/schemas/ExportStatus"
             application/octet-stream:
               schema:
                 type: string
@@ -3472,14 +3472,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReportRequest'
+              $ref: "#/components/schemas/ReportRequest"
       responses:
-        '202':
+        "202":
           description: Report generation started
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExportTaskResponse'
+                $ref: "#/components/schemas/ExportTaskResponse"
 
   /export/report/{taskId}:
     get:
@@ -3494,12 +3494,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Report ready
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExportStatus'
+                $ref: "#/components/schemas/ExportStatus"
             application/pdf:
               schema:
                 type: string
@@ -3515,14 +3515,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ComplianceReportRequest'
+              $ref: "#/components/schemas/ComplianceReportRequest"
       responses:
-        '202':
+        "202":
           description: Report generation started
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExportTaskResponse'
+                $ref: "#/components/schemas/ExportTaskResponse"
 
   /export/metrics:
     post:
@@ -3534,9 +3534,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MetricsExportRequest'
+              $ref: "#/components/schemas/MetricsExportRequest"
       responses:
-        '200':
+        "200":
           description: Metrics export
           content:
             text/csv:
@@ -3556,9 +3556,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DiagramExportRequest'
+              $ref: "#/components/schemas/DiagramExportRequest"
       responses:
-        '200':
+        "200":
           description: SVG diagram
           content:
             image/svg+xml:
@@ -3566,7 +3566,7 @@ paths:
                 type: string
             application/json:
               schema:
-                $ref: '#/components/schemas/ExportTaskResponse'
+                $ref: "#/components/schemas/ExportTaskResponse"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # SETTINGS
@@ -3577,12 +3577,12 @@ paths:
       summary: Get all settings
       operationId: getSettings
       responses:
-        '200':
+        "200":
           description: Settings
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Settings'
+                $ref: "#/components/schemas/Settings"
     patch:
       tags: [Settings]
       summary: Update settings
@@ -3592,9 +3592,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateSettingsRequest'
+              $ref: "#/components/schemas/UpdateSettingsRequest"
       responses:
-        '200':
+        "200":
           description: Settings updated
 
   /settings/llm:
@@ -3603,12 +3603,12 @@ paths:
       summary: Get LLM configuration
       operationId: getLLMSettings
       responses:
-        '200':
+        "200":
           description: LLM settings
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LLMSettings'
+                $ref: "#/components/schemas/LLMSettings"
     put:
       tags: [Settings]
       summary: Update LLM configuration
@@ -3618,9 +3618,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateLLMSettingsRequest'
+              $ref: "#/components/schemas/UpdateLLMSettingsRequest"
       responses:
-        '200':
+        "200":
           description: LLM settings updated
 
   /settings/llm/test:
@@ -3632,14 +3632,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LLMTestRequest'
+              $ref: "#/components/schemas/LLMTestRequest"
       responses:
-        '200':
+        "200":
           description: Test result
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LLMTestResult'
+                $ref: "#/components/schemas/LLMTestResult"
 
   /settings/llm/providers:
     get:
@@ -3647,14 +3647,14 @@ paths:
       summary: List available LLM providers
       operationId: listLLMProviders
       responses:
-        '200':
+        "200":
           description: Provider list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LLMProvider'
+                  $ref: "#/components/schemas/LLMProvider"
 
   /settings/notifications:
     get:
@@ -3662,12 +3662,12 @@ paths:
       summary: Get notification settings
       operationId: getNotificationSettings
       responses:
-        '200':
+        "200":
           description: Notification settings
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotificationSettings'
+                $ref: "#/components/schemas/NotificationSettings"
     put:
       tags: [Settings]
       summary: Update notification settings
@@ -3677,9 +3677,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NotificationSettings'
+              $ref: "#/components/schemas/NotificationSettings"
       responses:
-        '200':
+        "200":
           description: Settings updated
 
   /settings/retention:
@@ -3688,12 +3688,12 @@ paths:
       summary: Get data retention settings
       operationId: getRetentionSettings
       responses:
-        '200':
+        "200":
           description: Retention settings
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetentionSettings'
+                $ref: "#/components/schemas/RetentionSettings"
     put:
       tags: [Settings]
       summary: Update data retention settings
@@ -3703,9 +3703,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RetentionSettings'
+              $ref: "#/components/schemas/RetentionSettings"
       responses:
-        '200':
+        "200":
           description: Settings updated
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -3726,7 +3726,8 @@ paths:
           in: query
           schema:
             type: string
-            enum: [create, read, update, delete, login, logout, export, evaluate]
+            enum:
+              [create, read, update, delete, login, logout, export, evaluate]
         - name: resourceType
           in: query
           schema:
@@ -3751,15 +3752,15 @@ paths:
           schema:
             type: string
             enum: [success, failure, denied]
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Audit logs
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuditLogListResponse'
+                $ref: "#/components/schemas/AuditLogListResponse"
 
   /audit/logs/{logId}:
     get:
@@ -3774,12 +3775,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Audit log entry
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuditLogEntry'
+                $ref: "#/components/schemas/AuditLogEntry"
 
   /audit/logs/export:
     post:
@@ -3804,12 +3805,12 @@ paths:
                   enum: [json, csv]
                   default: json
       responses:
-        '202':
+        "202":
           description: Export started
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExportTaskResponse'
+                $ref: "#/components/schemas/ExportTaskResponse"
 
   /audit/summary:
     get:
@@ -3828,12 +3829,12 @@ paths:
             type: string
             format: date-time
       responses:
-        '200':
+        "200":
           description: Audit summary
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuditSummary'
+                $ref: "#/components/schemas/AuditSummary"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # ADMIN
@@ -3844,12 +3845,12 @@ paths:
       summary: Get system status
       operationId: getSystemStatus
       responses:
-        '200':
+        "200":
           description: System status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SystemStatus'
+                $ref: "#/components/schemas/SystemStatus"
 
   /admin/system/health:
     get:
@@ -3858,7 +3859,7 @@ paths:
       operationId: healthCheck
       security: []
       responses:
-        '200':
+        "200":
           description: System healthy
           content:
             application/json:
@@ -3877,12 +3878,12 @@ paths:
       summary: Get Neo4j cluster status
       operationId: getNeo4jStatus
       responses:
-        '200':
+        "200":
           description: Neo4j status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DatabaseStatus'
+                $ref: "#/components/schemas/DatabaseStatus"
 
   /admin/databases/qdrant:
     get:
@@ -3890,12 +3891,12 @@ paths:
       summary: Get Qdrant status
       operationId: getQdrantStatus
       responses:
-        '200':
+        "200":
           description: Qdrant status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VectorStoreStatus'
+                $ref: "#/components/schemas/VectorStoreStatus"
 
   /admin/databases/qdrant/collections:
     get:
@@ -3903,14 +3904,14 @@ paths:
       summary: List Qdrant collections
       operationId: listQdrantCollections
       responses:
-        '200':
+        "200":
           description: Collection list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/VectorCollection'
+                  $ref: "#/components/schemas/VectorCollection"
 
   /admin/databases/qdrant/collections/{collectionName}:
     get:
@@ -3924,12 +3925,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Collection details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VectorCollectionDetail'
+                $ref: "#/components/schemas/VectorCollectionDetail"
     delete:
       tags: [Admin]
       summary: Delete collection (DANGER)
@@ -3941,7 +3942,7 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: Collection deleted
 
   /admin/databases/qdrant/collections/{collectionName}/optimize:
@@ -3956,7 +3957,7 @@ paths:
           schema:
             type: string
       responses:
-        '202':
+        "202":
           description: Optimization started
 
   /admin/ingestion/queue:
@@ -3965,12 +3966,12 @@ paths:
       summary: Inspect ingestion queue
       operationId: inspectIngestionQueue
       responses:
-        '200':
+        "200":
           description: Queue status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IngestionQueueStatus'
+                $ref: "#/components/schemas/IngestionQueueStatus"
 
   /admin/ingestion/queue/pause:
     post:
@@ -3978,7 +3979,7 @@ paths:
       summary: Pause ingestion queue
       operationId: pauseIngestionQueue
       responses:
-        '200':
+        "200":
           description: Queue paused
 
   /admin/ingestion/queue/resume:
@@ -3987,7 +3988,7 @@ paths:
       summary: Resume ingestion queue
       operationId: resumeIngestionQueue
       responses:
-        '200':
+        "200":
           description: Queue resumed
 
   /admin/ingestion/queue/clear:
@@ -3996,7 +3997,7 @@ paths:
       summary: Clear ingestion queue (DANGER)
       operationId: clearIngestionQueue
       responses:
-        '204':
+        "204":
           description: Queue cleared
 
   /admin/backup:
@@ -4020,12 +4021,12 @@ paths:
                   type: boolean
                   default: true
       responses:
-        '202':
+        "202":
           description: Backup started
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BackupTask'
+                $ref: "#/components/schemas/BackupTask"
 
   /admin/backup/status:
     get:
@@ -4033,12 +4034,12 @@ paths:
       summary: Get backup status
       operationId: getBackupStatus
       responses:
-        '200':
+        "200":
           description: Backup status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BackupStatus'
+                $ref: "#/components/schemas/BackupStatus"
 
   /admin/backup/history:
     get:
@@ -4046,16 +4047,16 @@ paths:
       summary: Get backup history
       operationId: getBackupHistory
       parameters:
-        - $ref: '#/components/parameters/LimitParam'
+        - $ref: "#/components/parameters/LimitParam"
       responses:
-        '200':
+        "200":
           description: Backup history
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BackupRecord'
+                  $ref: "#/components/schemas/BackupRecord"
 
   /admin/cache/clear:
     post:
@@ -4074,7 +4075,7 @@ paths:
                     type: string
                     enum: [graphrag, embeddings, policies, sessions]
       responses:
-        '204':
+        "204":
           description: Caches cleared
 
   /admin/jobs:
@@ -4093,12 +4094,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Job list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/JobListResponse'
+                $ref: "#/components/schemas/JobListResponse"
 
   /admin/jobs/{jobId}:
     get:
@@ -4113,12 +4114,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Job details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Job'
+                $ref: "#/components/schemas/Job"
 
   /admin/jobs/{jobId}/cancel:
     post:
@@ -4133,7 +4134,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Job cancelled
 
   /admin/jobs/{jobId}/retry:
@@ -4149,7 +4150,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '202':
+        "202":
           description: Job requeued
 
 components:
@@ -4256,37 +4257,37 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     Unauthorized:
       description: Unauthorized
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     Forbidden:
       description: Forbidden
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     NotFound:
       description: Not found
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     Conflict:
       description: Conflict
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     RateLimited:
       description: Rate limited
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
       headers:
         Retry-After:
           schema:
@@ -4352,7 +4353,7 @@ components:
           type: string
           default: Bearer
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         requiresMFA:
           type: boolean
 
@@ -4396,7 +4397,7 @@ components:
 
     OrganizationDetail:
       allOf:
-        - $ref: '#/components/schemas/Organization'
+        - $ref: "#/components/schemas/Organization"
         - type: object
           properties:
             memberCount:
@@ -4416,9 +4417,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Organization'
+            $ref: "#/components/schemas/Organization"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     CreateOrganizationRequest:
       type: object
@@ -4430,7 +4431,7 @@ components:
           maxLength: 100
         slug:
           type: string
-          pattern: '^[a-z0-9-]+$'
+          pattern: "^[a-z0-9-]+$"
 
     UpdateOrganizationRequest:
       type: object
@@ -4457,7 +4458,7 @@ components:
         name:
           type: string
         role:
-          $ref: '#/components/schemas/OrgRole'
+          $ref: "#/components/schemas/OrgRole"
         status:
           type: string
           enum: [active, pending, suspended]
@@ -4467,13 +4468,13 @@ components:
 
     OrgMemberDetail:
       allOf:
-        - $ref: '#/components/schemas/OrgMember'
+        - $ref: "#/components/schemas/OrgMember"
         - type: object
           properties:
             teams:
               type: array
               items:
-                $ref: '#/components/schemas/TeamMembership'
+                $ref: "#/components/schemas/TeamMembership"
             lastActiveAt:
               type: string
               format: date-time
@@ -4484,9 +4485,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/OrgMember'
+            $ref: "#/components/schemas/OrgMember"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     InviteMemberRequest:
       type: object
@@ -4496,7 +4497,7 @@ components:
           type: string
           format: email
         role:
-          $ref: '#/components/schemas/OrgRole'
+          $ref: "#/components/schemas/OrgRole"
         teamIds:
           type: array
           items:
@@ -4519,7 +4520,7 @@ components:
               email:
                 type: string
               role:
-                $ref: '#/components/schemas/OrgRole'
+                $ref: "#/components/schemas/OrgRole"
               status:
                 type: string
                 enum: [pending, accepted, expired, cancelled]
@@ -4563,7 +4564,7 @@ components:
         roleMapping:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/OrgRole'
+            $ref: "#/components/schemas/OrgRole"
         enforced:
           type: boolean
         allowedDomains:
@@ -4719,7 +4720,7 @@ components:
 
     TeamDetail:
       allOf:
-        - $ref: '#/components/schemas/Team'
+        - $ref: "#/components/schemas/Team"
         - type: object
           properties:
             ownedEntities:
@@ -4740,9 +4741,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Team'
+            $ref: "#/components/schemas/Team"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     CreateTeamRequest:
       type: object
@@ -4784,7 +4785,7 @@ components:
         avatarUrl:
           type: string
         role:
-          $ref: '#/components/schemas/TeamRole'
+          $ref: "#/components/schemas/TeamRole"
         joinedAt:
           type: string
           format: date-time
@@ -4795,9 +4796,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/TeamMember'
+            $ref: "#/components/schemas/TeamMember"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     TeamMembership:
       type: object
@@ -4808,7 +4809,7 @@ components:
         teamName:
           type: string
         role:
-          $ref: '#/components/schemas/TeamRole'
+          $ref: "#/components/schemas/TeamRole"
 
     TeamMetrics:
       type: object
@@ -4872,7 +4873,7 @@ components:
 
     ProjectDetail:
       allOf:
-        - $ref: '#/components/schemas/Project'
+        - $ref: "#/components/schemas/Project"
         - type: object
           properties:
             connections:
@@ -4886,7 +4887,7 @@ components:
                   name:
                     type: string
                   status:
-                    $ref: '#/components/schemas/ConnectionStatus'
+                    $ref: "#/components/schemas/ConnectionStatus"
             healthScore:
               type: number
             violationCount:
@@ -4900,9 +4901,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Project'
+            $ref: "#/components/schemas/Project"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     CreateProjectRequest:
       type: object
@@ -4949,7 +4950,7 @@ components:
         avatarUrl:
           type: string
         role:
-          $ref: '#/components/schemas/UserRole'
+          $ref: "#/components/schemas/UserRole"
         status:
           type: string
           enum: [active, pending, suspended, deactivated]
@@ -4959,13 +4960,13 @@ components:
 
     UserDetail:
       allOf:
-        - $ref: '#/components/schemas/User'
+        - $ref: "#/components/schemas/User"
         - type: object
           properties:
             teams:
               type: array
               items:
-                $ref: '#/components/schemas/TeamMembership'
+                $ref: "#/components/schemas/TeamMembership"
             permissions:
               type: array
               items:
@@ -4985,9 +4986,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     UserRole:
       type: string
@@ -5003,7 +5004,7 @@ components:
         name:
           type: string
         role:
-          $ref: '#/components/schemas/UserRole'
+          $ref: "#/components/schemas/UserRole"
         teamIds:
           type: array
           items:
@@ -5019,7 +5020,7 @@ components:
         name:
           type: string
         role:
-          $ref: '#/components/schemas/UserRole'
+          $ref: "#/components/schemas/UserRole"
         avatarUrl:
           type: string
 
@@ -5049,7 +5050,7 @@ components:
 
     ApiKeyWithSecret:
       allOf:
-        - $ref: '#/components/schemas/ApiKey'
+        - $ref: "#/components/schemas/ApiKey"
         - type: object
           properties:
             secret:
@@ -5062,7 +5063,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/ApiKey'
+            $ref: "#/components/schemas/ApiKey"
 
     CreateApiKeyRequest:
       type: object
@@ -5107,7 +5108,29 @@ components:
     # ===== Entities =====
     EntityType:
       type: string
-      enum: [Service, API, Module, Database, Component, Team, Repository, Package, Function, Class, Interface, Endpoint, Queue, Cache, Document, Ticket, ADR, Epic, Story, User]
+      enum:
+        [
+          Service,
+          API,
+          Module,
+          Database,
+          Component,
+          Team,
+          Repository,
+          Package,
+          Function,
+          Class,
+          Interface,
+          Endpoint,
+          Queue,
+          Cache,
+          Document,
+          Ticket,
+          ADR,
+          Epic,
+          Story,
+          User,
+        ]
 
     Entity:
       type: object
@@ -5116,7 +5139,7 @@ components:
           type: string
           format: uuid
         type:
-          $ref: '#/components/schemas/EntityType'
+          $ref: "#/components/schemas/EntityType"
         name:
           type: string
         description:
@@ -5128,7 +5151,7 @@ components:
         properties:
           type: object
         health:
-          $ref: '#/components/schemas/HealthStatus'
+          $ref: "#/components/schemas/HealthStatus"
         teamId:
           type: string
           format: uuid
@@ -5143,7 +5166,7 @@ components:
 
     EntityDetail:
       allOf:
-        - $ref: '#/components/schemas/Entity'
+        - $ref: "#/components/schemas/Entity"
         - type: object
           properties:
             inboundRelationships:
@@ -5166,16 +5189,16 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Entity'
+            $ref: "#/components/schemas/Entity"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     CreateEntityRequest:
       type: object
       required: [type, name]
       properties:
         type:
-          $ref: '#/components/schemas/EntityType'
+          $ref: "#/components/schemas/EntityType"
         name:
           type: string
         description:
@@ -5202,7 +5225,7 @@ components:
           type: string
           format: uuid
         health:
-          $ref: '#/components/schemas/HealthStatus'
+          $ref: "#/components/schemas/HealthStatus"
 
     BulkCreateResponse:
       type: object
@@ -5244,7 +5267,7 @@ components:
                 type: string
                 format: date-time
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     HealthStatus:
       type: string
@@ -5253,7 +5276,23 @@ components:
     # ===== Relationships =====
     RelationshipType:
       type: string
-      enum: [depends_on, calls, imports, owns, maintains, reads_from, writes_to, deploys_to, implements, exposes, documents, references, requires, violates]
+      enum:
+        [
+          depends_on,
+          calls,
+          imports,
+          owns,
+          maintains,
+          reads_from,
+          writes_to,
+          deploys_to,
+          implements,
+          exposes,
+          documents,
+          references,
+          requires,
+          violates,
+        ]
 
     Relationship:
       type: object
@@ -5268,7 +5307,7 @@ components:
           type: string
           format: uuid
         type:
-          $ref: '#/components/schemas/RelationshipType'
+          $ref: "#/components/schemas/RelationshipType"
         properties:
           type: object
         isIntent:
@@ -5284,13 +5323,13 @@ components:
 
     RelationshipDetail:
       allOf:
-        - $ref: '#/components/schemas/Relationship'
+        - $ref: "#/components/schemas/Relationship"
         - type: object
           properties:
             sourceEntity:
-              $ref: '#/components/schemas/Entity'
+              $ref: "#/components/schemas/Entity"
             targetEntity:
-              $ref: '#/components/schemas/Entity'
+              $ref: "#/components/schemas/Entity"
 
     RelationshipListResponse:
       type: object
@@ -5298,9 +5337,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Relationship'
+            $ref: "#/components/schemas/Relationship"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     CreateRelationshipRequest:
       type: object
@@ -5313,7 +5352,7 @@ components:
           type: string
           format: uuid
         type:
-          $ref: '#/components/schemas/RelationshipType'
+          $ref: "#/components/schemas/RelationshipType"
         properties:
           type: object
         isIntent:
@@ -5326,29 +5365,29 @@ components:
         nodes:
           type: array
           items:
-            $ref: '#/components/schemas/Entity'
+            $ref: "#/components/schemas/Entity"
         edges:
           type: array
           items:
-            $ref: '#/components/schemas/Relationship'
+            $ref: "#/components/schemas/Relationship"
 
     ContextGraphResponse:
       type: object
       properties:
         rootEntity:
-          $ref: '#/components/schemas/Entity'
+          $ref: "#/components/schemas/Entity"
         nodes:
           type: array
           items:
-            $ref: '#/components/schemas/Entity'
+            $ref: "#/components/schemas/Entity"
         edges:
           type: array
           items:
-            $ref: '#/components/schemas/Relationship'
+            $ref: "#/components/schemas/Relationship"
         communities:
           type: array
           items:
-            $ref: '#/components/schemas/Community'
+            $ref: "#/components/schemas/Community"
 
     GraphResponse:
       type: object
@@ -5356,15 +5395,15 @@ components:
         nodes:
           type: array
           items:
-            $ref: '#/components/schemas/GraphNode'
+            $ref: "#/components/schemas/GraphNode"
         edges:
           type: array
           items:
-            $ref: '#/components/schemas/GraphEdge'
+            $ref: "#/components/schemas/GraphEdge"
         communities:
           type: array
           items:
-            $ref: '#/components/schemas/Community'
+            $ref: "#/components/schemas/Community"
         metadata:
           type: object
           properties:
@@ -5384,13 +5423,13 @@ components:
         id:
           type: string
         type:
-          $ref: '#/components/schemas/EntityType'
+          $ref: "#/components/schemas/EntityType"
         label:
           type: string
         properties:
           type: object
         health:
-          $ref: '#/components/schemas/HealthStatus'
+          $ref: "#/components/schemas/HealthStatus"
         position:
           type: object
           properties:
@@ -5415,7 +5454,7 @@ components:
         target:
           type: string
         type:
-          $ref: '#/components/schemas/RelationshipType'
+          $ref: "#/components/schemas/RelationshipType"
         properties:
           type: object
         isIntent:
@@ -5433,11 +5472,11 @@ components:
         entityTypes:
           type: array
           items:
-            $ref: '#/components/schemas/EntityType'
+            $ref: "#/components/schemas/EntityType"
         relationshipTypes:
           type: array
           items:
-            $ref: '#/components/schemas/RelationshipType'
+            $ref: "#/components/schemas/RelationshipType"
         projectId:
           type: string
           format: uuid
@@ -5449,7 +5488,7 @@ components:
         healthStatus:
           type: array
           items:
-            $ref: '#/components/schemas/HealthStatus'
+            $ref: "#/components/schemas/HealthStatus"
         lens:
           type: string
           enum: [reality, intent, drift, ownership, health]
@@ -5468,11 +5507,11 @@ components:
               nodes:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Entity'
+                  $ref: "#/components/schemas/Entity"
               edges:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Relationship'
+                  $ref: "#/components/schemas/Relationship"
               length:
                 type: integer
         totalPaths:
@@ -5514,15 +5553,15 @@ components:
         evidence:
           type: array
           items:
-            $ref: '#/components/schemas/Evidence'
+            $ref: "#/components/schemas/Evidence"
         communities:
           type: array
           items:
-            $ref: '#/components/schemas/CommunityReference'
+            $ref: "#/components/schemas/CommunityReference"
         entities:
           type: array
           items:
-            $ref: '#/components/schemas/Entity'
+            $ref: "#/components/schemas/Entity"
         confidence:
           type: number
         tokenUsage:
@@ -5643,7 +5682,7 @@ components:
         activeTasks:
           type: array
           items:
-            $ref: '#/components/schemas/IndexTaskStatus'
+            $ref: "#/components/schemas/IndexTaskStatus"
         stats:
           type: object
           properties:
@@ -5674,13 +5713,13 @@ components:
 
     CommunityDetail:
       allOf:
-        - $ref: '#/components/schemas/Community'
+        - $ref: "#/components/schemas/Community"
         - type: object
           properties:
             members:
               type: array
               items:
-                $ref: '#/components/schemas/Entity'
+                $ref: "#/components/schemas/Entity"
             report:
               type: string
             findings:
@@ -5690,7 +5729,7 @@ components:
             children:
               type: array
               items:
-                $ref: '#/components/schemas/Community'
+                $ref: "#/components/schemas/Community"
 
     CommunityListResponse:
       type: object
@@ -5698,7 +5737,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Community'
+            $ref: "#/components/schemas/Community"
         meta:
           type: object
           properties:
@@ -5713,9 +5752,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/QueryHistoryEntry'
+            $ref: "#/components/schemas/QueryHistoryEntry"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     QueryHistoryEntry:
       type: object
@@ -5732,7 +5771,7 @@ components:
         evidence:
           type: array
           items:
-            $ref: '#/components/schemas/Evidence'
+            $ref: "#/components/schemas/Evidence"
         userId:
           type: string
           format: uuid
@@ -5747,7 +5786,16 @@ components:
     # ===== Policies =====
     PolicyCategory:
       type: string
-      enum: [architecture, security, compliance, ownership, documentation, dependency, custom]
+      enum:
+        [
+          architecture,
+          security,
+          compliance,
+          ownership,
+          documentation,
+          dependency,
+          custom,
+        ]
 
     EnforcementMode:
       type: string
@@ -5764,13 +5812,13 @@ components:
         description:
           type: string
         category:
-          $ref: '#/components/schemas/PolicyCategory'
+          $ref: "#/components/schemas/PolicyCategory"
         rego:
           type: string
         enabled:
           type: boolean
         enforcementMode:
-          $ref: '#/components/schemas/EnforcementMode'
+          $ref: "#/components/schemas/EnforcementMode"
         version:
           type: integer
         violationCount:
@@ -5790,13 +5838,13 @@ components:
 
     PolicyDetail:
       allOf:
-        - $ref: '#/components/schemas/Policy'
+        - $ref: "#/components/schemas/Policy"
         - type: object
           properties:
             recentViolations:
               type: array
               items:
-                $ref: '#/components/schemas/Violation'
+                $ref: "#/components/schemas/Violation"
             affectedEntities:
               type: integer
             lastEvaluatedAt:
@@ -5811,9 +5859,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Policy'
+            $ref: "#/components/schemas/Policy"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     CreatePolicyRequest:
       type: object
@@ -5824,14 +5872,14 @@ components:
         description:
           type: string
         category:
-          $ref: '#/components/schemas/PolicyCategory'
+          $ref: "#/components/schemas/PolicyCategory"
         rego:
           type: string
         enabled:
           type: boolean
           default: false
         enforcementMode:
-          $ref: '#/components/schemas/EnforcementMode'
+          $ref: "#/components/schemas/EnforcementMode"
           default: advisory
         projectId:
           type: string
@@ -5849,7 +5897,7 @@ components:
         enabled:
           type: boolean
         enforcementMode:
-          $ref: '#/components/schemas/EnforcementMode'
+          $ref: "#/components/schemas/EnforcementMode"
 
     PolicyTestRequest:
       type: object
@@ -5951,12 +5999,12 @@ components:
                     message:
                       type: string
                     severity:
-                      $ref: '#/components/schemas/Severity'
+                      $ref: "#/components/schemas/Severity"
                     entityId:
                       type: string
                       format: uuid
               enforcementMode:
-                $ref: '#/components/schemas/EnforcementMode'
+                $ref: "#/components/schemas/EnforcementMode"
         totalPolicies:
           type: integer
         passedCount:
@@ -5972,7 +6020,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/EvaluationResponse'
+            $ref: "#/components/schemas/EvaluationResponse"
         summary:
           type: object
           properties:
@@ -6009,13 +6057,13 @@ components:
         entityName:
           type: string
         entityType:
-          $ref: '#/components/schemas/EntityType'
+          $ref: "#/components/schemas/EntityType"
         message:
           type: string
         severity:
-          $ref: '#/components/schemas/Severity'
+          $ref: "#/components/schemas/Severity"
         status:
-          $ref: '#/components/schemas/ViolationStatus'
+          $ref: "#/components/schemas/ViolationStatus"
         teamId:
           type: string
           format: uuid
@@ -6031,13 +6079,13 @@ components:
 
     ViolationDetail:
       allOf:
-        - $ref: '#/components/schemas/Violation'
+        - $ref: "#/components/schemas/Violation"
         - type: object
           properties:
             entity:
-              $ref: '#/components/schemas/Entity'
+              $ref: "#/components/schemas/Entity"
             policy:
-              $ref: '#/components/schemas/Policy'
+              $ref: "#/components/schemas/Policy"
             context:
               type: object
             history:
@@ -6073,9 +6121,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Violation'
+            $ref: "#/components/schemas/Violation"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     ViolationsSummary:
       type: object
@@ -6125,7 +6173,7 @@ components:
       type: object
       properties:
         status:
-          $ref: '#/components/schemas/ViolationStatus'
+          $ref: "#/components/schemas/ViolationStatus"
         comment:
           type: string
 
@@ -6138,7 +6186,7 @@ components:
           type: string
           example: "Services in payment domain must not directly call services in user domain"
         category:
-          $ref: '#/components/schemas/PolicyCategory'
+          $ref: "#/components/schemas/PolicyCategory"
         examples:
           type: array
           items:
@@ -6228,7 +6276,7 @@ components:
         id:
           type: string
         category:
-          $ref: '#/components/schemas/PolicyCategory'
+          $ref: "#/components/schemas/PolicyCategory"
         title:
           type: string
         description:
@@ -6289,11 +6337,11 @@ components:
         directlyAffected:
           type: array
           items:
-            $ref: '#/components/schemas/AffectedEntity'
+            $ref: "#/components/schemas/AffectedEntity"
         indirectlyAffected:
           type: array
           items:
-            $ref: '#/components/schemas/AffectedEntity'
+            $ref: "#/components/schemas/AffectedEntity"
         policiesTriggered:
           type: array
           items:
@@ -6305,7 +6353,7 @@ components:
               policyName:
                 type: string
               severity:
-                $ref: '#/components/schemas/Severity'
+                $ref: "#/components/schemas/Severity"
               message:
                 type: string
         riskAssessment:
@@ -6326,7 +6374,7 @@ components:
                   description:
                     type: string
         visualization:
-          $ref: '#/components/schemas/GraphResponse'
+          $ref: "#/components/schemas/GraphResponse"
         summary:
           type: object
           properties:
@@ -6345,7 +6393,7 @@ components:
       type: object
       properties:
         entity:
-          $ref: '#/components/schemas/Entity'
+          $ref: "#/components/schemas/Entity"
         impactType:
           type: string
           enum: [breaking, non-breaking, potential]
@@ -6371,16 +6419,23 @@ components:
             properties:
               type:
                 type: string
-                enum: [add_entity, remove_entity, modify_entity, add_relationship, remove_relationship]
+                enum:
+                  [
+                    add_entity,
+                    remove_entity,
+                    modify_entity,
+                    add_relationship,
+                    remove_relationship,
+                  ]
               entityId:
                 type: string
                 format: uuid
               newEntity:
-                $ref: '#/components/schemas/CreateEntityRequest'
+                $ref: "#/components/schemas/CreateEntityRequest"
               updates:
                 type: object
               relationship:
-                $ref: '#/components/schemas/CreateRelationshipRequest'
+                $ref: "#/components/schemas/CreateRelationshipRequest"
         policyIds:
           type: array
           items:
@@ -6391,7 +6446,7 @@ components:
       type: object
       properties:
         proposedState:
-          $ref: '#/components/schemas/GraphResponse'
+          $ref: "#/components/schemas/GraphResponse"
         newViolations:
           type: array
           items:
@@ -6403,7 +6458,7 @@ components:
               policyName:
                 type: string
               severity:
-                $ref: '#/components/schemas/Severity'
+                $ref: "#/components/schemas/Severity"
               message:
                 type: string
               affectedEntity:
@@ -6439,7 +6494,13 @@ components:
       properties:
         scenario:
           type: string
-          enum: [entity_removal, dependency_addition, team_change, technology_migration]
+          enum:
+            [
+              entity_removal,
+              dependency_addition,
+              team_change,
+              technology_migration,
+            ]
         parameters:
           type: object
           properties:
@@ -6478,7 +6539,7 @@ components:
               description:
                 type: string
               severity:
-                $ref: '#/components/schemas/Severity'
+                $ref: "#/components/schemas/Severity"
               affectedCount:
                 type: integer
         recommendations:
@@ -6511,9 +6572,9 @@ components:
             type: object
             properties:
               entity:
-                $ref: '#/components/schemas/Entity'
+                $ref: "#/components/schemas/Entity"
               relationshipType:
-                $ref: '#/components/schemas/RelationshipType'
+                $ref: "#/components/schemas/RelationshipType"
               critical:
                 type: boolean
         warnings:
@@ -6528,7 +6589,20 @@ components:
     # ===== Marketplace =====
     PluginCategory:
       type: string
-      enum: [source-control, issue-tracking, documentation, cloud-provider, ci-cd, communication, monitoring, security, policy-pack, visualization, custom]
+      enum:
+        [
+          source-control,
+          issue-tracking,
+          documentation,
+          cloud-provider,
+          ci-cd,
+          communication,
+          monitoring,
+          security,
+          policy-pack,
+          visualization,
+          custom,
+        ]
 
     Plugin:
       type: object
@@ -6540,7 +6614,7 @@ components:
         description:
           type: string
         category:
-          $ref: '#/components/schemas/PluginCategory'
+          $ref: "#/components/schemas/PluginCategory"
         type:
           type: string
           enum: [connector, policy-pack, visualization, integration]
@@ -6573,7 +6647,7 @@ components:
 
     PluginDetail:
       allOf:
-        - $ref: '#/components/schemas/Plugin'
+        - $ref: "#/components/schemas/Plugin"
         - type: object
           properties:
             fullDescription:
@@ -6604,7 +6678,7 @@ components:
             changelog:
               type: array
               items:
-                $ref: '#/components/schemas/ChangelogEntry'
+                $ref: "#/components/schemas/ChangelogEntry"
 
     PluginCatalogResponse:
       type: object
@@ -6612,9 +6686,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Plugin'
+            $ref: "#/components/schemas/Plugin"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     PluginVersionListResponse:
       type: object
@@ -6686,9 +6760,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/PluginReview'
+            $ref: "#/components/schemas/PluginReview"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
         summary:
           type: object
           properties:
@@ -6716,7 +6790,7 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/PluginCategory'
+          $ref: "#/components/schemas/PluginCategory"
         name:
           type: string
         description:
@@ -6766,7 +6840,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/InstalledPlugin'
+            $ref: "#/components/schemas/InstalledPlugin"
 
     PluginInstallationStatus:
       type: object
@@ -6813,7 +6887,7 @@ components:
         pluginName:
           type: string
         status:
-          $ref: '#/components/schemas/ConnectionStatus'
+          $ref: "#/components/schemas/ConnectionStatus"
         lastSyncAt:
           type: string
           format: date-time
@@ -6833,7 +6907,7 @@ components:
 
     ConnectionDetail:
       allOf:
-        - $ref: '#/components/schemas/Connection'
+        - $ref: "#/components/schemas/Connection"
         - type: object
           properties:
             config:
@@ -6849,7 +6923,7 @@ components:
                     type: string
                     format: date-time
                   status:
-                    $ref: '#/components/schemas/ConnectionStatus'
+                    $ref: "#/components/schemas/ConnectionStatus"
             stats:
               type: object
               properties:
@@ -6870,9 +6944,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Connection'
+            $ref: "#/components/schemas/Connection"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     CreateConnectionRequest:
       type: object
@@ -6995,9 +7069,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/SyncTaskStatus'
+            $ref: "#/components/schemas/SyncTaskStatus"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     ConnectionLogResponse:
       type: object
@@ -7065,7 +7139,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/WebhookConfig'
+            $ref: "#/components/schemas/WebhookConfig"
 
     CreateWebhookRequest:
       type: object
@@ -7129,7 +7203,7 @@ components:
                 type: string
                 format: date-time
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     # ===== Metrics =====
     HealthScore:
@@ -7483,7 +7557,7 @@ components:
               ownerTeam:
                 type: string
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     MaintenanceTaskResponse:
       type: object
@@ -7618,9 +7692,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/ReviewItem'
+            $ref: "#/components/schemas/ReviewItem"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     ReviewDecisionRequest:
       type: object
@@ -7654,7 +7728,7 @@ components:
             entityTypes:
               type: array
               items:
-                $ref: '#/components/schemas/EntityType'
+                $ref: "#/components/schemas/EntityType"
         includeProperties:
           type: boolean
           default: true
@@ -7818,3 +7892,94 @@ components:
           type: integer
         error:
           type: string
+
+    # ===== Settings =====
+    LLMSettings:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [openai, anthropic, azure, ollama, vllm, custom]
+        model:
+          type: string
+        embeddingModel:
+          type: string
+        apiKeyConfigured:
+          type: boolean
+        baseUrl:
+          type: string
+        temperature:
+          type: number
+        maxTokens:
+          type: integer
+
+    UpdateLLMSettingsRequest:
+      type: object
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        embeddingModel:
+          type: string
+        apiKey:
+          type: string
+        baseUrl:
+          type: string
+        temperature:
+          type: number
+        maxTokens:
+          type: integer
+
+    LLMTestRequest:
+      type: object
+      properties:
+        provider:
+          type: string
+        apiKey:
+          type: string
+        model:
+          type: string
+
+    LLMTestResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        latencyMs:
+          type: integer
+        model:
+          type: string
+
+    LLMProvider:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        models:
+          type: array
+          items:
+            type: string
+        capabilities:
+          type: array
+          items:
+            type: string
+
+    NotificationSettings:
+      type: object
+      properties:
+        emailEnabled:
+          type: boolean
+        slackEnabled:
+          type: boolean
+        slackWebhook:
+          type: string
+        digestFrequency:
+          type: string
+          enum: [realtime, daily, weekly]
+        alertThresholds:
+          type: object
