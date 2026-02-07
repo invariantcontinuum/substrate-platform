@@ -30,6 +30,60 @@ learn and evolve (organizational memory)
 aim is to move toward realisation of this substrate-frontend aliging with the vision and goals, therefore i need you to provide me an updated version of the docs from 
 docs
  and some markdown files where phase by phase the  implementation instructions  for substrate-frontend are written for later implementation. 
+
+ The following report compares 
+openapi.yaml
+ (legacy), 
+new_openapi.yaml
+ (service-level refactor), and 
+latest_openapi.yaml
+ (comprehensive v2.0) within the context of the substrate-platform/docs architectural goals.
+
+📊 Executive Summary
+Metric	openapi.yaml (Legacy)	new_openapi.yaml (Refactor)	latest_openapi.yaml (Target)
+Version	1.0.0	1.0.0	2.0.0
+Scope	Monolith (Core + Management)	Core Services Only	Full Platform (Core + Mgmt + Auth)
+Multi-Tenancy	Basic	❌ Removed	✅ Advanced (Subdomains, RBAC)
+Doc Alignment	Partial	Low (Missing key features)	High (Matches Architecture Spec)
+Status	Deprecated	Incomplete/Service-Specific	Production Ready
+🔍 Detailed Comparison
+1. Management & Multi-Tenancy (Critical)
+The documentation explicitly highlights "Multi-Tenant & RBAC" as a core feature for "Executives, Architects, Security, and Engineers" (docs/index.md).
+
+openapi.yaml: Contains basic CRUD endpoints for /organizations, /teams, and /projects.
+new_openapi.yaml: CRITICAL REGRESSION. These endpoints have been completely removed. This file appears to be a "Core Service" contract (Knowledge Fabric + Governance) stripped of the management layer. It strictly fails to support the documented multi-tenancy requirement if used as the primary entry point.
+latest_openapi.yaml: Restores and enhances these endpoints. It introduces a tenant server variable (https://{tenant}.api.substrate.io/v1), aligning perfectly with the SaaS architecture described in the docs.
+2. Authentication & Security
+openapi.yaml / new_openapi.yaml: Minimal definition (BearerAuth, ApiKeyAuth).
+latest_openapi.yaml: Adds comprehensive identity management:
+SSO Strings: /auth/login/sso, /auth/callback (Okta, Azure AD, Google).
+MFA: /auth/mfa/setup, /auth/mfa/verify.
+User Profiles: /auth/me with role parameters.
+3. Core Functional Parity
+All three files maintain consistency on the core "Structural Integrity" features described in docs/architecture/overview.md:
+
+Knowledge Fabric: /entities, /relationships (Graph traversal).
+GraphRAG: /graphrag/query, /graphrag/index (Semantic search).
+Governance: /policies, /violations (OPA enforcement).
+Metrics: /metrics/drift, /metrics/dora (Health scoring).
+new_openapi.yaml is effectively just this core layer, whereas latest_openapi.yaml wraps this core layer in the necessary enterprise management shell.
+
+🏛️ Contextual Analysis (Docs vs. Spec)
+Architecture Alignment
+The docs/architecture/overview.md describes a system with "Multi-tenant state management" and "RBAC".
+
+latest_openapi.yaml is the only spec that fully implements the RBAC (Role-Based Access Control) defined in the docs, with explicit schemas for OrgRole (admin, view, etc.) and TeamRole.
+new_openapi.yaml lacks the context of who is performing actions, making it unsuitable for the described "Multi-Tenant" architecture.
+Deployment Model
+The deployment guide (docs/deployment/docker.md referenced in index) assumes a Nginx gateway.
+
+latest_openapi.yaml aligns with a Gateway pattern where the API handles routing to specific tenant contexts.
+new_openapi.yaml resembles the internal gRPC/HTTP contract for the backend services behind that gateway.
+📝 Recommendations
+Adopt latest_openapi.yaml: This file is the true implementation of the vision outlined in docs/. It consolidates the Core Logic (from new_openapi.yaml) with the Management Layer (from openapi.yaml) and adds necessary Security features (SSO/MFA).
+Retain new_openapi.yaml as Internal Schema: You may keep new_openapi.yaml if you need a strict definition of the internal service API (excluding auth/management), but it should not be exposed to frontend clients.
+Archive openapi.yaml: It is obsolete. Its functionality has been fully superseded by latest_openapi.yaml.
+
 # Structural Integrity Platform (Substrate)
 Here is the comparison report between the current 
 openapi.yaml
